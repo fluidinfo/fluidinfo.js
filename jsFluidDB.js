@@ -62,6 +62,9 @@ fluidDB.delete = function(url, callback, async_req, username, password){
     fluidDB.ajax("DELETE", fluidDB.baseURL+url, null, callback, async_req, username, password);
 }
 
+fluidDB.head = function(url, callback, async_req, username, password){
+    fluidDB.ajax("HEAD", fluidDB.baseURL+url, null, callback, async_req, username, password);
+}
 
 //END FluidDB REST LIB
 
