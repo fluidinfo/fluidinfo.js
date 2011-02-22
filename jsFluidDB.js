@@ -30,10 +30,6 @@ fluidDB.ajax = function(type, url, payload, callback, async_req, username, passw
                   var base64string = username + ":" + password;
                   xhrObj.setRequestHeader("Authorization","Basic "+  Base64.encode(base64string));
               };
-              if(fluidDB.baseURL == fluidDB.instance.main){
-                  xhrObj.setRequestHeader("Accept","application/json");
-              };
-             
               xhrObj.setRequestHeader("Content-Type","application/json");
           },
           contentType: "application/json",
