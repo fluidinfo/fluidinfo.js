@@ -15,13 +15,16 @@ fluidDB.choose = function(type){
 
 fluidDB.choose('main');
 
-fluidDB.ajax = function(type, url, payload, callback, async_req, username, password){
+fluidDB.ajax = function(type, url, payload, callback, async_req, username, password, content_type){
     if((username != undefined) && (password != undefined)){
       var authenticate = true;
     }
     
     if(async_req == undefined){
       async_req = true;
+    }
+    if(content_type == undefined){
+      content_type = "application/json";
     }
     $.ajax({
           async: async_req,
@@ -30,9 +33,9 @@ fluidDB.ajax = function(type, url, payload, callback, async_req, username, passw
                   var base64string = username + ":" + password;
                   xhrObj.setRequestHeader("Authorization","Basic "+  Base64.encode(base64string));
               };
-              xhrObj.setRequestHeader("Content-Type","application/json");
+              xhrObj.setRequestHeader("Content-Type",content_type);
           },
-          contentType: "application/json",
+          contentType: content_type,
           type: type,
           url: url,
           data: payload,
@@ -50,8 +53,12 @@ fluidDB.post = function(url, payload, callback, async_req, username, password){
     fluidDB.ajax("POST", fluidDB.baseURL+url, payload, callback, async_req, username, password);
 }
 
-fluidDB.put = function(url, payload, callback, async_req, username, password){
+fluidDB.put = function(url, payload, callback, async_req, username, password, opaque, errorCallb){
+  if(opaque == undefined || !opaque){
     fluidDB.ajax("PUT", fluidDB.baseURL+url, payload, callback, async_req, username, password);
+  }else{
+    fluidDB.ajax("PUT", fluidDB.baseURL+url, payload, callback, async_req, username, password, "application/vnd.fluiddb.value+json");
+  }
 }
 
 fluidDB.delete = function(url, callback, async_req, username, password){
