@@ -24,6 +24,9 @@ fluidDB.config = function(options) {
     fluidDB.username     = options.username;
     fluidDB.password     = options.password;
     fluidDB.base64string = Base64.encode(options.username + ":" + options.password);
+  }else if(options.auth_token){
+    fluidDB.authenticate = true;
+    fluidDB.base64string = options.auth_token;
   }
 
   fluidDB.choose(options.instance);
@@ -34,7 +37,11 @@ fluidDB.ajax = function(options){
   if((options.username != undefined) && (options.password != undefined)){
     // we can override the authentication defaults
     var authenticate = true;
-    var base64string = Base64.encode(username + ":" + password);
+    var base64string = Base64.encode(options.username + ":" + options.password);
+  }else if(options.auth_token){
+    var authenticate = true;
+    var base64string = options.auth_token;
+  }
   }else if(fluidDB.authenticate){
     // there are no credential passed as arguments, but maybe there're in the configuration
     var authenticate = true;
