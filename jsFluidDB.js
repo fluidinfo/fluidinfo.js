@@ -9,16 +9,38 @@ fluidDB.instance = {
 
 
 fluidDB.choose = function(type){
-    // TODO add error handling
+  if(type === "main" || type === "sandbox"){
     fluidDB.baseURL = fluidDB.instance[type];
+  }
 }
 
-fluidDB.choose('main');
+fluidDB.choose('main'); // main instance as default
+
+fluidDB.config = function(options) {
+
+  // authentication credentials
+  if((options.username != undefined) && (options.password != undefined)){
+    fluidDB.authenticate = true;
+    fluidDB.username     = options.username;
+    fluidDB.password     = options.password;
+    fluidDB.base64string = Base64.encode(options.username + ":" + options.password);
+  }
+
+  fluidDB.choose(options.instance);
+
+}
 
 fluidDB.ajax = function(options){
   if((options.username != undefined) && (options.password != undefined)){
+    // we can override the authentication defaults
     var authenticate = true;
+    var base64string = Base64.encode(username + ":" + password);
+  }else if(fluidDB.authenticate){
+    // there are no credential passed as arguments, but maybe there're in the configuration
+    var authenticate = true;
+    var base64string = fluidDB.base64string;
   }
+
   options.url  = fluidDB.baseURL+options.url;
   options.async_req    = options.async_req || true;
   options.content_type = options.content_type || "application/json";
@@ -26,8 +48,7 @@ fluidDB.ajax = function(options){
   options.contentType  = options.content_type;
   options.beforeSend   =  function(xhrObj){
                             if(authenticate){
-                                var base64string = username + ":" + password;
-                                xhrObj.setRequestHeader("Authorization","Basic "+  Base64.encode(base64string));
+                                xhrObj.setRequestHeader("Authorization","Basic "+ base64string);
                             };
                             xhrObj.setRequestHeader("Content-Type", options.content_type);
                           };
