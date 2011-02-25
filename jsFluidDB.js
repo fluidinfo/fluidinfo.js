@@ -41,7 +41,6 @@ fluidDB.ajax = function(options){
   }else if(options.auth_token){
     var authenticate = true;
     var base64string = options.auth_token;
-  }
   }else if(fluidDB.authenticate){
     // there are no credential passed as arguments, but maybe there're in the configuration
     var authenticate = true;
