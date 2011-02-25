@@ -49,7 +49,7 @@ fluidDB.ajax = function(options){
   }
 
   options.url  = fluidDB.baseURL+options.url;
-  options.async_req    = options.async_req || true;
+  options.async    = options.async || true;
   options.content_type = options.content_type || "application/json";
   options.opaque_value = options.opaque_value || false;
   options.contentType  = options.content_type;
@@ -64,36 +64,6 @@ fluidDB.ajax = function(options){
 
   $.ajax(options);
 }
-
-fluidDB.ajax = function(type, url, payload, callback, async_req, username, password, content_type){
-    if((username != undefined) && (password != undefined)){
-      var authenticate = true;
-    }
-    
-    if(async_req == undefined){
-      async_req = true;
-    }
-    if(content_type == undefined){
-      content_type = "application/json";
-    }
-    $.ajax({
-          async: async_req,
-          beforeSend: function(xhrObj){
-              if(authenticate){
-                  var base64string = username + ":" + password;
-                  xhrObj.setRequestHeader("Authorization","Basic "+  Base64.encode(base64string));
-              };
-              xhrObj.setRequestHeader("Content-Type",content_type);
-          },
-          contentType: content_type,
-          type: type,
-          url: url,
-          data: payload,
-          processData: false,
-          success: callback
-    });
-}
-
 
 fluidDB.get = function(options){
   options.type = "GET";
