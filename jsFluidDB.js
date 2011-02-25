@@ -51,7 +51,7 @@ fluidDB.ajax = function(options){
   options.url  = fluidDB.baseURL+options.url;
   options.async    = options.async || true;
   options.content_type = options.content_type || "application/json";
-  options.opaque_value = options.opaque_value || false;
+  options.opaque = options.opaque || false;
   options.contentType  = options.content_type;
   options.beforeSend   =  function(xhrObj){
                             if(authenticate){
