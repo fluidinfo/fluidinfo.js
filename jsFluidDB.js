@@ -50,7 +50,7 @@ fluidDB.ajax = function(options){
   options.url  = fluidDB.baseURL+options.url;
   options.async    = options.async || true;
   options.content_type = options.content_type || "application/json";
-  options.opaque = options.opaque || false;
+  options.primitive = options.primitive || false;
   options.contentType  = options.content_type;
   options.beforeSend   =  function(xhrObj){
                             if(authenticate){
@@ -80,7 +80,7 @@ fluidDB.post = function(options){
 fluidDB.put = function(options){
   options.type = "PUT";
 
-  if(options.opaque){
+  if(options.primitive){
     options.content_type = "application/vnd.fluiddb.value+json";
   }
 
