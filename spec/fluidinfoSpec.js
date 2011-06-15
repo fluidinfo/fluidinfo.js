@@ -30,7 +30,7 @@ function it_should_have_empty_payload () {
   });
 }
 
-describe("jsFluidDB", function() {
+describe("Fluidinfo.js", function() {
   describe("Configuration", function() {
     it("as default it should point to the main instance", function() {
       expect(fluidDB.baseURL).toEqual("http://fluiddb.fluidinfo.com/");
