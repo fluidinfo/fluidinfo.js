@@ -1,6 +1,7 @@
 //BEGIN FluidDB REST LIB
 
 fluidDB = new Object();
+Fluidinfo = fluidDB;
 
 fluidDB.instance = {
     main : "http://fluiddb.fluidinfo.com/",

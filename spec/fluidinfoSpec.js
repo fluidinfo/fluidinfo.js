@@ -6,7 +6,7 @@ function it_should_be_a_standard_ajax_request() {
 
   it("should point to the correct URL", function() {
     expect(this.server.requests[0].url)
-      .toEqual(fluidDB.baseURL+"objects/fakeObjectID/username/tag");
+      .toEqual(Fluidinfo.baseURL+"objects/fakeObjectID/username/tag");
   });
 
   it("should be anonymous", function() {
@@ -33,18 +33,18 @@ function it_should_have_empty_payload () {
 describe("Fluidinfo.js", function() {
   describe("Configuration", function() {
     it("as default it should point to the main instance", function() {
-      expect(fluidDB.baseURL).toEqual("http://fluiddb.fluidinfo.com/");
+      expect(Fluidinfo.baseURL).toEqual("http://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the main instance", function() {
-      fluidDB.choose("main");
-      expect(fluidDB.baseURL).toEqual("http://fluiddb.fluidinfo.com/");
+      Fluidinfo.choose("main");
+      expect(Fluidinfo.baseURL).toEqual("http://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the sandbox", function() {
-      fluidDB.choose("sandbox");
-      expect(fluidDB.baseURL).toEqual("http://sandbox.fluidinfo.com/");
-      fluidDB.choose("main");
+      Fluidinfo.choose("sandbox");
+      expect(Fluidinfo.baseURL).toEqual("http://sandbox.fluidinfo.com/");
+      Fluidinfo.choose("main");
     });
   });
   
@@ -56,7 +56,7 @@ describe("Fluidinfo.js", function() {
     describe("GET", function() {
       describe("default values", function() {
         beforeEach(function() {
-          fluidDB.get({
+          Fluidinfo.get({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -79,7 +79,7 @@ describe("Fluidinfo.js", function() {
     describe("POST", function() {
       describe("default values", function() {
         beforeEach(function() {
-          fluidDB.post({
+          Fluidinfo.post({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -101,7 +101,7 @@ describe("Fluidinfo.js", function() {
     describe("PUT", function() {
       describe("default values", function() {
         beforeEach(function() {
-          fluidDB.put({
+          Fluidinfo.put({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -124,7 +124,7 @@ describe("Fluidinfo.js", function() {
     describe("DELETE", function() {
       describe("default values", function() {
         beforeEach(function() {
-          fluidDB.delete({
+          Fluidinfo.delete({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -148,7 +148,7 @@ describe("Fluidinfo.js", function() {
     describe("HEAD", function() {
       describe("default values", function() {
         beforeEach(function() {
-          fluidDB.head({
+          Fluidinfo.head({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -174,3 +174,24 @@ describe("Fluidinfo.js", function() {
   });
 });
 
+/*
+  GET
+  POST
+  PUT
+  DELETE
+  HEAD
+  primitive per put
+  primitive per altri
+  payload per head
+  payload per delete
+  payload per get
+  parsing del tag in values
+
+  setting async = true
+  changing the base url
+  changing content type
+  authenticazione salvata
+  authenticazione ovverriden
+
+  deve passare gli args
+*/
