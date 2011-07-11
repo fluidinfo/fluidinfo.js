@@ -18,7 +18,7 @@ function it_should_be_a_standard_ajax_request() {
 
   it("should have content-type to application/json", function() {
     expect(this.server.requests[0].requestHeaders['Content-Type'])
-      .toEqual('application/json');
+      .toStartWith('application/json');
   });
 };
 
@@ -30,24 +30,38 @@ function it_should_have_empty_payload () {
   });
 }
 
+function toStartWith(expected) {
+   // Ensures the actual result starts with the expected value
+   return expect(this.actual).toMatch("^"+expected);
+}
+
 describe("Fluidinfo.js", function() {
+
+  beforeEach(function() {
+    this.addMatchers({
+      toStartWith: function(expected) {
+        return expect(this.actual).toMatch("^"+expected);
+        }
+    });
+  }
+
   describe("Configuration", function() {
     it("as default it should point to the main instance", function() {
-      expect(Fluidinfo.baseURL).toEqual("http://fluiddb.fluidinfo.com/");
+      expect(Fluidinfo.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the main instance", function() {
       Fluidinfo.choose("main");
-      expect(Fluidinfo.baseURL).toEqual("http://fluiddb.fluidinfo.com/");
+      expect(Fluidinfo.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the sandbox", function() {
       Fluidinfo.choose("sandbox");
-      expect(Fluidinfo.baseURL).toEqual("http://sandbox.fluidinfo.com/");
+      expect(Fluidinfo.baseURL).toEqual("https://sandbox.fluidinfo.com/");
       Fluidinfo.choose("main");
     });
   });
-  
+
   describe("REST", function() {
     beforeEach(function() {
       this.server = sinon.fakeServer.create();

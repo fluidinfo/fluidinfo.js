@@ -4,8 +4,8 @@ fluidDB = new Object();
 Fluidinfo = fluidDB;
 
 fluidDB.instance = {
-    main : "http://fluiddb.fluidinfo.com/",
-    sandbox : "http://sandbox.fluidinfo.com/"
+    main : "https://fluiddb.fluidinfo.com/",
+    sandbox : "https://sandbox.fluidinfo.com/"
 }
 
 
