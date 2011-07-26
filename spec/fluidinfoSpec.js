@@ -7,7 +7,7 @@ function it_should_be_a_standard_ajax_request() {
 
   it("should point to the correct URL", function() {
     expect(this.server.requests[0].url)
-      .toEqual(Fluidinfo.baseURL+"objects/fakeObjectID/username/tag");
+      .toEqual(fi.baseURL+"objects/fakeObjectID/username/tag");
   });
 
   it("should be anonymous", function() {
@@ -33,20 +33,23 @@ function it_should_have_empty_payload () {
 
 describe("Fluidinfo.js", function() {
 
+  beforeEach(function() {
+    fi = Fluidinfo("username", "password");
+  });
+
   describe("Configuration", function() {
     it("as default it should point to the main instance", function() {
-      expect(Fluidinfo.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
+      expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the main instance", function() {
-      Fluidinfo.choose("main");
-      expect(Fluidinfo.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
+      fi = Fluidinfo("username", "password", "main");
+      expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the sandbox", function() {
-      Fluidinfo.choose("sandbox");
-      expect(Fluidinfo.baseURL).toEqual("https://sandbox.fluidinfo.com/");
-      Fluidinfo.choose("main");
+      fi = Fluidinfo("username", "password", "sandbox");
+      expect(fi.baseURL).toEqual("https://sandbox.fluidinfo.com/");
     });
   });
 
@@ -58,10 +61,9 @@ describe("Fluidinfo.js", function() {
     describe("GET", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.api.get({
+          fi.api.get({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){
-                          }
+                 success: function(json){}
           });
         });
 
@@ -72,8 +74,7 @@ describe("Fluidinfo.js", function() {
             .toEqual("GET");
         });
 
-        it("should have null payload", function() {
-        });
+        it("should have null payload", function() {});
       }); //default values
 
     });
@@ -81,10 +82,9 @@ describe("Fluidinfo.js", function() {
     describe("POST", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.api.post({
+          fi.api.post({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){
-                          }
+                 success: function(json){}
           });
         });
 
@@ -95,18 +95,16 @@ describe("Fluidinfo.js", function() {
             .toEqual("POST");
         });
 
-        it("should have null payload", function() {
-        });
+        it("should have null payload", function() {});
       });
     });
 
     describe("PUT", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.api.put({
+          fi.api.put({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){
-                          }
+                 success: function(json){}
           });
         });
 
@@ -117,8 +115,7 @@ describe("Fluidinfo.js", function() {
             .toEqual("PUT");
         });
 
-        it("should have null payload", function() {
-        });
+        it("should have null payload", function() {});
 
       });
     });
@@ -126,10 +123,9 @@ describe("Fluidinfo.js", function() {
     describe("DELETE", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.api.delete({
+          fi.api.delete({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){
-                          }
+                 success: function(json){}
           });
         });
 
@@ -140,8 +136,7 @@ describe("Fluidinfo.js", function() {
             .toEqual("DELETE");
         });
 
-        it("should have null payload", function() {
-        });
+        it("should have null payload", function() {});
 
       });
     });
@@ -150,10 +145,9 @@ describe("Fluidinfo.js", function() {
     describe("HEAD", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.api.head({
+          fi.api.head({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){
-                          }
+                 success: function(json){}
           });
         });
 
@@ -164,8 +158,7 @@ describe("Fluidinfo.js", function() {
             .toEqual("HEAD");
         });
 
-        it("should have null payload", function() {
-        });
+        it("should have null payload", function() {});
 
       });
     });
