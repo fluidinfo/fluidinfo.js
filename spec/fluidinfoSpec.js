@@ -1,4 +1,5 @@
 function it_should_be_a_standard_ajax_request() {
+
   it("should send one request", function() {
     expect(this.server.requests.length)
       .toEqual(1);
@@ -18,7 +19,7 @@ function it_should_be_a_standard_ajax_request() {
 
   it("should have content-type to application/json", function() {
     expect(this.server.requests[0].requestHeaders['Content-Type'])
-      .toStartWith('application/json');
+      .toMatch('^application/json');
   });
 };
 
@@ -30,20 +31,7 @@ function it_should_have_empty_payload () {
   });
 }
 
-function toStartWith(expected) {
-   // Ensures the actual result starts with the expected value
-   return expect(this.actual).toMatch("^"+expected);
-}
-
 describe("Fluidinfo.js", function() {
-
-  beforeEach(function() {
-    this.addMatchers({
-      toStartWith: function(expected) {
-        return expect(this.actual).toMatch("^"+expected);
-        }
-    });
-  }
 
   describe("Configuration", function() {
     it("as default it should point to the main instance", function() {
@@ -70,7 +58,7 @@ describe("Fluidinfo.js", function() {
     describe("GET", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.get({
+          Fluidinfo.api.get({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -93,7 +81,7 @@ describe("Fluidinfo.js", function() {
     describe("POST", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.post({
+          Fluidinfo.api.post({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -115,7 +103,7 @@ describe("Fluidinfo.js", function() {
     describe("PUT", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.put({
+          Fluidinfo.api.put({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -138,7 +126,7 @@ describe("Fluidinfo.js", function() {
     describe("DELETE", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.delete({
+          Fluidinfo.api.delete({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }
@@ -162,7 +150,7 @@ describe("Fluidinfo.js", function() {
     describe("HEAD", function() {
       describe("default values", function() {
         beforeEach(function() {
-          Fluidinfo.head({
+          Fluidinfo.api.head({
                  url: "objects/fakeObjectID/username/tag",
                  success: function(json){
                           }

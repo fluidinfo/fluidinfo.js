@@ -1,40 +1,37 @@
-//BEGIN FluidDB REST LIB
+Fluidinfo = new Object();
 
-fluidDB = new Object();
-Fluidinfo = fluidDB;
-
-fluidDB.instance = {
+Fluidinfo.instance = {
     main : "https://fluiddb.fluidinfo.com/",
     sandbox : "https://sandbox.fluidinfo.com/"
 }
 
-
-fluidDB.choose = function(type){
+Fluidinfo.choose = function(type){
   if(type === "main" || type === "sandbox"){
-    fluidDB.baseURL = fluidDB.instance[type];
+    Fluidinfo.baseURL = Fluidinfo.instance[type];
   }
 }
 
-fluidDB.choose('main'); // main instance as default
+Fluidinfo.choose('main'); // main instance as default
 
-fluidDB.config = function(options) {
-
+Fluidinfo.config = function(options) {
   // authentication credentials
-  if((options.username != undefined) && (options.password != undefined)){
-    fluidDB.authenticate = true;
-    fluidDB.username     = options.username;
-    fluidDB.password     = options.password;
-    fluidDB.base64string = Base64.encode(options.username + ":" + options.password);
-  }else if(options.auth_token){
-    fluidDB.authenticate = true;
-    fluidDB.base64string = options.auth_token;
+  if((options.username != undefined) && (options.password != undefined)) {
+    Fluidinfo.authenticate = true;
+    Fluidinfo.username     = options.username;
+    Fluidinfo.password     = options.password;
+    Fluidinfo.base64string = Base64.encode(options.username + ":" + options.password);
+  } else if (options.auth_token) {
+    Fluidinfo.authenticate = true;
+    Fluidinfo.base64string = options.auth_token;
   }
-
-  fluidDB.choose(options.instance);
-
+  if(options.instance != undefined) {
+    Fluidinfo.choose(options.instance);
+  }
 }
 
-fluidDB.ajax = function(options){
+api = new Object();
+
+api.ajax = function(options){
   if((options.username != undefined) && (options.password != undefined)){
     // we can override the authentication defaults
     var authenticate = true;
@@ -42,65 +39,59 @@ fluidDB.ajax = function(options){
   }else if(options.auth_token){
     var authenticate = true;
     var base64string = options.auth_token;
-  }else if(fluidDB.authenticate){
+  }else if(Fluidinfo.authenticate){
     // there are no credential passed as arguments, but maybe there're in the configuration
     var authenticate = true;
-    var base64string = fluidDB.base64string;
+    var base64string = Fluidinfo.base64string;
   }
 
-  options.url  = fluidDB.baseURL+options.url;
-  options.async    = options.async || true;
-  options.content_type = options.content_type || "application/json";
+  options.url = Fluidinfo.baseURL+options.url;
+  options.async = options.async || true;
+  options.contentType = options.contentType || "application/json";
   options.primitive = options.primitive || false;
-  options.contentType  = options.content_type;
-  options.beforeSend   =  function(xhrObj){
-                            if(authenticate){
-                                xhrObj.setRequestHeader("Authorization","Basic "+ base64string);
-                            };
-                            xhrObj.setRequestHeader("Content-Type", options.content_type);
-                          };
-  options.processData  = false;
-  options.data  = options.payload;
-
+  options.beforeSend = function(xhrObj){
+    if(authenticate){
+      xhrObj.setRequestHeader("Authorization","Basic "+ base64string);
+    };
+    xhrObj.setRequestHeader("Content-Type", options.contentType);
+  };
+  options.processData = false;
+  options.data = options.payload;
   $.ajax(options);
 }
 
-fluidDB.get = function(options){
+api.get = function(options){
   options.type = "GET";
   options.payload = null;
-
-  fluidDB.ajax(options);
+  Fluidinfo.api.ajax(options);
 }
 
-fluidDB.post = function(options){
+api.post = function(options){
   options.type = "POST";
-
-  fluidDB.ajax(options);
+  Fluidinfo.api.ajax(options);
 }
 
-fluidDB.put = function(options){
+api.put = function(options){
   options.type = "PUT";
-
   if(options.primitive){
-    options.content_type = "application/vnd.fluiddb.value+json";
+    options.contentType = "application/vnd.fluiddb.value+json";
   }
-
-  fluidDB.ajax(options);
+  Fluidinfo.api.ajax(options);
 }
 
-fluidDB.delete = function(options){
+api.delete = function(options){
   options.type = "DELETE";
   options.payload = null;
-
-  fluidDB.ajax(options);
+  Fluidinfo.api.ajax(options);
 }
 
-fluidDB.head = function(options){
+api.head = function(options){
   options.type = "HEAD";
   options.payload = null;
-
-  fluidDB.ajax(options);
+  Fluidinfo.api.ajax(options);
 }
+
+Fluidinfo.api = api;
 
 //END FluidDB REST LIB
 
