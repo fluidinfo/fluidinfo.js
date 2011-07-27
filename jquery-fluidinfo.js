@@ -49,7 +49,9 @@ fluidDB.ajax = function(options){
   }
 
   options.url  = fluidDB.baseURL+options.url;
-  options.async    = options.async || true;
+  if (options.async === undefined){
+    options.async  = true;
+  }
   options.content_type = options.content_type || "application/json";
   options.primitive = options.primitive || false;
   options.contentType  = options.content_type;
