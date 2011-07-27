@@ -43,7 +43,7 @@ describe("Fluidinfo.js", function() {
         return expect(this.actual).toMatch("^"+expected);
         }
     });
-  }
+  });
 
   describe("Configuration", function() {
     it("as default it should point to the main instance", function() {
