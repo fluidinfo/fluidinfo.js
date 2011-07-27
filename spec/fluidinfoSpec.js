@@ -1,7 +1,30 @@
+function it_should_have_null_payload() {
+  it("should have null payload", function() {
+    expect(jQuery.ajax.getCall(0).args[0].data).toEqual(null);
+  });
+};
+
+function it_should_be_an_authenticated_ajax_request() {
+  it("should not be anonymous", function() {
+    expect(this.server.requests[0].username)
+      .toBeDefined();
+    expect(this.server.requests[0].password)
+      .toBeDefined();
+  });
+
+  it("should send the basic authentication header", function() {
+    expect(this.server.requests[0].requestHeaders['Authorization']).toEqual("Basic " + Base64.encode("username:password"));
+  });
+}
+
 function it_should_be_a_standard_ajax_request() {
   it("should send one request", function() {
     expect(this.server.requests.length)
       .toEqual(1);
+  });
+
+  it("should have processData set to false", function() {
+    expect(jQuery.ajax.getCall(0).args[0].processData).toBeFalsy();
   });
 
   it("should point to the correct URL", function() {
@@ -36,7 +59,6 @@ function it_should_be_a_standard_ajax_request() {
   });
 
 };
-
 
 function it_should_have_empty_payload () {
   it("it should have empty payload", function() {
@@ -82,6 +104,7 @@ describe("Fluidinfo.js", function() {
         beforeEach(function() {
           Fluidinfo.get({
                  url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
                  success: function(json){
                           }
           });
@@ -94,9 +117,31 @@ describe("Fluidinfo.js", function() {
             .toEqual("GET");
         });
 
-        it("should have null payload", function() {
-        });
+        it_should_have_null_payload();
       }); //default values
+
+      describe("authentication", function() {
+        beforeEach(function() {
+          Fluidinfo.get({
+                 url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
+                 username: "username",
+                 password: "password",
+                 success: function(json){
+                          }
+          });
+        });
+        
+        it_should_be_an_authenticated_ajax_request();
+      }); //authentication
+
+      it("should be possible to set Content-type to arbitrary value", function (){
+        Fluidinfo.get({
+          content_type: "text/plain"
+        });
+
+        expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('text/plain');
+      });
 
     });
 
@@ -105,6 +150,7 @@ describe("Fluidinfo.js", function() {
         beforeEach(function() {
           Fluidinfo.post({
                  url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
                  success: function(json){
                           }
           });
@@ -117,9 +163,34 @@ describe("Fluidinfo.js", function() {
             .toEqual("POST");
         });
 
-        it("should have null payload", function() {
+        it("should be possible to set the payload", function() {
+          expect(jQuery.ajax.getCall(0).args[0].data).toEqual('{data: fake}');
         });
+      }); //default values
+
+      describe("authentication", function() {
+        beforeEach(function() {
+          Fluidinfo.post({
+                 url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
+                 username: "username",
+                 password: "password",
+                 success: function(json){
+                          }
+          });
+        });
+        
+        it_should_be_an_authenticated_ajax_request();
+      }); //authentication
+
+      it("should be possible to set Content-type to arbitrary value", function (){
+        Fluidinfo.post({
+          content_type: "text/plain"
+        });
+
+        expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('text/plain');
       });
+
     });
 
     describe("PUT", function() {
@@ -127,6 +198,7 @@ describe("Fluidinfo.js", function() {
         beforeEach(function() {
           Fluidinfo.put({
                  url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
                  success: function(json){
                           }
           });
@@ -143,20 +215,46 @@ describe("Fluidinfo.js", function() {
           expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('application/json');
         });
 
-        it("should have null payload", function() {
+        it("should be possible to set the payload", function() {
+          expect(jQuery.ajax.getCall(0).args[0].data).toEqual('{data: fake}');
         });
 
-      });
+
+      }); //default values
 
       it("should be possible to set primitive to true", function() {
         Fluidinfo.put({
                url: "objects/fakeObjectID/username/tag",
+               payload: "{data: fake}",
                primitive: true,
                success: function(json){
                         }
         });
         expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('application/vnd.fluiddb.value+json');
 
+      });
+
+      describe("authentication", function() {
+        beforeEach(function() {
+          Fluidinfo.put({
+                 url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
+                 username: "username",
+                 password: "password",
+                 success: function(json){
+                          }
+          });
+        });
+        
+        it_should_be_an_authenticated_ajax_request();
+      }); //authentication
+
+      it("should be possible to set Content-type to arbitrary value", function (){
+        Fluidinfo.put({
+          content_type: "text/plain"
+        });
+
+        expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('text/plain');
       });
 
     });
@@ -166,6 +264,7 @@ describe("Fluidinfo.js", function() {
         beforeEach(function() {
           Fluidinfo.delete({
                  url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
                  success: function(json){
                           }
           });
@@ -178,10 +277,32 @@ describe("Fluidinfo.js", function() {
             .toEqual("DELETE");
         });
 
-        it("should have null payload", function() {
+        it_should_have_null_payload();
+
+      }); //default values
+
+      describe("authentication", function() {
+        beforeEach(function() {
+          Fluidinfo.delete({
+                 url: "objects/fakeObjectID/username/tag",
+                 username: "username",
+                 password: "password",
+                 success: function(json){
+                          }
+          });
+        });
+        
+        it_should_be_an_authenticated_ajax_request();
+      }); //authentication
+
+      it("should be possible to set Content-type to arbitrary value", function (){
+        Fluidinfo.delete({
+          content_type: "text/plain"
         });
 
+        expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('text/plain');
       });
+
     });
 
 
@@ -190,6 +311,7 @@ describe("Fluidinfo.js", function() {
         beforeEach(function() {
           Fluidinfo.head({
                  url: "objects/fakeObjectID/username/tag",
+                 payload: "{data: fake}",
                  success: function(json){
                           }
           });
@@ -202,10 +324,31 @@ describe("Fluidinfo.js", function() {
             .toEqual("HEAD");
         });
 
-        it("should have null payload", function() {
+        it_should_have_null_payload();
+      }); //default values
+
+      describe("authentication", function() {
+        beforeEach(function() {
+          Fluidinfo.head({
+                 url: "objects/fakeObjectID/username/tag",
+                 username: "username",
+                 password: "password",
+                 success: function(json){
+                          }
+          });
+        });
+        
+        it_should_be_an_authenticated_ajax_request();
+      }); //authentication
+
+       it("should be possible to set Content-type to arbitrary value", function (){
+        Fluidinfo.head({
+          content_type: "text/plain"
         });
 
+        expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('text/plain');
       });
+
     });
 
     afterEach(function() {
@@ -220,14 +363,14 @@ describe("Fluidinfo.js", function() {
   PUT
   DELETE
   HEAD
-  primitive per put
-  primitive per altri
-  payload per head
-  payload per delete
-  payload per get
+  * primitive per put
+  * primitive per altri
+  * payload per head
+  * payload per delete
+  * payload per get
   parsing del tag in values
 
-  setting async = true
+  * setting async = true
   changing the base url
   changing content type
   authenticazione salvata
