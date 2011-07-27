@@ -139,10 +139,26 @@ describe("Fluidinfo.js", function() {
             .toEqual("PUT");
         });
 
+        it("should have primitive set to false", function() {
+          expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('application/json');
+        });
+
         it("should have null payload", function() {
         });
 
       });
+
+      it("should be possible to set primitive to true", function() {
+        Fluidinfo.put({
+               url: "objects/fakeObjectID/username/tag",
+               primitive: true,
+               success: function(json){
+                        }
+        });
+        expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('application/vnd.fluiddb.value+json');
+
+      });
+
     });
 
     describe("DELETE", function() {
