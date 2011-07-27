@@ -16,9 +16,8 @@ function it_should_be_a_standard_ajax_request() {
       .not.toBeDefined();
   });
 
-  it("should have content-type to application/json", function() {
-    expect(this.server.requests[0].requestHeaders['Content-Type'])
-      .toStartWith('application/json');
+  it("should have content-type set to application/json", function() {
+    expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('application/json');
   });
 };
 
@@ -30,19 +29,14 @@ function it_should_have_empty_payload () {
   });
 }
 
-function toStartWith(expected) {
-   // Ensures the actual result starts with the expected value
-   return expect(this.actual).toMatch("^"+expected);
-}
-
 describe("Fluidinfo.js", function() {
 
   beforeEach(function() {
-    this.addMatchers({
-      toStartWith: function(expected) {
-        return expect(this.actual).toMatch("^"+expected);
-        }
-    });
+    sinon.spy(jQuery, "ajax");
+  });
+
+  afterEach(function () {
+    jQuery.ajax.restore(); // Unwraps the spy
   });
 
   describe("Configuration", function() {
