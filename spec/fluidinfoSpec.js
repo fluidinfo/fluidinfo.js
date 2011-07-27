@@ -19,6 +19,22 @@ function it_should_be_a_standard_ajax_request() {
   it("should have content-type set to application/json", function() {
     expect(jQuery.ajax.getCall(0).args[0].content_type).toEqual('application/json');
   });
+  
+  describe("ajax options", function() {
+
+    it("should have async set to true", function() {
+      expect(jQuery.ajax.getCall(0).args[0].async).toEqual(true);
+    });
+    
+    it("should be possible to set async to false", function() {
+      Fluidinfo.ajax({async: false});
+      expect(jQuery.ajax.getCall(0).args[0].async).toEqual(true);
+      //we need to extract getCall(1) because we made 2 requests (one in beforeEach, one here)
+      expect(jQuery.ajax.getCall(1).args[0].async).toEqual(false);
+    });
+
+  });
+
 };
 
 
