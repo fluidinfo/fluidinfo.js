@@ -4,23 +4,21 @@
  * @author <a href="http://twitter.com/onigiri">onigiri</a>, <a href="http://twitter.com/ntoll">ntoll</a> & <a href="http://twitter.com/barshirtcliff">barshirtcliff</a>
  * @version 0.1
  * @constructor
- * @param username {string} The username to use when connecting to Fluidinfo.
- * @param password {string} The password to use when connecting to Fluidinfo.
- * @param instance {string} Either "main" or "sandbox" to select the instance of Fluidinfo to connect to.
+ * @param options {Object} Contains various parameters for the call.
  * returns {Object} An object through which one interacts with Fluidinfo.
  */
-Fluidinfo = function(username, password, instance) {
+Fluidinfo = function(options) {
     session = new Object();
 
-    if(instance == "sandbox"){
-        session.baseURL = "https://sandbox.fluidinfo.com/";
+    if(options.instance != undefined && options.instance === "sandbox"){
+      session.baseURL = "https://sandbox.fluidinfo.com/";
     } else {
-        // default to main instance
-        session.baseURL = "https://fluiddb.fluidinfo.com/";
+      // default to main instance
+      session.baseURL = "https://fluiddb.fluidinfo.com/";
     }
 
-    if((username != undefined) && (password != undefined)) {
-        session.authorizationToken = Base64.encode(username + ":" + password);
+    if((options.username != undefined) && (options.password != undefined)) {
+        session.authorizationToken = Base64.encode(options.username + ":" + options.password);
     }
 
     api = new Object();
