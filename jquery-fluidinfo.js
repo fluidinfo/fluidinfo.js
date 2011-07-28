@@ -10,7 +10,7 @@
  * returns {Object} An object through which one interacts with Fluidinfo.
  */
 Fluidinfo = function(username, password, instance) {
-    session = new Object();
+    var session = new Object();
 
     if(instance == "sandbox"){
         session.baseURL = "https://sandbox.fluidinfo.com/";
@@ -23,7 +23,105 @@ Fluidinfo = function(username, password, instance) {
         session.authorizationToken = Base64.encode(username + ":" + password);
     }
 
-    api = new Object();
+    var utils = new Object();
+
+    /**
+     * Magic voodoo used to identify an array (potentially a Fluidinfo set).
+     * Taken from page 61 of Doug Crockford's "Javascript: The Good Parts".
+     *
+     * @param value A value that might be an array.
+     * @return {boolean} An indication if the value is an array.
+     */
+    utils.isArray = function(value) {
+      return Object.prototype.toString.apply(value) === "[object Array]";
+    };
+
+    /**
+     * Given a path that is expressed as an array of path elements, will
+     * return the correctly encoded URL. e.g. ["a", "b", "c"] -> "/a/b/c"
+     *
+     * @param value {Array} A list of values to be appropriately encoded between
+     * '/' values.
+     * @return {string} The appropriately encoded URL.
+     */
+    utils.encodeURL = function(path) {
+      var result = "";
+      for(i=0; i<path.length; i++) {
+        result += "/" + encodeURIComponent(path[i]);
+      }
+      return result.slice(1); // chops the leading slash
+    };
+
+    /**
+     * Checks the passed value to discover if it's a Fluidinfo "primitive"
+     * type. See <a href="http://doc.fluidinfo.com/fluidDB/api/tag-values.html">
+     * the Fluidinfo docs</a> for <a href="http://bit.ly/hmrMzT">more
+     * information</a> on Fluidinfo's types.
+     *
+     * @param value A value whose "type" needs identifying
+     * @return A boolean indication if the value is a Fluidinfo primitive type.
+     */
+    utils.isPrimitive = function(value) {
+      // check the easy type matches first
+      var valueType = typeof(value);
+      var primitiveTypes = ["number", "string", "boolean"];
+      for(i=0; i<primitiveTypes.length; i++) {
+        if(valueType === primitiveTypes[i]) {
+          return true;
+        }
+      }
+      // A null value is also a primitive
+      if(value===null) {
+        return true;
+      }
+      // check for an array (potential set) and validate it only contains
+      // strings (currently multi-type arrays are not allowed)
+      if(utils.isArray(value)) {
+        for(i=0; i<value.length; i++) {
+          memberType = typeof(value[i]);
+          if(memberType !== "string") {
+            return false;
+          }
+        }
+        return true;
+      }
+      // value hasn't matched any of the primitive checks
+      return false;
+    }
+
+    /**
+     * Given the options describing a request, will return the most appropriate
+     * MIME to set as the value for the Content-Type header
+     *
+     * @param options {Object} Contains various parameters describing the
+     * request.
+     * @return the most appropriate MIME to use of null if not appropriate /
+     * required.
+     */
+    utils.detectContentType = function(options) {
+      // a "PUT" to objects/ or about/ endpoints means dealing with the MIME
+      // of a tag-value. If no MIME type is passed in the options objects
+      // then check if the value is a Fluidinfo primitive type. Otherwise
+      // complain.
+      var result = null;
+      if(options.type==="PUT" && (options.url.match("^objects\/") || options.url.match("^about\/"))) {
+        if(options.contentType){
+          result = options.contentType;
+        } else if (api.utils.isPrimitive(options.data)) {
+          result = "application/vnd.fluiddb.value+json";
+        } else {
+          throw { name: "ValueError", message: "Must supply Content-Type"};
+        }
+      } else if (options.data) {
+        // all other requests to the API that have payloads will be passing JSON
+        result = "application/json";
+      }
+      return result;
+    }
+
+    var api = new Object();
+
+    api.utils = utils;
 
     /**
      * Makes an appropriate AJAX request to Fluidinfo
@@ -32,22 +130,21 @@ Fluidinfo = function(username, password, instance) {
      * @param options {Object} Contains various parameters for the call.
      */
     api.ajax = function(options){
-      if(session.authorizationToken != undefined){
-        var authenticate = true;
-        var base64string = session.authorizationToken;
+      options.contentType = api.utils.detectContentType(options);
+      if(api.utils.isArray(options.url)) {
+        options.url = api.utils.encodeURL(options.url);
       }
       options.url = session.baseURL+options.url;
       options.async = options.async || true;
-      options.contentType = options.contentType || "application/json";
-      options.primitive = options.primitive || false;
       options.beforeSend = function(xhrObj){
-        if(authenticate){
-          xhrObj.setRequestHeader("Authorization","Basic "+ base64string);
+        if(session.authorizationToken != undefined){
+          xhrObj.setRequestHeader("Authorization","Basic " + session.authorizationToken);
         };
-        xhrObj.setRequestHeader("Content-Type", options.contentType);
+        if(options.contentType) {
+          xhrObj.setRequestHeader("Content-Type", options.contentType);
+        }
       };
       options.processData = false;
-      options.data = options.payload;
       $.ajax(options);
     }
 
@@ -57,7 +154,7 @@ Fluidinfo = function(username, password, instance) {
      */
     api.get = function(options){
       options.type = "GET";
-      options.payload = null;
+      options.data = null;
       session.api.ajax(options);
     }
 
@@ -76,9 +173,6 @@ Fluidinfo = function(username, password, instance) {
      */
     api.put = function(options){
       options.type = "PUT";
-      if(options.primitive){
-        options.contentType = "application/vnd.fluiddb.value+json";
-      }
       session.api.ajax(options);
     }
 
@@ -88,7 +182,7 @@ Fluidinfo = function(username, password, instance) {
      */
     api.delete = function(options){
       options.type = "DELETE";
-      options.payload = null;
+      options.data = null;
       session.api.ajax(options);
     }
 
@@ -98,7 +192,7 @@ Fluidinfo = function(username, password, instance) {
      */
     api.head = function(options){
       options.type = "HEAD";
-      options.payload = null;
+      options.data = null;
       session.api.ajax(options);
     }
 
@@ -107,10 +201,9 @@ Fluidinfo = function(username, password, instance) {
     return session;
 }
 
-/* Taken from http://www.webtoolkit.info/javascript-base64.html
-*  eventually is going to be moved outside this file
+/**
+ * Taken from http://www.webtoolkit.info/javascript-base64.html
 */
-
 var Base64 = {
 	// private property
 	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
