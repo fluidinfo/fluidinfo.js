@@ -58,7 +58,9 @@ function it_should_have_a_content_type_of(type) {
 describe("Fluidinfo.js", function() {
 
   beforeEach(function() {
-    fi = Fluidinfo("username", "password");
+    fi = Fluidinfo({ username: "username",
+                     password: "password"
+                   });
     this.server = sinon.fakeServer.create();
   });
 
@@ -73,12 +75,18 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should set the lib to point to the main instance", function() {
-      fi = Fluidinfo("username", "password", "main");
+      fi = Fluidinfo({ username: "username",
+                       password: "password",
+                       instance: "main"
+                     });
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the sandbox", function() {
-      fi = Fluidinfo("username", "password", "sandbox");
+      fi = Fluidinfo({ username: "username",
+                       password: "password",
+                       instance: "sandbox"
+                     });
       expect(fi.baseURL).toEqual("https://sandbox.fluidinfo.com/");
     });
 
