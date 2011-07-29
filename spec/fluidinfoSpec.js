@@ -224,12 +224,21 @@ describe("Fluidinfo.js", function() {
     });
 
     describe("GET", function() {
-      describe("default values", function() {
+      describe("default behaviour", function() {
         beforeEach(function() {
+          this.server.respondWith("GET", "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag",
+            [200, {"Content-Type": "application/vnd.fluiddb.value+json"},
+            "1.234"]);
           fi.api.get({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){}
+                 onSuccess: function(xhr) {
+                   expect(xhr.responseText).toEqual("1.234");
+                 },
+                 onError: function(xhr) {
+                   throw { name: "XHRError", message: "Bad response"};
+                 }
           });
+          this.server.respond()
         });
 
         it_should_be_a_standard_ajax_request();
@@ -246,11 +255,11 @@ describe("Fluidinfo.js", function() {
     });
 
     describe("POST", function() {
-      describe("default values", function() {
+      describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.post({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){},
+                 onSuccess: function(json){},
                  data: {"test": "test"}
           });
         });
@@ -276,12 +285,12 @@ describe("Fluidinfo.js", function() {
     });
 
     describe("PUT", function() {
-      describe("default values", function() {
+      describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.put({
                  url: "objects/fakeObjectID/username/tag",
                  data: "data",
-                 success: function(json){},
+                 onSuccess: function(json){},
           });
         });
 
@@ -306,11 +315,11 @@ describe("Fluidinfo.js", function() {
     });
 
     describe("DELETE", function() {
-      describe("default values", function() {
+      describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.delete({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){}
+                 onSuccess: function(json){}
           });
         });
 
@@ -329,11 +338,11 @@ describe("Fluidinfo.js", function() {
     });
 
     describe("HEAD", function() {
-      describe("default values", function() {
+      describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.head({
                  url: "objects/fakeObjectID/username/tag",
-                 success: function(json){}
+                 onSuccess: function(json){}
           });
         });
 
