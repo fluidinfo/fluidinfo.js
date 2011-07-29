@@ -90,6 +90,11 @@ describe("Fluidinfo.js", function() {
       expect(fi.baseURL).toEqual("https://sandbox.fluidinfo.com/");
     });
 
+    it("should set the lib to point to any other instance", function() {
+      fi = Fluidinfo({instance: "https://localhost/"});
+      expect(fi.baseURL).toEqual("https://localhost/");
+    });
+
     it("should work as anonymous user", function() {
       fi = Fluidinfo();
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
