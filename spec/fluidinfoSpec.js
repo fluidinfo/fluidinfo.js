@@ -95,6 +95,33 @@ describe("Fluidinfo.js", function() {
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
+    it("should validate bespoke instances are valid addresses", function() {
+      // missing http[s]:// and trailing slash
+      try {
+        fi = Fluidinfo({instance: "localhost"});
+      } catch(e) {
+        var exception = e;
+      }
+      expect(exception.name).toEqual("ValueError");
+      // missing the trailing slash
+      try {
+        fi = Fluidinfo({instance: "http://localhost"});
+      } catch(e) {
+        var exception = e;
+      }
+      expect(exception.name).toEqual("ValueError");
+      // missing http[s]://
+      try {
+        fi = Fluidinfo({instance: "localhost/"});
+      } catch(e) {
+        var exception = e;
+      }
+      expect(exception.name).toEqual("ValueError");
+      // valid case
+      fi = Fluidinfo({instance: "https://localhost/"});
+      expect(fi.baseURL).toEqual("https://localhost/");
+    });
+
     it("should work as anonymous user", function() {
       fi = Fluidinfo();
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
