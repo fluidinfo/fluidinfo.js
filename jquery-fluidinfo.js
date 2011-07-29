@@ -7,7 +7,7 @@
  * @param options {Object} Contains various parameters for the call.
  * returns {Object} An object through which one interacts with Fluidinfo.
  */
-Fluidinfo = function(options) {
+fluidinfo = function(options) {
     session = new Object();
 
     if(options) {

@@ -58,7 +58,7 @@ function it_should_have_a_content_type_of(type) {
 describe("Fluidinfo.js", function() {
 
   beforeEach(function() {
-    fi = Fluidinfo({ username: "username",
+    fi = fluidinfo({ username: "username",
                      password: "password"
                    });
     this.server = sinon.fakeServer.create();
@@ -75,7 +75,7 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should set the lib to point to the main instance", function() {
-      fi = Fluidinfo({ username: "username",
+      fi = fluidinfo({ username: "username",
                        password: "password",
                        instance: "main"
                      });
@@ -83,7 +83,7 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should set the lib to point to the sandbox", function() {
-      fi = Fluidinfo({ username: "username",
+      fi = fluidinfo({ username: "username",
                        password: "password",
                        instance: "sandbox"
                      });
@@ -91,39 +91,39 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should set the lib to point to any other instance", function() {
-      fi = Fluidinfo({instance: "https://localhost/"});
+      fi = fluidinfo({instance: "https://localhost/"});
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
     it("should validate bespoke instances are valid addresses", function() {
       // missing http[s]:// and trailing slash
       try {
-        fi = Fluidinfo({instance: "localhost"});
+        fi = fluidinfo({instance: "localhost"});
       } catch(e) {
         var exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // missing the trailing slash
       try {
-        fi = Fluidinfo({instance: "http://localhost"});
+        fi = fluidinfo({instance: "http://localhost"});
       } catch(e) {
         var exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // missing http[s]://
       try {
-        fi = Fluidinfo({instance: "localhost/"});
+        fi = fluidinfo({instance: "localhost/"});
       } catch(e) {
         var exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // valid case
-      fi = Fluidinfo({instance: "https://localhost/"});
+      fi = fluidinfo({instance: "https://localhost/"});
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
     it("should work as anonymous user", function() {
-      fi = Fluidinfo();
+      fi = fluidinfo();
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
       expect(fi.authorizationToken).toEqual(undefined);
     });
