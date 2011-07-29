@@ -11,20 +11,24 @@ Fluidinfo = function(options) {
     session = new Object();
 
     if(options) {
-      if(options.instance != undefined && options.instance === "sandbox"){
-        session.baseURL = "https://sandbox.fluidinfo.com/";
-      } else {
-        // default to main instance
-        session.baseURL = "https://fluiddb.fluidinfo.com/";
+      if(options.instance) {
+        if(options.instance === "sandbox") {
+          session.baseURL = "https://sandbox.fluidinfo.com/";
+        } else if(options.instance === "main") {
+          session.baseURL = "https://fluiddb.fluidinfo.com/";
+        } else {
+          session.baseURL = options.instance;
+        }
       }
 
       if((options.username != undefined) && (options.password != undefined)) {
         session.authorizationToken = Base64.encode(options.username + ":" + options.password);
       }
-    } else {
-      session.baseURL = "https://fluiddb.fluidinfo.com/";
     }
 
+    if(session.baseURL === undefined){
+      session.baseURL = "https://fluiddb.fluidinfo.com/";
+    }
 
     var utils = new Object();
 
