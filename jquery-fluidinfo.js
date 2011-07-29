@@ -12,12 +12,24 @@ Fluidinfo = function(options) {
 
     if(options) {
       if(options.instance) {
-        if(options.instance === "sandbox") {
-          session.baseURL = "https://sandbox.fluidinfo.com/";
-        } else if(options.instance === "main") {
-          session.baseURL = "https://fluiddb.fluidinfo.com/";
-        } else {
-          session.baseURL = options.instance;
+        switch(options.instance.toLowerCase()) {
+          case "main":
+            session.baseURL = "https://fluiddb.fluidinfo.com/";
+            break;
+          case "sandbox":
+            session.baseURL = "https://sandbox.fluidinfo.com/";
+            break;
+          default:
+              // validate the bespoke instance
+              var urlRegex = /^(http|https):\/\/[\w\-_\.]+\/$/;
+              if(urlRegex.exec(options.instance)) {
+                session.baseURL = options.instance;
+              } else {
+                throw {
+                  name: "ValueError",
+                  message: "The URL must start with http[s]:// and have a trailing slash ('/') to be valid. E.g. https://localhost/"
+                };
+              }
         }
       }
 
@@ -26,6 +38,7 @@ Fluidinfo = function(options) {
       }
     }
 
+    // Catch-all to make sure the library defaults to the main instance
     if(session.baseURL === undefined){
       session.baseURL = "https://fluiddb.fluidinfo.com/";
     }
