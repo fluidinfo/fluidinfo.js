@@ -269,13 +269,21 @@ fluidinfo = function(options) {
       }
       xhr.onreadystatechange = function() {
         if(xhr.readyState != 4) return;
+        // build a simple result object
+        var result = new Object();
+        result.status = xhr.status;
+        result.statusText = xhr.statusText;
+        result.headers = xhr.responseHeaders;
+        result.data = xhr.responseText;
+        result.request = xhr;
+        // call the event handlers
         if(xhr.status < 300 && xhr.status != 304) {
           if(options.onSuccess){
-            options.onSuccess(xhr);
+            options.onSuccess(result);
           }
         } else if (options.onError){
           // there appears to be a problem
-          options.onError(xhr);
+          options.onError(result);
         }
       }
       if(xhr.readyState == 4) return xhr;

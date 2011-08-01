@@ -222,6 +222,52 @@ describe("Fluidinfo.js", function() {
           .toEqual(fi.baseURL+"about/%C3%A4n%2F-%20object/namespace/tag");
       })
 
+      it("should provide a simple response object for onSuccess", function() {
+        var options = new Object();
+        options.url = "namespaces/test";
+        var payload = {name: "foo", description: "bar"};
+        options.data = payload;
+        options.onSuccess = function(result) {
+          expect(typeof(result)).toEqual("object");
+          expect(result.status).toEqual(201);
+          expect(result.statusText).toEqual("Created");
+          expect(typeof(result.headers)).toEqual("object");
+          expect(result.headers["Content-Type"]).toEqual("application/json");
+          expect(result.data).toBeTruthy();
+          expect(typeof(result.request)).toEqual("object"); // original XHR
+        };
+        fi.api.post(options);
+        var responseStatus = 201;
+        var responseHeaders = {"Content-Type": "application/json",
+          "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
+          "Content-Length": 107,
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
+        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+      });
+
+      it("should provide a simple response object for onError", function() {
+        var options = new Object();
+        options.url = "namespaces/test";
+        var payload = {name: "foo", description: "bar"};
+        options.data = payload;
+        options.onSuccess = function(result) {
+          expect(typeof(result)).toEqual("object");
+          expect(result.status).toEqual(401);
+          expect(result.statusText).toEqual("Unauthorized");
+          expect(typeof(result.headers)).toEqual("object");
+          expect(result.data).toEqual(undefined);
+          expect(typeof(result.request)).toEqual("object"); // original XHR
+        };
+        fi.api.post(options);
+        var responseStatus = 401;
+        var responseHeaders = {"Content-Type": "text/html",
+          "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        var responseText = '';
+        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+      });
+
       it("should serialise Javascript objects into JSON", function() {
         var options = new Object();
         options.url = "namespaces/test";
@@ -255,10 +301,10 @@ describe("Fluidinfo.js", function() {
             "1.234"]);
           fi.api.get({
                  url: "objects/fakeObjectID/username/tag",
-                 onSuccess: function(xhr) {
-                   expect(xhr.responseText).toEqual("1.234");
+                 onSuccess: function(result) {
+                   expect(result.data).toEqual("1.234");
                  },
-                 onError: function(xhr) {
+                 onError: function(result) {
                    throw { name: "XHRError", message: "Bad response"};
                  }
           });
