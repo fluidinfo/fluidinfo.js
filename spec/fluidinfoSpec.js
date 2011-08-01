@@ -72,7 +72,6 @@ describe("Fluidinfo.js", function() {
 
     it("should default to point to the main instance", function() {
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
-      expect(fi.authorizationToken).not.toEqual(undefined);
     });
 
     it("should set the lib to point to the main instance", function() {
@@ -123,10 +122,18 @@ describe("Fluidinfo.js", function() {
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
+    it("should work as a logged in user", function() {
+      fi.api.get({path: "users/ntoll"})
+      expect(this.server.requests[0].requestHeaders['Authorization'])
+            .not.toEqual(undefined);
+    });
+
     it("should work as anonymous user", function() {
       fi = fluidinfo();
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
-      expect(fi.authorizationToken).toEqual(undefined);
+      fi.api.get({path: "users/ntoll"})
+      expect(this.server.requests[0].requestHeaders['Authorization'])
+            .toEqual(undefined);
     });
   });
 
@@ -682,18 +689,6 @@ describe("Fluidinfo.js", function() {
                   "value-type": "image/png",
                   "size": 179393
                 }
-            },
-            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
-                "fluiddb/about": {
-                  "value": "bar"
-                },
-                "ntoll/foo": {
-                  "value": 6.8
-                },
-                "terrycojones/bar": {
-                  "value-type": "image/png",
-                  "size": 179329
-                }
             }
           }}
         });
@@ -701,20 +696,30 @@ describe("Fluidinfo.js", function() {
 
       it("should send an appropriate query to /values", function() {
         var select = ["ntoll/foo", "terrycojones/bar"];
-        var where = "has esteve/rating>7";
+        var where = "has esteve/rating > 7";
         fi.query({select: select, where: where, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll/foo&tag=terrycojones/bar&tag=fluiddb/about&query=has%20esteve%2Frating>7";
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("GET");
+      });
+
+      it("should not duplicate a request for the fluiddb/about tag in the request to /values", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var where = "has esteve/rating > 7";
+        fi.query({select: select, where: where, onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
 
       it("should not add fluiddb/about if useAbout is false", function() {
         var select = ["ntoll/foo", "terrycojones/bar"];
-        var where = "has esteve/rating>7";
+        var where = "has esteve/rating > 7";
         fi.query({select: select, where: where, onSuccess: function(result){},
           onError: function(result){}, useAbout: false});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll/foo&tag=terrycojones/bar&query=has%20esteve%2Frating>7";
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&query=has%20esteve%2Frating%20%3E%207";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
@@ -834,15 +839,6 @@ describe("Fluidinfo.js", function() {
                   "value-type": "image/png",
                   "size": 179393
                 }
-            },
-            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
-                "ntoll/foo": {
-                  "value": 6.8
-                },
-                "terrycojones/bar": {
-                  "value-type": "image/png",
-                  "size": 179329
-                }
             }
           }}
         });
@@ -873,7 +869,7 @@ describe("Fluidinfo.js", function() {
         var where = "has esteve/rating>7";
         var onSuccess = function(results) {
           var obj = results[0];
-          expect(typeof(obj['terrcojones/bar'])).toEqual("object");
+          expect(typeof(obj['terrycojones/bar'])).toEqual("object");
           expect(obj['terrycojones/bar']["value-type"]).toEqual("image/png");
           expect(obj['terrycojones/bar']["size"]).toEqual(179393);
         };
