@@ -646,6 +646,48 @@ describe("Fluidinfo.js", function() {
     });
   });
 
+  /**
+   * Checks the library correctly implements the various utility functions for
+   * common tasks.
+   */
+  describe("Utility functions", function() {
+    /**
+     * See semi-sepcification described here:
+     * https://github.com/fluidinfo/fluidinfo.js/issues/9#issuecomment-1700115
+     */
+    describe("Query function", function() {
+      it("should send an appropriate query to /values", function() {
+      });
+
+      it("should not add fluiddb/about if useAbout is false", function() {
+      });
+
+      it("should insist on a 'select' argument", function() {
+      });
+
+      it("should insist on a 'where' argument", function() {
+      });
+
+      it("should appropriately call onSuccess function", function() {
+      });
+
+      it("should appropriately call onError function", function() {
+      });
+
+      it("should build a result array correctly", function() {
+      });
+
+      it("should produce objects with id, about and original attributes", function() {
+      });
+
+      it("should produce objects without an about attribute if useAbout is false", function() {
+      });
+
+      it("should produce objects that correctly represent opaque values", function() {
+      });
+    });
+  });
+
   afterEach(function() {
     this.server.restore();
   });
