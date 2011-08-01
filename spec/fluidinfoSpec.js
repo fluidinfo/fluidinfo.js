@@ -139,9 +139,20 @@ describe("Fluidinfo.js", function() {
     describe("Request configuration", function() {
       it("should correctly use the full URL", function() {
         var options = new Object();
-        options.url = "objects/fakeObjectID/username/tag";
+        options.path = "objects/fakeObjectID/username/tag";
         fi.api.get(options);
         expected = "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag";
+        actual = this.server.requests[0].url;
+        expect(actual).toEqual(expected);
+      });
+
+      it("should correctly process URL arguments", function() {
+        var options = new Object();
+        options.path = "values";
+        options.args = {tag: ["foo/bar", "baz/qux"],
+          query: "has ntoll/rating > 7"};
+        fi.api.get(options);
+        expected = "https://fluiddb.fluidinfo.com/values?tag=foo%2Fbar&tag=baz%2Fqux&query=has%20ntoll%2Frating%20%3E%207";
         actual = this.server.requests[0].url;
         expect(actual).toEqual(expected);
       });
@@ -224,7 +235,7 @@ describe("Fluidinfo.js", function() {
 
       it("should appropriately encode a URL passed as an array", function() {
         var options = new Object();
-        options.url = ["about", "än/- object", "namespace", "tag"];
+        options.path = ["about", "än/- object", "namespace", "tag"];
         options.data = {name: "foo", description: "bar"};
         fi.api.post(options);
         expect(this.server.requests[0].url)

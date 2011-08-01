@@ -216,6 +216,29 @@ fluidinfo = function(options) {
     }
 
     /**
+     * Given an object representing the arguments to append to a URL will return
+     * an appropriately encoded string representation.
+     */
+    function createArgs(args) {
+      var result = "";
+      if(args) {
+        for(arg in args) {
+          if(typeof args[arg] !== "function") {
+              if(isArray(args[arg])) {
+                for(j=0; j<args[arg].length; j++) {
+                  result += "&" + encodeURIComponent(arg)+"="+encodeURIComponent(args[arg][j]);
+                }
+              } else {
+                result += "&"+encodeURIComponent(arg)+"="+encodeURIComponent(args[arg]);
+              }
+            }
+        }
+        result = "?" + result.slice(1);
+      }
+      return result;
+    }
+
+    /**
      * Returns an appropriate XMLHttpRequest Object depending on the browser.
      * Based upon code from here:
      * http://www.quirksmode.org/js/xmlhttp.html
@@ -262,11 +285,12 @@ fluidinfo = function(options) {
      *
      */
     function sendRequest(options) {
-      if(isArray(options.url)) {
-        options.url = encodeURL(options.url);
+      if(isArray(options.path)) {
+        options.path = encodeURL(options.path);
       }
       var method = options.type.toUpperCase() || "GET";
-      var url = session.baseURL+options.url;
+      var args = createArgs(options.args);
+      var url = session.baseURL+options.path+args;
       var async = options.async || true;
       var xhr = createXMLHTTPObject();
       if(!xhr) return;
@@ -362,6 +386,16 @@ fluidinfo = function(options) {
     }
 
     session.api = api;
+
+    /**
+     * Easily gets results from Fluidinfo.
+     */
+    session.query = function(options) {
+      var useAbout = options.useAbout || true;
+      if(useAbout) {
+      }
+      api.get({url: "values?" + args.slice(1)})
+    }
 
     return session;
 }
