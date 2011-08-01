@@ -251,12 +251,12 @@ describe("Fluidinfo.js", function() {
         options.url = "namespaces/test";
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
-        options.onSuccess = function(result) {
+        options.onError = function(result) {
           expect(typeof(result)).toEqual("object");
           expect(result.status).toEqual(401);
           expect(result.statusText).toEqual("Unauthorized");
           expect(typeof(result.headers)).toEqual("object");
-          expect(result.data).toEqual(undefined);
+          expect(result.data).toEqual("");
           expect(typeof(result.request)).toEqual("object"); // original XHR
         };
         fi.api.post(options);
@@ -286,10 +286,12 @@ describe("Fluidinfo.js", function() {
         options.url = "namespaces/test";
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
+        options.onSuccess = function(result) {
+            expect(result.data.id)
+              .toEqual("e9c97fa8-05ed-4905-9f72-8d00b7390f9b");
+        };
         fi.api.post(options);
         this.server.requests[0].respond(201, {"Content-Type": "application/json"}, '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/foo/bar"}');
-        expect(this.server.requests[0].responseText.id)
-          .toEqual("e9c97fa8-05ed-4905-9f72-8d00b7390f9b");
       })
     });
 
@@ -302,7 +304,7 @@ describe("Fluidinfo.js", function() {
           fi.api.get({
                  url: "objects/fakeObjectID/username/tag",
                  onSuccess: function(result) {
-                   expect(result.data).toEqual("1.234");
+                   expect(result.data).toEqual(1.234);
                  },
                  onError: function(result) {
                    throw { name: "XHRError", message: "Bad response"};
@@ -346,8 +348,8 @@ describe("Fluidinfo.js", function() {
         it("should have a payload", function() {
           expect(this.server.requests[0].requestBody)
             .not.toEqual(null);
-          expect(this.server.requests[0].requestBody.test)
-            .toEqual("test");
+          expect(this.server.requests[0].requestBody)
+            .toBeTruthy();
         });
 
         it_should_have_a_content_type_of("application/json");
@@ -377,7 +379,7 @@ describe("Fluidinfo.js", function() {
           expect(this.server.requests[0].requestBody)
             .not.toEqual(null);
           expect(this.server.requests[0].requestBody)
-            .toEqual("data");
+            .toEqual('"data"');
         });
 
         it_should_have_a_content_type_of("application/vnd.fluiddb.value+json");

@@ -205,6 +205,17 @@ fluidinfo = function(options) {
     }
 
     /**
+     * Given a value from a Content-Type header, will return a boolean
+     * indication if the associated content is JSON.
+     *
+     * @param contentType {string} The MIME value associated with the content
+     * @result {boolean} An indication if the associated content is JSON
+     */
+    function isJSONData(contentType) {
+      return contentType && (contentType === "application/json" || contentType === "application/vnd.fluiddb.value+json");
+    }
+
+    /**
      * Returns an appropriate XMLHttpRequest Object depending on the browser.
      * Based upon code from here:
      * http://www.quirksmode.org/js/xmlhttp.html
@@ -266,6 +277,9 @@ fluidinfo = function(options) {
       var contentType = detectContentType(options);
       if(contentType) {
         xhr.setRequestHeader("Content-Type", contentType);
+        if(isJSONData(contentType)) {
+          options.data = JSON.stringify(options.data);
+        }
       }
       xhr.onreadystatechange = function() {
         if(xhr.readyState != 4) return;
@@ -274,7 +288,11 @@ fluidinfo = function(options) {
         result.status = xhr.status;
         result.statusText = xhr.statusText;
         result.headers = xhr.responseHeaders;
-        result.data = xhr.responseText;
+        if(isJSONData(result.headers['Content-Type'])) {
+          result.data = JSON.parse(xhr.responseText);
+        } else {
+            result.data = xhr.responseText;
+        }
         result.request = xhr;
         // call the event handlers
         if(xhr.status < 300 && xhr.status != 304) {
