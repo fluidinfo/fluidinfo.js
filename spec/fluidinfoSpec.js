@@ -221,6 +221,30 @@ describe("Fluidinfo.js", function() {
         expect(this.server.requests[0].url)
           .toEqual(fi.baseURL+"about/%C3%A4n%2F-%20object/namespace/tag");
       })
+
+      it("should serialise Javascript objects into JSON", function() {
+        var options = new Object();
+        options.url = "namespaces/test";
+        var payload = {name: "foo", description: "bar"};
+        options.data = payload;
+        fi.api.post(options);
+        expected = "application/json";
+        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        expect(actual).toContain(expected);
+        expect(this.server.requests[0].requestBody)
+          .toEqual(JSON.stringify(payload));
+      })
+
+      it("should de-serialise JSON payloads to Javascript objects", function() {
+        var options = new Object();
+        options.url = "namespaces/test";
+        var payload = {name: "foo", description: "bar"};
+        options.data = payload;
+        fi.api.post(options);
+        this.server.requests[0].respond(201, {"Content-Type": "application/json"}, '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/foo/bar"}');
+        expect(this.server.requests[0].responseText.id)
+          .toEqual("e9c97fa8-05ed-4905-9f72-8d00b7390f9b");
+      })
     });
 
     describe("GET", function() {
