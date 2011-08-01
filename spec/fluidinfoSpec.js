@@ -656,34 +656,225 @@ describe("Fluidinfo.js", function() {
      * https://github.com/fluidinfo/fluidinfo.js/issues/9#issuecomment-1700115
      */
     describe("Query function", function() {
+
+      beforeEach(function() {
+        this.responseText = JSON.stringify({
+          results: {id: {
+            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
+                "fluiddb/about": {
+                  "value": "foo"
+                },
+                "ntoll/foo": {
+                  "value": 5
+                },
+                "terrycojones/bar": {
+                  "value-type": "image/png",
+                  "size": 179393
+                }
+            },
+            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
+                "fluiddb/about": {
+                  "value": "bar"
+                },
+                "ntoll/foo": {
+                  "value": 6.8
+                },
+                "terrycojones/bar": {
+                  "value-type": "image/png",
+                  "size": 179329
+                }
+            }
+          }}
+        });
+      });
+
       it("should send an appropriate query to /values", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        fi.query({select: select, where: where, onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll/foo&tag=terrycojones/bar&tag=fluiddb/about&query=has%20esteve%2Frating>7";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("GET");
       });
 
       it("should not add fluiddb/about if useAbout is false", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        fi.query({select: select, where: where, onSuccess: function(result){},
+          onError: function(result){}, useAbout: false});
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll/foo&tag=terrycojones/bar&query=has%20esteve%2Frating>7";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("GET");
       });
 
       it("should insist on a 'select' argument", function() {
+        try {
+          var where = "has esteve/rating>7";
+          fi.query({where: where, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
       it("should insist on a 'where' argument", function() {
+        try {
+          var select = ["ntoll/foo", "terrycojones/bar"];
+          fi.query({select: select, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
       it("should appropriately call onSuccess function", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        var onSuccess = sinon.mock();
+        fi.query({select: select, where: where, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        // expect the onSuccess function to be called only once
+        onSuccess.once();
       });
 
       it("should appropriately call onError function", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        var onError = sinon.mock();
+        fi.query({select: select, where: where, onSuccess: function(result){},
+          onError: onError});
+        var responseStatus = 401;
+        var responseHeaders = {"Content-Type": "text/html",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        // expect the onError function to be called only once
+        onError.once();
       });
 
       it("should build a result array correctly", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        var onSuccess = function(results) {
+          expect(Object.prototype.toString.apply(results))
+            .toEqual("[object Array]");
+        };
+        var spy = sinon.spy(onSuccess);
+        fi.query({select: select, where: where, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce);
       });
 
       it("should produce objects with id, about and original attributes", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        var onSuccess = function(results) {
+          var obj = results[0];
+          expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
+          expect(obj.about).toEqual("foo");
+          expect(typeof(obj.original)).toEqual("object");
+        };
+        var spy = sinon.spy(onSuccess);
+        fi.query({select: select, where: where, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce);
       });
 
       it("should produce objects without an about attribute if useAbout is false", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        var onSuccess = function(results) {
+          var obj = results[0];
+          expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
+          expect(obj.about).toEqual(undefined);
+          expect(typeof(obj.original)).toEqual("object");
+        };
+        var spy = sinon.spy(onSuccess);
+        fi.query({select: select, where: where, onSuccess: onSuccess,
+          onError: function(result){}, useAbout: false});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        var responseText = JSON.stringify({
+          results: {id: {
+            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
+                "ntoll/foo": {
+                  "value": 5
+                },
+                "terrycojones/bar": {
+                  "value-type": "image/png",
+                  "size": 179393
+                }
+            },
+            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
+                "ntoll/foo": {
+                  "value": 6.8
+                },
+                "terrycojones/bar": {
+                  "value-type": "image/png",
+                  "size": 179329
+                }
+            }
+          }}
+        });
+        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+        expect(spy.calledOnce);
+      });
+
+      it("should produce objects where values can be referenced by tag path", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        var onSuccess = function(results) {
+          var obj = results[0];
+          expect(obj['ntoll/foo']).toEqual(5);
+        };
+        var spy = sinon.spy(onSuccess);
+        fi.query({select: select, where: where, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce);
       });
 
       it("should produce objects that correctly represent opaque values", function() {
+        var select = ["ntoll/foo", "terrycojones/bar"];
+        var where = "has esteve/rating>7";
+        var onSuccess = function(results) {
+          var obj = results[0];
+          expect(typeof(obj['terrcojones/bar'])).toEqual("object");
+          expect(obj['terrycojones/bar']["value-type"]).toEqual("image/png");
+          expect(obj['terrycojones/bar']["size"]).toEqual(179393);
+        };
+        var spy = sinon.spy(onSuccess);
+        fi.query({select: select, where: where, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce);
       });
     });
   });
