@@ -13,9 +13,9 @@ function it_should_be_a_standard_ajax_request() {
       .toEqual(1);
   });
 
-  it("should point to the correct URL", function() {
+  it("should point to the correct domain", function() {
     expect(this.server.requests[0].url)
-      .toEqual(fi.baseURL+"objects/fakeObjectID/username/tag");
+      .toContain(fi.baseURL);
   });
 };
 
@@ -137,6 +137,15 @@ describe("Fluidinfo.js", function() {
   describe("API", function() {
 
     describe("Request configuration", function() {
+      it("should correctly use the full URL", function() {
+        var options = new Object();
+        options.url = "objects/fakeObjectID/username/tag";
+        fi.api.get(options);
+        expected = "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag";
+        actual = this.server.requests[0].url;
+        expect(actual).toEqual(expected);
+      });
+
       it("should correctly set content-type on a primitive value PUT to the /objects endpoint", function() {
         var options = new Object();
         options.url = "objects/fakeObjectID/username/tag";
@@ -221,7 +230,9 @@ describe("Fluidinfo.js", function() {
         expect(this.server.requests[0].url)
           .toEqual(fi.baseURL+"about/%C3%A4n%2F-%20object/namespace/tag");
       })
+    });
 
+    describe("Response handling", function() {
       it("should provide a simple response object for onSuccess", function() {
         var options = new Object();
         options.url = "namespaces/test";
@@ -330,10 +341,21 @@ describe("Fluidinfo.js", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.post({
-                 url: "objects/fakeObjectID/username/tag",
-                 onSuccess: function(json){},
-                 data: {"test": "test"}
+                 url: "namespaces/test",
+                 data: {name: "test", description: "A description"},
+                 onSuccess: function(result){
+                   expect(result.status).toEqual(201);
+                   expect(result.data.id).
+                     toEqual("e9c97fa8-05ed-4905-9f72-8d00b7390f9b");
+                 }
           });
+          var responseStatus = 201;
+          var responseHeaders = {"Content-Type": "application/json",
+              "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
+              "Content-Length": 107,
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
+          this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
 
         it_should_be_a_standard_ajax_request();
@@ -362,8 +384,15 @@ describe("Fluidinfo.js", function() {
           fi.api.put({
                  url: "objects/fakeObjectID/username/tag",
                  data: "data",
-                 onSuccess: function(json){},
+                 onSuccess: function(result){
+                   expect(result.status).toEqual(204);
+                 },
           });
+          var responseStatus = 204;
+          var responseHeaders = {"Content-Type": "text/html",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          var responseText = '';
+          this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
 
         it_should_be_a_standard_ajax_request();
@@ -391,8 +420,15 @@ describe("Fluidinfo.js", function() {
         beforeEach(function() {
           fi.api.delete({
                  url: "objects/fakeObjectID/username/tag",
-                 onSuccess: function(json){}
+                 onSuccess: function(result){
+                   expect(result.status).toEqual(204);
+                 }
           });
+          var responseStatus = 204;
+          var responseHeaders = {"Content-Type": "text/html",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          var responseText = '';
+          this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
 
         it_should_be_a_standard_ajax_request();
@@ -414,8 +450,21 @@ describe("Fluidinfo.js", function() {
         beforeEach(function() {
           fi.api.head({
                  url: "objects/fakeObjectID/username/tag",
-                 onSuccess: function(json){}
+                 onSuccess: function(response){
+                   expect(response.status).toEqual(200);
+                   expect(response.statusText).toEqual("OK");
+                   expect(typeof(response.headers)).toEqual("object");
+                   expect(response.headers["Content-Type"]).toEqual("text/html");
+                   expect(response.headers["Content-Length"]).toEqual("28926");
+                   expect(response.headers["Date"]).toEqual("Mon, 02 Aug 2010 12:40:41 GMT");
+                 }
           });
+          var responseStatus = 200;
+          var responseHeaders = {"Content-Type": "text/html",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          var responseText = '';
+          this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
 
         it_should_be_a_standard_ajax_request();
