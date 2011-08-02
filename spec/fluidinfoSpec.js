@@ -844,12 +844,37 @@ describe("Fluidinfo.js", function() {
      */
     describe("Update function", function() {
       it("should insist on a values object", function() {
+        try {
+          var where = "has esteve/rating>7";
+          fi.update({where: where, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
       it("should insist on a where object", function() {
+        try {
+          var vals = {"foo/bar": "baz"};
+          fi.update({values: val, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
       it("should produce the correct JSON payload", function() {
+        var vals = {
+          "ntoll/rating": 7,
+          "ntoll/description": "I like it!"
+        };
+        var where = "has terrycojones < 2";
+        fi.update({values: vals, where: where, onSuccess: function(result){},
+          onError: function(result){}});
+        // TODO: Finish this
+
       });
 
       it("should call onSuccess appropriately", function() {
