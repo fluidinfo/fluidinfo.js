@@ -269,7 +269,7 @@ fluidinfo = function(options) {
       }
       xhr.onreadystatechange = function() {
         if(xhr.readyState != 4) return;
-        if(xhr.status < 300 && xhr.status != 304) {
+        if(xhr.status < 300 || xhr.status == 304) {
           if(options.onSuccess){
             options.onSuccess(xhr);
           }
@@ -278,7 +278,6 @@ fluidinfo = function(options) {
           options.onError(xhr);
         }
       }
-      if(xhr.readyState == 4) return xhr;
       xhr.send(options.data)
     }
 
