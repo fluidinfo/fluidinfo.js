@@ -166,7 +166,7 @@ describe("Fluidinfo.js", function() {
 
       it("should correctly set content-type on a primitive value PUT to the /objects endpoint", function() {
         var options = new Object();
-        options.url = "objects/fakeObjectID/username/tag";
+        options.path = "objects/fakeObjectID/username/tag";
         options.data = 1.234;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -176,7 +176,7 @@ describe("Fluidinfo.js", function() {
 
       it("should correctly set content-type on a primitive value PUT to the /about endpoint", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = 1.234;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -186,7 +186,7 @@ describe("Fluidinfo.js", function() {
 
       it("should correctly set content-type on a passed in MIME as PUT to the /objects endpoint", function() {
         var options = new Object();
-        options.url = "objects/fakeObjectID/username/tag";
+        options.path = "objects/fakeObjectID/username/tag";
         options.data = "<html><body><h1>Hello, world!</h1></body></html>";
         options.contentType = "text/html";
         fi.api.put(options);
@@ -197,7 +197,7 @@ describe("Fluidinfo.js", function() {
 
       it("should correctly set content-type on a passed in MIME as PUT to the /about endpoint", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = "<html><body><h1>Hello, world!</h1></body></html>";
         options.contentType = "text/html";
         fi.api.put(options);
@@ -208,7 +208,7 @@ describe("Fluidinfo.js", function() {
 
       it("should complain if it can't set a content-type on a PUT to /objects", function() {
         var options = new Object();
-        options.url = "objects/fakeObjectID/username/tag";
+        options.path = "objects/fakeObjectID/username/tag";
         options.data = {"foo": "bar"};
         try {
           fi.api.put(options);
@@ -220,7 +220,7 @@ describe("Fluidinfo.js", function() {
 
       it("should complain if it can't set a content-type on a PUT to /about", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = {"foo": "bar"};
         try {
           fi.api.put(options);
@@ -232,7 +232,7 @@ describe("Fluidinfo.js", function() {
 
       it("should set the content-type to to 'application/json' by default", function() {
         var options = new Object();
-        options.url = "namespaces/test";
+        options.path = "namespaces/test";
         options.data = {name: "foo", description: "bar"};
         fi.api.post(options);
         expected = "application/json";
@@ -253,7 +253,7 @@ describe("Fluidinfo.js", function() {
     describe("Response handling", function() {
       it("should provide a simple response object for onSuccess", function() {
         var options = new Object();
-        options.url = "namespaces/test";
+        options.path = "namespaces/test";
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
         options.onSuccess = function(result) {
@@ -280,7 +280,7 @@ describe("Fluidinfo.js", function() {
 
       it("should provide a simple response object for onError", function() {
         var options = new Object();
-        options.url = "namespaces/test";
+        options.path = "namespaces/test";
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
         options.onError = function(result) {
@@ -305,7 +305,7 @@ describe("Fluidinfo.js", function() {
 
       it("should serialise Javascript objects into JSON", function() {
         var options = new Object();
-        options.url = "namespaces/test";
+        options.path = "namespaces/test";
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
         fi.api.post(options);
@@ -318,7 +318,7 @@ describe("Fluidinfo.js", function() {
 
       it("should de-serialise JSON payloads to Javascript objects", function() {
         var options = new Object();
-        options.url = "namespaces/test";
+        options.path = "namespaces/test";
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
         options.onSuccess = function(result) {
@@ -337,7 +337,7 @@ describe("Fluidinfo.js", function() {
             [200, {"Content-Type": "application/vnd.fluiddb.value+json"},
             "1.234"]);
           fi.api.get({
-                 url: "objects/fakeObjectID/username/tag",
+                 path: "objects/fakeObjectID/username/tag",
                  onSuccess: function(result) {
                    expect(result.data).toEqual(1.234);
                  },
@@ -365,7 +365,7 @@ describe("Fluidinfo.js", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.post({
-                 url: "namespaces/test",
+                 path: "namespaces/test",
                  data: {name: "test", description: "A description"},
                  onSuccess: function(result){
                    expect(result.status).toEqual(201);
@@ -406,7 +406,7 @@ describe("Fluidinfo.js", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.put({
-                 url: "objects/fakeObjectID/username/tag",
+                 path: "objects/fakeObjectID/username/tag",
                  data: "data",
                  onSuccess: function(result){
                    expect(result.status).toEqual(204);
@@ -443,7 +443,7 @@ describe("Fluidinfo.js", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.delete({
-                 url: "objects/fakeObjectID/username/tag",
+                 path: "objects/fakeObjectID/username/tag",
                  onSuccess: function(result){
                    expect(result.status).toEqual(204);
                  }
@@ -473,7 +473,7 @@ describe("Fluidinfo.js", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
           fi.api.head({
-                 url: "objects/fakeObjectID/username/tag",
+                 path: "objects/fakeObjectID/username/tag",
                  onSuccess: function(response){
                    expect(response.status).toEqual(200);
                    expect(response.statusText).toEqual("OK");
@@ -518,7 +518,7 @@ describe("Fluidinfo.js", function() {
     describe("Content-Type detection", function() {
       it("should identify a primitive in a PUT to 'objects'", function() {
         var options = new Object();
-        options.url = "objects/fakeObjectID/username/tag";
+        options.path = "objects/fakeObjectID/username/tag";
         options.data = 1.234;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -528,7 +528,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a primitive in a PUT to 'about'", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = 1.234;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -538,7 +538,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a given MIME in a PUT to 'objects'", function() {
         var options = new Object();
-        options.url = "objects/fakeObjectID/username/tag";
+        options.path = "objects/fakeObjectID/username/tag";
         options.contentType = "text/html";
         fi.api.put(options);
         expected = "text/html";
@@ -549,7 +549,7 @@ describe("Fluidinfo.js", function() {
       it("should identify a given MIME in a PUT to 'about'", function() {
         var options = new Object();
         options.type = "PUT";
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.contentType = "text/html";
         fi.api.put(options);
         expected = "text/html";
@@ -559,7 +559,7 @@ describe("Fluidinfo.js", function() {
 
       it("should default to JSON for all other requests with data", function() {
         var options = new Object();
-        options.url = "namespaces/test";
+        options.path = "namespaces/test";
         options.data = {name: "foo", description: "bar"};
         fi.api.post(options);
         expected = "application/json";
@@ -569,7 +569,7 @@ describe("Fluidinfo.js", function() {
 
       it("should complain if it can't detect the MIME", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = new Object();
         try {
           fi.api.put(options);
@@ -586,7 +586,7 @@ describe("Fluidinfo.js", function() {
     describe("Primitive identification", function() {
       it("should identify an integer as primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = 1;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -596,7 +596,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a float as primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = 1.234;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -606,7 +606,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a boolean as primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = false;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -616,7 +616,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a string as primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = "hello";
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -626,7 +626,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a null as primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = null;
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -636,7 +636,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a string array as primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = ["a", "b", "c"];
         fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
@@ -646,7 +646,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify a mixed array as NOT primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = ["a", "b", 1];
         try {
           fi.api.put(options);
@@ -658,7 +658,7 @@ describe("Fluidinfo.js", function() {
 
       it("should identify an object as NOT primitive", function() {
         var options = new Object();
-        options.url = "about/fakeAboutValue/username/tag";
+        options.path = "about/fakeAboutValue/username/tag";
         options.data = {foo: "bar"};
         try {
           fi.api.put(options);
@@ -857,7 +857,7 @@ describe("Fluidinfo.js", function() {
       it("should insist on a where object", function() {
         try {
           var vals = {"foo/bar": "baz"};
-          fi.update({values: val, onSuccess: function(result){},
+          fi.update({values: vals, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -876,6 +876,8 @@ describe("Fluidinfo.js", function() {
         expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("PUT");
+        expect(this.server.requests[0].requestHeaders["Content-Type"])
+          .toContain("application/json");
         expect(this.server.requests[0].requestBody)
             .not.toEqual(null);
         var body = JSON.parse(this.server.requests[0].requestBody);
@@ -897,7 +899,7 @@ describe("Fluidinfo.js", function() {
         var spy = sinon.spy(onSuccess);
         fi.update({values: vals, where: where, onSuccess: onSuccess,
           onError: function(result){}});
-        spy.calledOnce();
+        spy.calledOnce;
       });
 
       it("should call onError when a problem occurs", function() {
@@ -910,7 +912,7 @@ describe("Fluidinfo.js", function() {
         var spy = sinon.spy(onError);
         fi.update({values: vals, where: where, onSuccess: function(result){},
           onError: onError});
-        spy.calledOnce();
+        spy.calledOnce;
       });
     });
   });

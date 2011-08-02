@@ -190,7 +190,7 @@ fluidinfo = function(options) {
       // then check if the value is a Fluidinfo primitive type. Otherwise
       // complain.
       var result = null;
-      if(options.type==="PUT" && (options.url.match("^objects\/") || options.url.match("^about\/"))) {
+      if(options.type==="PUT" && (options.path.match("^objects\/") || options.path.match("^about\/"))) {
         if(options.contentType){
           result = options.contentType;
         } else if (isPrimitive(options.data)) {
@@ -440,6 +440,41 @@ fluidinfo = function(options) {
       this.api.get({path: "values",
         args: {tag: options.select, query: options.where},
         onSuccess: processResult, onError: options.onError});
+    }
+
+    /**
+     * Easily gets results from Fluidinfo.
+     */
+    session.update = function(options) {
+      // process the options
+      if(options.values === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Missing values option."
+        }
+      }
+      if(options.where === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Missing where option."
+        }
+      }
+      var payload = new Object();
+      var queries = [];
+      var updateSpecification = [];
+      updateSpecification[0] = options.where;
+      var valueSpec = new Object();
+      for(val in options.values){
+        if(typeof options.values[val] !== "function") {
+          valueSpec[val]= {value: options.values[val]};
+        }
+      }
+      updateSpecification[1] = valueSpec;
+      queries[0] = updateSpecification;
+      payload["queries"] = queries;
+      // Make the appropriate call to Fluidinfo
+      this.api.put({path: "values", data: payload,
+        onSuccess: options.onSuccess, onError: options.onError});
     }
 
     return session;
