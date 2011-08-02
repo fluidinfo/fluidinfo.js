@@ -265,6 +265,7 @@ describe("Fluidinfo.js", function() {
           expect(result.data).toBeTruthy();
           expect(typeof(result.request)).toEqual("object"); // original XHR
         };
+        var spy = sinon.spy(options.onSuccess);
         fi.api.post(options);
         var responseStatus = 201;
         var responseHeaders = {"Content-Type": "application/json",
@@ -273,6 +274,7 @@ describe("Fluidinfo.js", function() {
           "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
         var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+        spy.calledOnce;
       });
 
       it("should provide a simple response object for onError", function() {
@@ -288,6 +290,7 @@ describe("Fluidinfo.js", function() {
           expect(result.data).toEqual("");
           expect(typeof(result.request)).toEqual("object"); // original XHR
         };
+        var spy = sinon.spy(options.onError);
         fi.api.post(options);
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
@@ -295,6 +298,7 @@ describe("Fluidinfo.js", function() {
           "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
         var responseText = '';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+        spy.calledOnce;
       });
 
       it("should serialise Javascript objects into JSON", function() {
@@ -695,31 +699,11 @@ describe("Fluidinfo.js", function() {
       });
 
       it("should send an appropriate query to /values", function() {
-        var select = ["ntoll/foo", "terrycojones/bar"];
-        var where = "has esteve/rating > 7";
-        fi.query({select: select, where: where, onSuccess: function(result){},
-          onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
-        expect(this.server.requests[0].url).toEqual(expected);
-        expect(this.server.requests[0].method).toEqual("GET");
-      });
-
-      it("should not duplicate a request for the fluiddb/about tag in the request to /values", function() {
         var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
         var where = "has esteve/rating > 7";
         fi.query({select: select, where: where, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
-        expect(this.server.requests[0].url).toEqual(expected);
-        expect(this.server.requests[0].method).toEqual("GET");
-      });
-
-      it("should not add fluiddb/about if useAbout is false", function() {
-        var select = ["ntoll/foo", "terrycojones/bar"];
-        var where = "has esteve/rating > 7";
-        fi.query({select: select, where: where, onSuccess: function(result){},
-          onError: function(result){}, useAbout: false});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&query=has%20esteve%2Frating%20%3E%207";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
@@ -778,8 +762,8 @@ describe("Fluidinfo.js", function() {
       it("should build a result array correctly", function() {
         var select = ["ntoll/foo", "terrycojones/bar"];
         var where = "has esteve/rating>7";
-        var onSuccess = function(results) {
-          expect(Object.prototype.toString.apply(results))
+        var onSuccess = function(result) {
+          expect(Object.prototype.toString.apply(result.data))
             .toEqual("[object Array]");
         };
         var spy = sinon.spy(onSuccess);
@@ -793,14 +777,13 @@ describe("Fluidinfo.js", function() {
         expect(spy.calledOnce);
       });
 
-      it("should produce objects with id, about and original attributes", function() {
+      it("should produce objects with id and original result in raw_data", function() {
         var select = ["ntoll/foo", "terrycojones/bar"];
         var where = "has esteve/rating>7";
-        var onSuccess = function(results) {
-          var obj = results[0];
+        var onSuccess = function(result) {
+          var obj = result.data[0];
           expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
-          expect(obj.about).toEqual("foo");
-          expect(typeof(obj.original)).toEqual("object");
+          expect(typeof(result.raw_data)).toEqual("object");
         };
         var spy = sinon.spy(onSuccess);
         fi.query({select: select, where: where, onSuccess: onSuccess,
@@ -813,45 +796,13 @@ describe("Fluidinfo.js", function() {
         expect(spy.calledOnce);
       });
 
-      it("should produce objects without an about attribute if useAbout is false", function() {
-        var select = ["ntoll/foo", "terrycojones/bar"];
-        var where = "has esteve/rating>7";
-        var onSuccess = function(results) {
-          var obj = results[0];
-          expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
-          expect(obj.about).toEqual(undefined);
-          expect(typeof(obj.original)).toEqual("object");
-        };
-        var spy = sinon.spy(onSuccess);
-        fi.query({select: select, where: where, onSuccess: onSuccess,
-          onError: function(result){}, useAbout: false});
-        var responseStatus = 200;
-        var responseHeaders = {"Content-Type": "application/json",
-              "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
-        var responseText = JSON.stringify({
-          results: {id: {
-            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
-                "ntoll/foo": {
-                  "value": 5
-                },
-                "terrycojones/bar": {
-                  "value-type": "image/png",
-                  "size": 179393
-                }
-            }
-          }}
-        });
-        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
-        expect(spy.calledOnce);
-      });
-
       it("should produce objects where values can be referenced by tag path", function() {
-        var select = ["ntoll/foo", "terrycojones/bar"];
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
         var where = "has esteve/rating>7";
-        var onSuccess = function(results) {
-          var obj = results[0];
-          expect(obj['ntoll/foo']).toEqual(5);
+        var onSuccess = function(result) {
+          var obj = result.data[0];
+          expect(obj["fluiddb/about"]).toEqual("foo");
+          expect(obj["ntoll/foo"]).toEqual(5);
         };
         var spy = sinon.spy(onSuccess);
         fi.query({select: select, where: where, onSuccess: onSuccess,
@@ -865,10 +816,10 @@ describe("Fluidinfo.js", function() {
       });
 
       it("should produce objects that correctly represent opaque values", function() {
-        var select = ["ntoll/foo", "terrycojones/bar"];
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
         var where = "has esteve/rating>7";
-        var onSuccess = function(results) {
-          var obj = results[0];
+        var onSuccess = function(result) {
+          var obj = result.data[0];
           expect(typeof(obj['terrycojones/bar'])).toEqual("object");
           expect(obj['terrycojones/bar']["value-type"]).toEqual("image/png");
           expect(obj['terrycojones/bar']["size"]).toEqual(179393);

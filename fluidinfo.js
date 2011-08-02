@@ -405,23 +405,6 @@ fluidinfo = function(options) {
           message: "Missing where option."
         }
       }
-      var useAbout = true;
-      if(options.useAbout != undefined) {
-        useAbout = options.useAbout;
-      }
-      if(useAbout) {
-        // make sure fluiddb/about is in the select array
-        var hasAbout = false;
-        for(i=0; i<options.select.length; i++) {
-          if(options.select[i] === "fluiddb/about") {
-            hasAbout = true;
-            break;
-          }
-        }
-        if(!hasAbout) {
-          options.select[options.select.length] = "fluiddb/about";
-        }
-      }
       /**
        * Takes the raw result from Fluidinfo and turns it into an easy-to-use
        * array of useful objects representing the matching results then calls
@@ -437,7 +420,6 @@ fluidinfo = function(options) {
           if(typeof data.id[objectID] !== "function") {
             var obj = new Object();
             obj["id"] = objectID;
-            obj["original"] = data.id[objectID];
             for(tag in data.id[objectID]) {
               if(typeof data.id[objectID][tag] !== "function") {
                 if(tag === "fluiddb/about") {
@@ -453,7 +435,9 @@ fluidinfo = function(options) {
             result[result.length] = obj;
           }
         }
-        options.onSuccess(result);
+        raw.raw_data = raw.data;
+        raw.data = result;
+        options.onSuccess(raw);
       }
       // Make the appropriate call to Fluidinfo
       this.api.get({path: "values",
