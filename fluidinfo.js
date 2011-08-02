@@ -314,8 +314,15 @@ fluidinfo = function(options) {
         result.status = xhr.status;
         result.statusText = xhr.statusText;
         result.headers = xhr.responseHeaders;
+        result.raw_data = xhr.responseText;
         if(isJSONData(result.headers['Content-Type'])) {
-          result.data = JSON.parse(xhr.responseText);
+          try {
+            result.data = JSON.parse(xhr.responseText);
+          } catch (e) {
+            // fail silently since the raw_data is still available
+            // and leaving .data as undefined will help indicate the
+            // de-serialization hasn't worked for the purposes of debugging.
+          }
         } else {
             result.data = xhr.responseText;
         }
@@ -432,7 +439,6 @@ fluidinfo = function(options) {
             result[result.length] = obj;
           }
         }
-        raw.raw_data = raw.data;
         raw.data = result;
         options.onSuccess(raw);
       }

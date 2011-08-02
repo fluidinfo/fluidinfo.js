@@ -263,6 +263,7 @@ describe("Fluidinfo.js", function() {
           expect(typeof(result.headers)).toEqual("object");
           expect(result.headers["Content-Type"]).toEqual("application/json");
           expect(result.data).toBeTruthy();
+          expect(typeof(result.raw_data)).toEqual("string");
           expect(typeof(result.request)).toEqual("object"); // original XHR
         };
         var spy = sinon.spy(options.onSuccess);
@@ -288,6 +289,7 @@ describe("Fluidinfo.js", function() {
           expect(result.statusText).toEqual("Unauthorized");
           expect(typeof(result.headers)).toEqual("object");
           expect(result.data).toEqual("");
+          expect(result.raw_data).toEqual("");
           expect(typeof(result.request)).toEqual("object"); // original XHR
         };
         var spy = sinon.spy(options.onError);
@@ -783,7 +785,7 @@ describe("Fluidinfo.js", function() {
         var onSuccess = function(result) {
           var obj = result.data[0];
           expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
-          expect(typeof(result.raw_data)).toEqual("object");
+          expect(typeof(result.raw_data)).toEqual("string");
         };
         var spy = sinon.spy(onSuccess);
         fi.query({select: select, where: where, onSuccess: onSuccess,
