@@ -873,14 +873,44 @@ describe("Fluidinfo.js", function() {
         var where = "has terrycojones < 2";
         fi.update({values: vals, where: where, onSuccess: function(result){},
           onError: function(result){}});
-        // TODO: Finish this
-
+        expected = "https://fluiddb.fluidinfo.com/values";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("PUT");
+        expect(this.server.requests[0].requestBody)
+            .not.toEqual(null);
+        var body = JSON.parse(this.server.requests[0].requestBody);
+        expect(Object.prototype.toString.apply(body.queries))
+            .toEqual("[object Array]");
+        var updateSpecification = body.queries[0];
+        expect(updateSpecification[0]).toEqual(where);
+        expect(updateSpecification[1]["ntoll/rating"].value).toEqual(7);
+        expect(updateSpecification[1]["ntoll/description"].value).toEqual("I like it!");
       });
 
       it("should call onSuccess appropriately", function() {
+        var vals = {
+          "ntoll/rating": 7,
+          "ntoll/description": "I like it!"
+        };
+        var where = "has terrycojones < 2";
+        var onSuccess = function(result) {};
+        var spy = sinon.spy(onSuccess);
+        fi.update({values: vals, where: where, onSuccess: onSuccess,
+          onError: function(result){}});
+        spy.calledOnce();
       });
 
       it("should call onError when a problem occurs", function() {
+        var vals = {
+          "ntoll/rating": 7,
+          "ntoll/description": "I like it!"
+        };
+        var where = "has terrycojones < 2";
+        var onError = function(result) {};
+        var spy = sinon.spy(onError);
+        fi.update({values: vals, where: where, onSuccess: function(result){},
+          onError: onError});
+        spy.calledOnce();
       });
     });
   });
