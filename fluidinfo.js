@@ -422,9 +422,6 @@ fluidinfo = function(options) {
             obj["id"] = objectID;
             for(tag in data.id[objectID]) {
               if(typeof data.id[objectID][tag] !== "function") {
-                if(tag === "fluiddb/about") {
-                  obj["about"] = data.id[objectID][tag].value;
-                }
                 if(data.id[objectID][tag].value !== undefined) {
                   obj[tag] = data.id[objectID][tag].value;
                 } else {
