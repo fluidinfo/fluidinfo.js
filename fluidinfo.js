@@ -321,7 +321,7 @@ fluidinfo = function(options) {
         }
         result.request = xhr;
         // call the event handlers
-        if(xhr.status < 300 && xhr.status != 304) {
+        if(xhr.status < 300 || xhr.status == 304) {
           if(options.onSuccess){
             options.onSuccess(result);
           }
@@ -330,7 +330,6 @@ fluidinfo = function(options) {
           options.onError(result);
         }
       }
-      if(xhr.readyState == 4) return xhr;
       xhr.send(options.data)
     }
 
