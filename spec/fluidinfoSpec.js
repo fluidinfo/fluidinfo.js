@@ -837,6 +837,27 @@ describe("Fluidinfo.js", function() {
         expect(spy.calledOnce);
       });
     });
+
+    /**
+     * See semi-sepcification described here:
+     * https://github.com/fluidinfo/fluidinfo.js/issues/10
+     */
+    describe("Update function", function() {
+      it("should insist on a values object", function() {
+      });
+
+      it("should insist on a where object", function() {
+      });
+
+      it("should produce the correct JSON payload", function() {
+      });
+
+      it("should call onSuccess appropriately", function() {
+      });
+
+      it("should call onError when a problem occurs", function() {
+      });
+    });
   });
 
   afterEach(function() {
