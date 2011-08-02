@@ -316,15 +316,9 @@ fluidinfo = function(options) {
         result.headers = xhr.responseHeaders;
         result.raw_data = xhr.responseText;
         if(isJSONData(result.headers['Content-Type'])) {
-          try {
-            result.data = JSON.parse(xhr.responseText);
-          } catch (e) {
-            // fail silently since the raw_data is still available
-            // and leaving .data as undefined will help indicate the
-            // de-serialization hasn't worked for the purposes of debugging.
-          }
+          result.data = JSON.parse(xhr.responseText);
         } else {
-            result.data = xhr.responseText;
+          result.data = xhr.responseText;
         }
         result.request = xhr;
         // call the event handlers
