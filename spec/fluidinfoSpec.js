@@ -924,7 +924,7 @@ describe("Fluidinfo.js", function() {
       it("should insist on a values object", function() {
         try {
           var about = "foo";
-          fi.update({about: about, onSuccess: function(result){},
+          fi.tag({about: about, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -933,9 +933,65 @@ describe("Fluidinfo.js", function() {
       });
 
       it("should insist on either an id or about attribute in options", function() {
+        try {
+          var values = {
+            "ntoll/rating": 7,
+            "ntoll/comment": "I like it!"
+          };
+          fi.tag({values: values, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
-      it("should send to correct JSON payload", function() {
+      it("should send the correct JSON payload using fluiddb/about", function() {
+        var vals = {
+          "ntoll/rating": 7,
+          "ntoll/description": "I like it!"
+        };
+        var about = "foo";
+        fi.update({values: vals, about: about, onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/values";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("PUT");
+        expect(this.server.requests[0].requestHeaders["Content-Type"])
+          .toContain("application/json");
+        expect(this.server.requests[0].requestBody)
+            .not.toEqual(null);
+        var body = JSON.parse(this.server.requests[0].requestBody);
+        expect(Object.prototype.toString.apply(body.queries))
+            .toEqual("[object Array]");
+        var updateSpecification = body.queries[0];
+        expect(updateSpecification[0]).toEqual('fluiddb/about="foo"');
+        expect(updateSpecification[1]["ntoll/rating"].value).toEqual(7);
+        expect(updateSpecification[1]["ntoll/description"].value).toEqual("I like it!");
+      });
+
+      it("should send the correct JSON payload using fluiddb/id", function() {
+        var vals = {
+          "ntoll/rating": 7,
+          "ntoll/description": "I like it!"
+        };
+        var id = "SOMEUUID";
+        fi.update({values: vals, id: id, onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/values";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("PUT");
+        expect(this.server.requests[0].requestHeaders["Content-Type"])
+          .toContain("application/json");
+        expect(this.server.requests[0].requestBody)
+            .not.toEqual(null);
+        var body = JSON.parse(this.server.requests[0].requestBody);
+        expect(Object.prototype.toString.apply(body.queries))
+            .toEqual("[object Array]");
+        var updateSpecification = body.queries[0];
+        expect(updateSpecification[0]).toEqual('fluiddb/id="SOMEUUID"');
+        expect(updateSpecification[1]["ntoll/rating"].value).toEqual(7);
+        expect(updateSpecification[1]["ntoll/description"].value).toEqual("I like it!");
       });
 
       it("should call onSuccess as appropriate", function() {
