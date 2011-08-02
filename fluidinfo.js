@@ -77,6 +77,7 @@ fluidinfo = function(options) {
      * Represents a session with Fluidinfo.
      */
     var session = new Object();
+    var authorizationToken = "";
 
     if(options) {
       if(options.instance) {
@@ -101,7 +102,7 @@ fluidinfo = function(options) {
         }
       }
       if((options.username != undefined) && (options.password != undefined)) {
-        session.authorizationToken = Base64.encode(options.username + ":" + options.password);
+        authorizationToken = Base64.encode(options.username + ":" + options.password);
       }
     }
 
@@ -216,6 +217,30 @@ fluidinfo = function(options) {
     }
 
     /**
+     * Given an object representing the arguments to append to a URL will return
+     * an appropriately encoded string representation.
+     */
+    function createArgs(args) {
+      var result = "";
+      if(args) {
+        var arg;
+        for(arg in args) {
+          if(typeof args[arg] !== "function") {
+              if(isArray(args[arg])) {
+                for(j=0; j<args[arg].length; j++) {
+                  result += "&" + encodeURIComponent(arg)+"="+encodeURIComponent(args[arg][j]);
+                }
+              } else {
+                result += "&"+encodeURIComponent(arg)+"="+encodeURIComponent(args[arg]);
+              }
+            }
+        }
+        result = "?" + result.slice(1);
+      }
+      return result;
+    }
+
+    /**
      * Returns an appropriate XMLHttpRequest Object depending on the browser.
      * Based upon code from here:
      * http://www.quirksmode.org/js/xmlhttp.html
@@ -262,17 +287,18 @@ fluidinfo = function(options) {
      *
      */
     function sendRequest(options) {
-      if(isArray(options.url)) {
-        options.url = encodeURL(options.url);
+      if(isArray(options.path)) {
+        options.path = encodeURL(options.path);
       }
       var method = options.type.toUpperCase() || "GET";
-      var url = session.baseURL+options.url;
+      var args = createArgs(options.args);
+      var url = session.baseURL+options.path+args;
       var async = options.async || true;
       var xhr = createXMLHTTPObject();
       if(!xhr) return;
       xhr.open(method, url, async);
-      if(session.authorizationToken != undefined){
-        xhr.setRequestHeader("Authorization", "Basic " + session.authorizationToken);
+      if(authorizationToken != ""){
+        xhr.setRequestHeader("Authorization", "Basic " + authorizationToken);
       };
       var contentType = detectContentType(options);
       if(contentType) {
@@ -288,10 +314,11 @@ fluidinfo = function(options) {
         result.status = xhr.status;
         result.statusText = xhr.statusText;
         result.headers = xhr.responseHeaders;
+        result.raw_data = xhr.responseText;
         if(isJSONData(result.headers['Content-Type'])) {
           result.data = JSON.parse(xhr.responseText);
         } else {
-            result.data = xhr.responseText;
+          result.data = xhr.responseText;
         }
         result.request = xhr;
         // call the event handlers
@@ -361,6 +388,59 @@ fluidinfo = function(options) {
     }
 
     session.api = api;
+
+    /**
+     * Easily gets results from Fluidinfo.
+     */
+    session.query = function(options) {
+      // process the options
+      if(options.select === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Missing select option."
+        }
+      }
+      if(options.where === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Missing where option."
+        }
+      }
+      /**
+       * Takes the raw result from Fluidinfo and turns it into an easy-to-use
+       * array of useful objects representing the matching results then calls
+       * the onSuccess function with the newly created array.
+       *
+       * @param {Object} The raw result from Fluidinfo that is to be processed
+       */
+      var processResult = function(raw) {
+        result = [];
+        var data = raw.data.results;
+        var objectID;
+        for(objectID in data.id){
+          if(typeof data.id[objectID] !== "function") {
+            var obj = new Object();
+            obj["id"] = objectID;
+            for(tag in data.id[objectID]) {
+              if(typeof data.id[objectID][tag] !== "function") {
+                if(data.id[objectID][tag].value !== undefined) {
+                  obj[tag] = data.id[objectID][tag].value;
+                } else {
+                  obj[tag] = data.id[objectID][tag];
+                }
+              }
+            }
+            result[result.length] = obj;
+          }
+        }
+        raw.data = result;
+        options.onSuccess(raw);
+      }
+      // Make the appropriate call to Fluidinfo
+      this.api.get({path: "values",
+        args: {tag: options.select, query: options.where},
+        onSuccess: processResult, onError: options.onError});
+    }
 
     return session;
 }
