@@ -443,7 +443,7 @@ fluidinfo = function(options) {
     }
 
     /**
-     * Easily updates results from Fluidinfo.
+     * Easily updates objects in Fluidinfo.
      */
     session.update = function(options) {
       // process the options
