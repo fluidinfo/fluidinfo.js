@@ -915,6 +915,34 @@ describe("Fluidinfo.js", function() {
         spy.calledOnce;
       });
     });
+
+    /**
+     * See semi-sepcification described here:
+     * https://github.com/fluidinfo/fluidinfo.js/issues/11
+     */
+    describe("Tag function", function() {
+      it("should insist on a values object", function() {
+        try {
+          var about = "foo";
+          fi.update({about: about, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
+      });
+
+      it("should insist on either an id or about attribute in options", function() {
+      });
+
+      it("should send to correct JSON payload", function() {
+      });
+
+      it("should call onSuccess as appropriate", function() {
+      });
+
+      it("should call onError as appropriate", function() {
+      });
   });
 
   afterEach(function() {
