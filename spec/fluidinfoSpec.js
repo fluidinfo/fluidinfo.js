@@ -676,7 +676,7 @@ describe("Fluidinfo.js", function() {
    */
   describe("Utility functions", function() {
     /**
-     * See semi-sepcification described here:
+     * See semi-specification described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/9#issuecomment-1700115
      */
     describe("Query function", function() {
@@ -839,7 +839,7 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * See semi-sepcification described here:
+     * See semi-specification described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/10
      */
     describe("Update function", function() {
