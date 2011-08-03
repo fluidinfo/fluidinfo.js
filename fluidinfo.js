@@ -499,5 +499,43 @@ fluidinfo = function(options) {
       this.update(options);
     };
 
+    /**
+     * Get tags for a specific object
+     */
+    session.getObject = function(options) {
+      if(options.about === undefined && options.id === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Supply either an 'about' or 'id' specification."
+        }
+      }
+      if(options.about) {
+        options.where = 'fluiddb/about="'+options.about+'"';
+      } else if(options.id) {
+        options.where = 'fluiddb/id="'+options.id+'"';
+      }
+
+      var userOnSuccess = options.onSuccess;
+      /**
+       * Takes the result of a call to query() and builds an appropriate
+       * result.
+       */
+      var processResult = function(result) {
+        if(result.data.length === 1) {
+          result.data = result.data[0];
+          userOnSuccess(result)
+        } else if (result.data.length === 0) {
+          // no data returned so just pass an empty object
+          result.data = [];
+          userOnSuccess(result);
+        } else {
+          options.onError(result);
+        }
+      };
+      options.onSuccess = processResult;
+      // call the query function
+      session.query(options);
+    };
+
     return session;
 }
