@@ -254,9 +254,16 @@ fluidinfo = function(options) {
       var h = "";
       for(h in HEADERS){
         var header = HEADERS[h];
-        var value = xhr.getResponseHeader(header);
-        if(value){
-          result[header] = value;
+        try{
+          var value = xhr.getResponseHeader(header);
+          if(value){
+            result[header] = value;
+          }
+        } catch(e){
+          // we expect an exception to be thrown by the browser when it
+          // encounters "unsafe" headers (those that are in HEADERS but were
+          // not returned by Fluidinfo).
+          continue;
         }
       }
       return result;
@@ -460,7 +467,9 @@ fluidinfo = function(options) {
           }
         }
         raw.data = result;
-        options.onSuccess(raw);
+        if(options.onSuccess){
+          options.onSuccess(raw)
+        };
       }
       // Make the appropriate call to Fluidinfo
       this.api.get({path: "values",
@@ -545,13 +554,19 @@ fluidinfo = function(options) {
       var processResult = function(result) {
         if(result.data.length === 1) {
           result.data = result.data[0];
-          userOnSuccess(result)
+          if(userOnSuccess){
+            userOnSuccess(result);
+          }
         } else if (result.data.length === 0) {
           // no data returned so just pass an empty object
           result.data = [];
-          userOnSuccess(result);
+          if(userOnSuccess){
+            userOnSuccess(result);
+          }
         } else {
-          options.onError(result);
+          if(options.onError){
+            options.onError(result);
+          }
         }
       };
       options.onSuccess = processResult;
