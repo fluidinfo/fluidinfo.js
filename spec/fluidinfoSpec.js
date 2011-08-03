@@ -943,7 +943,7 @@ describe("Fluidinfo.js", function() {
      * https://github.com/fluidinfo/fluidinfo.js/issues/11
      */
     describe("Tag function", function() {
-      it("should insist on a values object", function() {
+      it("should insist on a values attribute in options", function() {
         try {
           var about = "foo";
           fi.tag({about: about, onSuccess: function(result){},
@@ -1062,23 +1062,185 @@ describe("Fluidinfo.js", function() {
      * https://github.com/fluidinfo/fluidinfo.js/issues/12
      */
     describe("getObject function", function() {
+      beforeEach(function() {
+        this.responseText = JSON.stringify({
+          results: {id: {
+            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
+                "fluiddb/about": {
+                  "value": "foo"
+                },
+                "ntoll/foo": {
+                  "value": 5
+                },
+                "terrycojones/bar": {
+                  "value-type": "image/png",
+                  "size": 179393,
+                }
+            }
+          }}
+        });
+      });
+
       it("should insist on a select value", function() {
+        try {
+          var about = "foo";
+          fi.getObject({about: about, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
-      it("should insist on either an about or id value", function() {
+      it("should insist on either an id or about attribute in options", function() {
+        try {
+          var select = ["fluiddb/about", "ntoll/foo", "terrycojones/bar"];
+          fi.getObject({select: select, onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
-      it("should result in the correct request to Fluidinfo", function() {
+      it("should result in the correct request to Fluidinfo for 'about'", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "foo";
+        fi.getObject({select: select, about: about, onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fabout%32%22foo%22";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("GET");
+      });
+
+      it("should result in the correct request to Fluidinfo for 'id'", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var id = "SOMEUUID";
+        fi.getObject({select: select, id: id, onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fid%32%22SOMEUUID%22";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("GET");
       });
 
       it("should result in a single appropriate JS object", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "foo";
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          expect(typeof (result.data))
+            .toEqual("object");
+          spy();
+        };
+        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce).toBeTruthy();
+      });
+
+      it("should produce an object with id and original result in raw_data", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "foo";
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          var obj = result.data;
+          expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
+          expect(typeof(result.raw_data)).toEqual("string");
+          spy();
+        };
+        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce).toBeTruthy();
+      });
+
+      it("should produce an object where values can be referenced by tag path", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "foo";
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          var obj = result.data;
+          expect(obj["fluiddb/about"]).toEqual("foo");
+          expect(obj["ntoll/foo"]).toEqual(5);
+          spy();
+        };
+        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce).toBeTruthy();
+      });
+
+      it("should produce an object that correctly represents opaque values", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "about";
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          var obj = result.data;
+          expect(typeof(obj["terrycojones/bar"])).toEqual("object");
+          expect(obj["terrycojones/bar"]["value-type"]).toEqual("image/png");
+          expect(obj["terrycojones/bar"]["size"]).toEqual(179393);
+          var expected = "https://fluiddb.fluidinfo.com/objects/05eee31e-fbd1-43cc-9500-0469707a9bc3/terrycojones/bar";
+          expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
+          spy();
+        };
+        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce).toBeTruthy();
       });
 
       it("should appropriately call the onSuccess function", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "about";
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          expect(result.status).toEqual(200);
+          spy();
+        };
+        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce).toBeTruthy();
       });
 
       it("should appropriately call the onError function", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "about";
+        var spy = sinon.spy();
+        var onError= function(result) {
+          expect(result.status).toEqual(401);
+          spy();
+        };
+        fi.getObject({select: select, about: about,
+          onSuccess: function(result){}, onError: onError});
+        var responseStatus = 401;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce).toBeTruthy();
       });
+    });
   });
 
   afterEach(function() {
