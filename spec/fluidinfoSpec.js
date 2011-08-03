@@ -1108,7 +1108,7 @@ describe("Fluidinfo.js", function() {
         var about = "foo";
         fi.getObject({select: select, about: about, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fabout%32%22foo%22";
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fabout%3D%22foo%22";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
@@ -1118,7 +1118,7 @@ describe("Fluidinfo.js", function() {
         var id = "SOMEUUID";
         fi.getObject({select: select, id: id, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fid%32%22SOMEUUID%22";
+        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fid%3D%22SOMEUUID%22";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
@@ -1202,6 +1202,26 @@ describe("Fluidinfo.js", function() {
               "Content-Length": "28926",
               "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
+        expect(spy.calledOnce).toBeTruthy();
+      });
+
+      it("should produce and *empty* object when no result is returned", function() {
+        var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+        var about = "about";
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          var obj = result.data;
+          expect(typeof(obj)).toEqual("object");
+          expect(obj.id).toEqual(undefined); 
+          spy();
+        };
+        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 200;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, '{"results": {"id": {}}}');
         expect(spy.calledOnce).toBeTruthy();
       });
 
