@@ -972,7 +972,7 @@ describe("Fluidinfo.js", function() {
           "ntoll/description": "I like it!"
         };
         var about = "foo";
-        fi.update({values: vals, about: about, onSuccess: function(result){},
+        fi.tag({values: vals, about: about, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -996,7 +996,7 @@ describe("Fluidinfo.js", function() {
           "ntoll/description": "I like it!"
         };
         var id = "SOMEUUID";
-        fi.update({values: vals, id: id, onSuccess: function(result){},
+        fi.tag({values: vals, id: id, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -1015,10 +1015,45 @@ describe("Fluidinfo.js", function() {
       });
 
       it("should call onSuccess as appropriate", function() {
+        var vals = {
+          "ntoll/rating": 7,
+          "ntoll/description": "I like it!"
+        };
+        var about = "foo";
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          expect(result.status).toEqual(204);
+          spy();
+        };
+        fi.tag({values: vals, about: about, onSuccess: onSuccess,
+          onError: function(result){}});
+        var responseStatus = 204;
+        var responseHeaders = {"Content-Type": "text/html",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, '');
+        expect(spy.calledOnce).toBeTruthy();
       });
 
       it("should call onError as appropriate", function() {
+        var vals = {
+          "ntoll/rating": 7,
+          "ntoll/description": "I like it!"
+        };
+        var about = "foo";
+        var spy = sinon.spy();
+        var onError= function(result) {
+          expect(result.status).toEqual(401);
+          spy();
+        };
+        fi.tag({values: vals, about: about, onSuccess: function(){},
+          onError: onError});
+        var responseStatus = 401;
+        var responseHeaders = {"Content-Type": "text/html",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, '');
+        expect(spy.calledOnce).toBeTruthy();
       });
+    });
   });
 
   afterEach(function() {
