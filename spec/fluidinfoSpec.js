@@ -695,7 +695,7 @@ describe("Fluidinfo.js", function() {
                 },
                 "terrycojones/bar": {
                   "value-type": "image/png",
-                  "size": 179393,
+                  "size": 179393
                 }
             }
           }}
