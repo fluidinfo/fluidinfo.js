@@ -241,6 +241,28 @@ fluidinfo = function(options) {
     }
 
     /**
+     * Returns an object representing the headers returned from Fluidinfo
+     */
+    function getHeaders(xhr) {
+      var result = new Object();
+      var HEADERS = ["Content-Type", "Content-Length", "Location", "Date",
+        "WWW-Authenticate", "Cache-Control", "X-FluidDB-Error-Class",
+        "X-FluidDB-Path", "X-FluidDB-Message", "X-FluidDB-ObjectId",
+        "X-FluidDB-Query", "X-FluidDB-Name", "X-FluidDB-Category",
+        "X-FluidDB-Action", "X-FluidDB-Rangetype", "X-FluidDB-Fieldname",
+        "X-FluidDB-Type", "X-FluidDB-Argument"];
+      var h = "";
+      for(h in HEADERS){
+        var header = HEADERS[h];
+        var value = xhr.getResponseHeader(header);
+        if(value){
+          result[header] = value;
+        }
+      }
+      return result;
+    }
+
+    /**
      * Returns an appropriate XMLHttpRequest Object depending on the browser.
      * Based upon code from here:
      * http://www.quirksmode.org/js/xmlhttp.html
@@ -313,7 +335,7 @@ fluidinfo = function(options) {
         var result = new Object();
         result.status = xhr.status;
         result.statusText = xhr.statusText;
-        result.headers = xhr.responseHeaders;
+        result.headers = getHeaders(xhr);
         result.raw_data = xhr.responseText;
         if(isJSONData(result.headers['Content-Type'])) {
           result.data = JSON.parse(xhr.responseText);
