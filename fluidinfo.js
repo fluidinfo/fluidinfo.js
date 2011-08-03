@@ -477,5 +477,23 @@ fluidinfo = function(options) {
         onSuccess: options.onSuccess, onError: options.onError});
     }
 
+    /**
+     * Easily tag a specified object
+     */
+    session.tag = function(options) {
+      if(options.about === undefined && options.id === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Supply either an 'about' or 'id' specification."
+        }
+      }
+      if(options.about) {
+        options.where = 'fluiddb/about="'+options.about+'"';
+      } else if(options.id) {
+        options.where = 'fluiddb/id="'+options.id+'"';
+      }
+      this.update(options);
+    };
+
     return session;
 }
