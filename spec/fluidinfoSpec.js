@@ -746,7 +746,7 @@ describe("Fluidinfo.js", function() {
               "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         // expect the onSuccess function to be called only once
-        onSuccess.once();
+        expect(onSuccess.once()).toBeTruthy();
       });
 
       it("should appropriately call onError function", function() {
@@ -760,7 +760,7 @@ describe("Fluidinfo.js", function() {
               "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         // expect the onError function to be called only once
-        onError.once();
+        expect(onError.once()).toBeTruthy();
       });
 
       it("should build a result array correctly", function() {
@@ -828,9 +828,11 @@ describe("Fluidinfo.js", function() {
         var spy = sinon.spy();
         var onSuccess = function(result) {
           var obj = result.data[0];
-          expect(typeof(obj['terrycojones/bar'])).toEqual("object");
-          expect(obj['terrycojones/bar']["value-type"]).toEqual("image/png");
-          expect(obj['terrycojones/bar']["size"]).toEqual(179393);
+          expect(typeof(obj["terrycojones/bar"])).toEqual("object");
+          expect(obj["terrycojones/bar"]["value-type"]).toEqual("image/png");
+          expect(obj["terrycojones/bar"]["size"]).toEqual(179393);
+          var expected = "https://fluiddb.fluidinfo.com/objects/05eee31e-fbd1-43cc-9500-0469707a9bc3/terrycojones/bar";
+          expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
           spy();
         };
         fi.query({select: select, where: where, onSuccess: onSuccess,

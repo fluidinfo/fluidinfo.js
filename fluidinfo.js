@@ -424,9 +424,13 @@ fluidinfo = function(options) {
             for(tag in data.id[objectID]) {
               if(typeof data.id[objectID][tag] !== "function") {
                 if(data.id[objectID][tag].value !== undefined) {
+                  // primitive value
                   obj[tag] = data.id[objectID][tag].value;
                 } else {
+                  // opaque value
                   obj[tag] = data.id[objectID][tag];
+                  // add a URL to the opaque value
+                  obj[tag]['url'] = session.baseURL+"objects/"+objectID+"/"+tag;
                 }
               }
             }
