@@ -251,6 +251,39 @@ describe("Fluidinfo.js", function() {
     });
 
     describe("Response handling", function() {
+      it("should parse the response headers correctly", function() {
+        var HEADERS = ["Content-Type", "Content-Length", "Location", "Date",
+          "WWW-Authenticate", "Cache-Control", "X-FluidDB-Error-Class",
+          "X-FluidDB-Path", "X-FluidDB-Message", "X-FluidDB-ObjectId",
+          "X-FluidDB-Query", "X-FluidDB-Name", "X-FluidDB-Category",
+          "X-FluidDB-Action", "X-FluidDB-Rangetype", "X-FluidDB-Fieldname",
+          "X-FluidDB-Type", "X-FluidDB-Argument"];
+        var options = new Object();
+        options.path = "namespaces/test";
+        var payload = {name: "foo", description: "bar"};
+        options.data = payload;
+        var spy = sinon.spy();
+        options.onSuccess = function(result) {
+          var h = "";
+          for(h in HEADERS){
+            var header = HEADERS[h];
+            expect(result.headers[header]).toEqual("foo");
+          }
+          spy();
+        };
+        fi.api.post(options);
+        var responseStatus = 201;
+        var responseHeaders = new Object();
+        var h = "";
+        for(h in HEADERS){
+          var header = HEADERS[h];
+          responseHeaders[header] = "foo";
+        }
+        var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
+        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+        expect(spy.calledOnce).toBeTruthy();
+      });
+
       it("should provide a simple response object for onSuccess", function() {
         var options = new Object();
         options.path = "namespaces/test";
