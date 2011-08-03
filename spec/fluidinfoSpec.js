@@ -60,7 +60,8 @@ describe("Fluidinfo.js", function() {
   beforeEach(function() {
     this.server = sinon.fakeServer.create();
     this.xhr = sinon.useFakeXMLHttpRequest();
-    fi = fluidinfo({ username: "username",
+      var password;
+    var fi = fluidinfo({ username: "username",
                      password: "password"
                    });
   });
@@ -69,13 +70,14 @@ describe("Fluidinfo.js", function() {
    * Describes the expected behaviour of a new Fluidinfo session object.
    */
   describe("Configuration", function() {
-
+      var fi;
     it("should default to point to the main instance", function() {
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the main instance", function() {
-      fi = fluidinfo({ username: "username",
+        var instance;
+      var fi = fluidinfo({ username: "username",
                        password: "password",
                        instance: "main"
                      });
@@ -83,7 +85,8 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should set the lib to point to the sandbox", function() {
-      fi = fluidinfo({ username: "username",
+        var instance;
+      var fi = fluidinfo({ username: "username",
                        password: "password",
                        instance: "sandbox"
                      });
@@ -91,7 +94,7 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should set the lib to point to any other instance", function() {
-      fi = fluidinfo({instance: "https://localhost/"});
+      var fi = fluidinfo({instance: "https://localhost/"});
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
@@ -118,7 +121,7 @@ describe("Fluidinfo.js", function() {
       }
       expect(exception.name).toEqual("ValueError");
       // valid case
-      fi = fluidinfo({instance: "https://localhost/"});
+      var fi = fluidinfo({instance: "https://localhost/"});
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
@@ -129,7 +132,7 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should work as anonymous user", function() {
-      fi = fluidinfo();
+      var fi = fluidinfo();
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
       fi.api.get({path: "users/ntoll"})
       expect(this.server.requests[0].requestHeaders['Authorization'])

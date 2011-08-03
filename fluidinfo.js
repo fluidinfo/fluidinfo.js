@@ -499,6 +499,21 @@ fluidinfo = function(options) {
       this.update(options);
     };
 
+    session.delete  = function(options) {
+      if(options.about === undefined && options.id === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Supply either an 'about' or 'id' specification."
+        }
+      }
+      if(options.about) {
+        options.where = 'fluiddb/about="'+options.about+'"';
+      } else if(options.id) {
+        options.where = 'fluiddb/id="'+options.id+'"';
+      }
+      this.api.delete(options);
+    };
+
     /**
      * Get tags for a specific object
      */
