@@ -1056,6 +1056,29 @@ describe("Fluidinfo.js", function() {
         expect(spy.calledOnce).toBeTruthy();
       });
     });
+
+    /**
+     * See semi-sepcification described here:
+     * https://github.com/fluidinfo/fluidinfo.js/issues/12
+     */
+    describe("getObject function", function() {
+      it("should insist on a select value", function() {
+      });
+
+      it("should insist on either an about or id value", function() {
+      });
+
+      it("should result in the correct request to Fluidinfo", function() {
+      });
+
+      it("should result in a single appropriate JS object", function() {
+      });
+
+      it("should appropriately call the onSuccess function", function() {
+      });
+
+      it("should appropriately call the onError function", function() {
+      });
   });
 
   afterEach(function() {
