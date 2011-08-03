@@ -939,7 +939,7 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * See semi-sepcification described here:
+     * See semi-specification described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/11
      */
     describe("Tag function", function() {
@@ -1058,7 +1058,7 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * See semi-sepcification described here:
+     * See semi-specification described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/12
      */
     describe("getObject function", function() {
