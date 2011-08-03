@@ -15,7 +15,7 @@ function it_should_be_a_standard_ajax_request() {
 
   it("should point to the correct domain", function() {
     expect(this.server.requests[0].url)
-      .toContain(fi.baseURL);
+      .toContain(this.fi.baseURL);
   });
 };
 
@@ -61,7 +61,7 @@ describe("Fluidinfo.js", function() {
     this.server = sinon.fakeServer.create();
     this.xhr = sinon.useFakeXMLHttpRequest();
       var password;
-    var fi = fluidinfo({ username: "username",
+    this.fi = fluidinfo({ username: "username",
                      password: "password"
                    });
   });
@@ -70,13 +70,11 @@ describe("Fluidinfo.js", function() {
    * Describes the expected behaviour of a new Fluidinfo session object.
    */
   describe("Configuration", function() {
-      var fi;
     it("should default to point to the main instance", function() {
-      expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
+      expect(this.fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the main instance", function() {
-        var instance;
       var fi = fluidinfo({ username: "username",
                        password: "password",
                        instance: "main"
@@ -85,7 +83,6 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should set the lib to point to the sandbox", function() {
-        var instance;
       var fi = fluidinfo({ username: "username",
                        password: "password",
                        instance: "sandbox"
@@ -101,21 +98,21 @@ describe("Fluidinfo.js", function() {
     it("should validate bespoke instances are valid addresses", function() {
       // missing http[s]:// and trailing slash
       try {
-        fi = fluidinfo({instance: "localhost"});
+        var fi = fluidinfo({instance: "localhost"});
       } catch(e) {
         var exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // missing the trailing slash
       try {
-        fi = fluidinfo({instance: "http://localhost"});
+        var fi = fluidinfo({instance: "http://localhost"});
       } catch(e) {
         var exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // missing http[s]://
       try {
-        fi = fluidinfo({instance: "localhost/"});
+        var fi = fluidinfo({instance: "localhost/"});
       } catch(e) {
         var exception = e;
       }
@@ -126,7 +123,7 @@ describe("Fluidinfo.js", function() {
     });
 
     it("should work as a logged in user", function() {
-      fi.api.get({path: "users/ntoll"})
+      this.fi.api.get({path: "users/ntoll"})
       expect(this.server.requests[0].requestHeaders['Authorization'])
             .not.toEqual(undefined);
     });
@@ -150,7 +147,7 @@ describe("Fluidinfo.js", function() {
       it("should correctly use the full URL", function() {
         var options = new Object();
         options.path = "objects/fakeObjectID/username/tag";
-        fi.api.get(options);
+        this.fi.api.get(options);
         expected = "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag";
         actual = this.server.requests[0].url;
         expect(actual).toEqual(expected);
@@ -161,7 +158,7 @@ describe("Fluidinfo.js", function() {
         options.path = "values";
         options.args = {tag: ["foo/bar", "baz/qux"],
           query: "has ntoll/rating > 7"};
-        fi.api.get(options);
+        this.fi.api.get(options);
         expected = "https://fluiddb.fluidinfo.com/values?tag=foo%2Fbar&tag=baz%2Fqux&query=has%20ntoll%2Frating%20%3E%207";
         actual = this.server.requests[0].url;
         expect(actual).toEqual(expected);
@@ -171,7 +168,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "objects/fakeObjectID/username/tag";
         options.data = 1.234;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -181,7 +178,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = 1.234;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -192,7 +189,7 @@ describe("Fluidinfo.js", function() {
         options.path = "objects/fakeObjectID/username/tag";
         options.data = "<html><body><h1>Hello, world!</h1></body></html>";
         options.contentType = "text/html";
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "text/html";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -203,7 +200,7 @@ describe("Fluidinfo.js", function() {
         options.path = "about/fakeAboutValue/username/tag";
         options.data = "<html><body><h1>Hello, world!</h1></body></html>";
         options.contentType = "text/html";
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "text/html";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -214,7 +211,7 @@ describe("Fluidinfo.js", function() {
         options.path = "objects/fakeObjectID/username/tag";
         options.data = {"foo": "bar"};
         try {
-          fi.api.put(options);
+          this.fi.api.put(options);
         } catch(e) {
           var exception = e;
         }
@@ -226,7 +223,7 @@ describe("Fluidinfo.js", function() {
         options.path = "about/fakeAboutValue/username/tag";
         options.data = {"foo": "bar"};
         try {
-          fi.api.put(options);
+          this.fi.api.put(options);
         } catch(e) {
           var exception = e;
         }
@@ -237,7 +234,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "namespaces/test";
         options.data = {name: "foo", description: "bar"};
-        fi.api.post(options);
+        this.fi.api.post(options);
         expected = "application/json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -247,9 +244,9 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = ["about", "än/- object", "namespace", "tag"];
         options.data = {name: "foo", description: "bar"};
-        fi.api.post(options);
+        this.fi.api.post(options);
         expect(this.server.requests[0].url)
-          .toEqual(fi.baseURL+"about/%C3%A4n%2F-%20object/namespace/tag");
+          .toEqual(this.fi.baseURL+"about/%C3%A4n%2F-%20object/namespace/tag");
       })
     });
 
@@ -271,7 +268,7 @@ describe("Fluidinfo.js", function() {
           expect(typeof(result.request)).toEqual("object"); // original XHR
           spy();
         };
-        fi.api.post(options);
+        this.fi.api.post(options);
         var responseStatus = 201;
         var responseHeaders = {"Content-Type": "application/json",
           "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
@@ -298,7 +295,7 @@ describe("Fluidinfo.js", function() {
           expect(typeof(result.request)).toEqual("object"); // original XHR
           spy(); // to prove the function was called
         };
-        fi.api.post(options);
+        this.fi.api.post(options);
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
           "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
@@ -313,7 +310,7 @@ describe("Fluidinfo.js", function() {
         options.path = "namespaces/test";
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
-        fi.api.post(options);
+        this.fi.api.post(options);
         expected = "application/json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -330,7 +327,7 @@ describe("Fluidinfo.js", function() {
             expect(result.data.id)
               .toEqual("e9c97fa8-05ed-4905-9f72-8d00b7390f9b");
         };
-        fi.api.post(options);
+        this.fi.api.post(options);
         this.server.requests[0].respond(201, {"Content-Type": "application/json"}, '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/foo/bar"}');
       })
     });
@@ -341,7 +338,7 @@ describe("Fluidinfo.js", function() {
           this.server.respondWith("GET", "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag",
             [200, {"Content-Type": "application/vnd.fluiddb.value+json"},
             "1.234"]);
-          fi.api.get({
+          this.fi.api.get({
                  path: "objects/fakeObjectID/username/tag",
                  onSuccess: function(result) {
                    expect(result.data).toEqual(1.234);
@@ -369,7 +366,7 @@ describe("Fluidinfo.js", function() {
     describe("POST", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
-          fi.api.post({
+          this.fi.api.post({
                  path: "namespaces/test",
                  data: {name: "test", description: "A description"},
                  onSuccess: function(result){
@@ -410,7 +407,7 @@ describe("Fluidinfo.js", function() {
     describe("PUT", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
-          fi.api.put({
+          this.fi.api.put({
                  path: "objects/fakeObjectID/username/tag",
                  data: "data",
                  onSuccess: function(result){
@@ -447,7 +444,7 @@ describe("Fluidinfo.js", function() {
     describe("DELETE", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
-          fi.api.delete({
+          this.fi.api.delete({
                  path: "objects/fakeObjectID/username/tag",
                  onSuccess: function(result){
                    expect(result.status).toEqual(204);
@@ -477,7 +474,7 @@ describe("Fluidinfo.js", function() {
     describe("HEAD", function() {
       describe("default behaviour", function() {
         beforeEach(function() {
-          fi.api.head({
+          this.fi.api.head({
                  path: "objects/fakeObjectID/username/tag",
                  onSuccess: function(response){
                    expect(response.status).toEqual(200);
@@ -525,7 +522,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "objects/fakeObjectID/username/tag";
         options.data = 1.234;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -535,7 +532,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = 1.234;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -545,7 +542,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "objects/fakeObjectID/username/tag";
         options.contentType = "text/html";
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "text/html";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -556,7 +553,7 @@ describe("Fluidinfo.js", function() {
         options.type = "PUT";
         options.path = "about/fakeAboutValue/username/tag";
         options.contentType = "text/html";
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "text/html";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -566,7 +563,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "namespaces/test";
         options.data = {name: "foo", description: "bar"};
-        fi.api.post(options);
+        this.fi.api.post(options);
         expected = "application/json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -577,7 +574,7 @@ describe("Fluidinfo.js", function() {
         options.path = "about/fakeAboutValue/username/tag";
         options.data = new Object();
         try {
-          fi.api.put(options);
+          this.fi.api.put(options);
         } catch(e) {
           var exception = e;
         }
@@ -586,14 +583,14 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * Checks the library correctly identifies primitive values.
+     * Checks the library correctly identithis.fi.s primitive values.
      */
-    describe("Primitive identification", function() {
+    describe("Primitive identithis.fi.ation", function() {
       it("should identify an integer as primitive", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = 1;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -603,7 +600,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = 1.234;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -613,7 +610,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = false;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -623,7 +620,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = "hello";
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -633,7 +630,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = null;
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -643,7 +640,7 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
         options.data = ["a", "b", "c"];
-        fi.api.put(options);
+        this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
         actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
@@ -654,7 +651,7 @@ describe("Fluidinfo.js", function() {
         options.path = "about/fakeAboutValue/username/tag";
         options.data = ["a", "b", 1];
         try {
-          fi.api.put(options);
+          this.fi.api.put(options);
         } catch(e) {
           var exception = e;
         }
@@ -666,7 +663,7 @@ describe("Fluidinfo.js", function() {
         options.path = "about/fakeAboutValue/username/tag";
         options.data = {foo: "bar"};
         try {
-          fi.api.put(options);
+          this.fi.api.put(options);
         } catch(e) {
           var exception = e;
         }
@@ -681,7 +678,7 @@ describe("Fluidinfo.js", function() {
    */
   describe("Utility functions", function() {
     /**
-     * See semi-specification described here:
+     * See semi-specithis.fi.ation described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/9#issuecomment-1700115
      */
     describe("Query function", function() {
@@ -708,7 +705,7 @@ describe("Fluidinfo.js", function() {
       it("should send an appropriate query to /values", function() {
         var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
         var where = "has esteve/rating > 7";
-        fi.query({select: select, where: where, onSuccess: function(result){},
+        this.fi.query({select: select, where: where, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -718,7 +715,7 @@ describe("Fluidinfo.js", function() {
       it("should insist on a 'select' argument", function() {
         try {
           var where = "has esteve/rating>7";
-          fi.query({where: where, onSuccess: function(result){},
+          this.fi.query({where: where, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -729,7 +726,7 @@ describe("Fluidinfo.js", function() {
       it("should insist on a 'where' argument", function() {
         try {
           var select = ["ntoll/foo", "terrycojones/bar"];
-          fi.query({select: select, onSuccess: function(result){},
+          this.fi.query({select: select, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -741,7 +738,7 @@ describe("Fluidinfo.js", function() {
         var select = ["ntoll/foo", "terrycojones/bar"];
         var where = "has esteve/rating>7";
         var onSuccess = sinon.mock();
-        fi.query({select: select, where: where, onSuccess: onSuccess,
+        this.fi.query({select: select, where: where, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -756,7 +753,7 @@ describe("Fluidinfo.js", function() {
         var select = ["ntoll/foo", "terrycojones/bar"];
         var where = "has esteve/rating>7";
         var onError = sinon.mock();
-        fi.query({select: select, where: where, onSuccess: function(result){},
+        this.fi.query({select: select, where: where, onSuccess: function(result){},
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
@@ -775,7 +772,7 @@ describe("Fluidinfo.js", function() {
             .toEqual("[object Array]");
           spy();
         };
-        fi.query({select: select, where: where, onSuccess: onSuccess,
+        this.fi.query({select: select, where: where, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -795,7 +792,7 @@ describe("Fluidinfo.js", function() {
           expect(typeof(result.raw_data)).toEqual("string");
           spy();
         };
-        fi.query({select: select, where: where, onSuccess: onSuccess,
+        this.fi.query({select: select, where: where, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -815,7 +812,7 @@ describe("Fluidinfo.js", function() {
           expect(obj["ntoll/foo"]).toEqual(5);
           spy();
         };
-        fi.query({select: select, where: where, onSuccess: onSuccess,
+        this.fi.query({select: select, where: where, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -838,7 +835,7 @@ describe("Fluidinfo.js", function() {
           expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
           spy();
         };
-        fi.query({select: select, where: where, onSuccess: onSuccess,
+        this.fi.query({select: select, where: where, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -850,14 +847,14 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * See semi-specification described here:
+     * See semi-specithis.fi.ation described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/10
      */
     describe("Update function", function() {
       it("should insist on a values object", function() {
         try {
           var where = "has esteve/rating>7";
-          fi.update({where: where, onSuccess: function(result){},
+          this.fi.update({where: where, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -868,7 +865,7 @@ describe("Fluidinfo.js", function() {
       it("should insist on a where object", function() {
         try {
           var vals = {"foo/bar": "baz"};
-          fi.update({values: vals, onSuccess: function(result){},
+          this.fi.update({values: vals, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -882,7 +879,7 @@ describe("Fluidinfo.js", function() {
           "ntoll/description": "I like it!"
         };
         var where = "has terrycojones < 2";
-        fi.update({values: vals, where: where, onSuccess: function(result){},
+        this.fi.update({values: vals, where: where, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -911,7 +908,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(204);
           spy();
         };
-        fi.update({values: vals, where: where, onSuccess: onSuccess,
+        this.fi.update({values: vals, where: where, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 204;
         var responseHeaders = {"Content-Type": "text/html",
@@ -931,7 +928,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(401);
           spy();
         };
-        fi.update({values: vals, where: where, onSuccess: function(result){},
+        this.fi.update({values: vals, where: where, onSuccess: function(result){},
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
@@ -942,14 +939,14 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * See semi-specification described here:
+     * See semi-specithis.fi.ation described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/11
      */
     describe("Tag function", function() {
       it("should insist on a values attribute in options", function() {
         try {
           var about = "foo";
-          fi.tag({about: about, onSuccess: function(result){},
+          this.fi.tag({about: about, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -963,7 +960,7 @@ describe("Fluidinfo.js", function() {
             "ntoll/rating": 7,
             "ntoll/comment": "I like it!"
           };
-          fi.tag({values: values, onSuccess: function(result){},
+          this.fi.tag({values: values, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -977,7 +974,7 @@ describe("Fluidinfo.js", function() {
           "ntoll/description": "I like it!"
         };
         var about = "foo";
-        fi.tag({values: vals, about: about, onSuccess: function(result){},
+        this.fi.tag({values: vals, about: about, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -1001,7 +998,7 @@ describe("Fluidinfo.js", function() {
           "ntoll/description": "I like it!"
         };
         var id = "SOMEUUID";
-        fi.tag({values: vals, id: id, onSuccess: function(result){},
+        this.fi.tag({values: vals, id: id, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -1030,7 +1027,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(204);
           spy();
         };
-        fi.tag({values: vals, about: about, onSuccess: onSuccess,
+        this.fi.tag({values: vals, about: about, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 204;
         var responseHeaders = {"Content-Type": "text/html",
@@ -1050,7 +1047,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(401);
           spy();
         };
-        fi.tag({values: vals, about: about, onSuccess: function(){},
+        this.fi.tag({values: vals, about: about, onSuccess: function(){},
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
@@ -1061,7 +1058,7 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * See semi-specification described here:
+     * See semi-specithis.fi.ation described here:
      * https://github.com/fluidinfo/fluidinfo.js/issues/12
      */
     describe("getObject function", function() {
@@ -1087,7 +1084,7 @@ describe("Fluidinfo.js", function() {
       it("should insist on a select value", function() {
         try {
           var about = "foo";
-          fi.getObject({about: about, onSuccess: function(result){},
+          this.fi.getObject({about: about, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -1098,7 +1095,7 @@ describe("Fluidinfo.js", function() {
       it("should insist on either an id or about attribute in options", function() {
         try {
           var select = ["fluiddb/about", "ntoll/foo", "terrycojones/bar"];
-          fi.getObject({select: select, onSuccess: function(result){},
+          this.fi.getObject({select: select, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -1109,7 +1106,7 @@ describe("Fluidinfo.js", function() {
       it("should result in the correct request to Fluidinfo for 'about'", function() {
         var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
         var about = "foo";
-        fi.getObject({select: select, about: about, onSuccess: function(result){},
+        this.fi.getObject({select: select, about: about, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fabout%3D%22foo%22";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -1119,7 +1116,7 @@ describe("Fluidinfo.js", function() {
       it("should result in the correct request to Fluidinfo for 'id'", function() {
         var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
         var id = "SOMEUUID";
-        fi.getObject({select: select, id: id, onSuccess: function(result){},
+        this.fi.getObject({select: select, id: id, onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fid%3D%22SOMEUUID%22";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -1135,7 +1132,7 @@ describe("Fluidinfo.js", function() {
             .toEqual("object");
           spy();
         };
-        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+        this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1155,7 +1152,7 @@ describe("Fluidinfo.js", function() {
           expect(typeof(result.raw_data)).toEqual("string");
           spy();
         };
-        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+        this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1175,7 +1172,7 @@ describe("Fluidinfo.js", function() {
           expect(obj["ntoll/foo"]).toEqual(5);
           spy();
         };
-        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+        this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1198,7 +1195,7 @@ describe("Fluidinfo.js", function() {
           expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
           spy();
         };
-        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+        this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1218,7 +1215,7 @@ describe("Fluidinfo.js", function() {
           expect(obj.id).toEqual(undefined); 
           spy();
         };
-        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+        this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1236,7 +1233,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(200);
           spy();
         };
-        fi.getObject({select: select, about: about, onSuccess: onSuccess,
+        this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1254,7 +1251,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(401);
           spy();
         };
-        fi.getObject({select: select, about: about,
+        this.fi.getObject({select: select, about: about,
           onSuccess: function(result){}, onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "application/json",
