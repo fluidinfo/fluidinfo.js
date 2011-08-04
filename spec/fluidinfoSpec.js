@@ -1364,6 +1364,30 @@ describe("Fluidinfo.js", function() {
         expect(spy.calledOnce).toBeTruthy();
       });
     });
+
+    /**
+     * See semi-specification described here:
+     * https://github.com/fluidinfo/fluidinfo.js/issues/37
+     */
+    describe("createObject function", function() {
+      it("should complain if the user isn't logged in", function() {
+      });
+
+      it("should insist on an about value", function() {
+      });
+
+      it("should send the correct request to Fluidinfo", function() {
+      });
+
+      it("should return an object with 'id' and 'fluiddb/about' attributes", function() {
+      });
+
+      it("should appropriately call onSuccess", function() {
+      });
+
+      it("should appropriately call onError", function() {
+      });
+    }
   });
 
   afterEach(function() {
