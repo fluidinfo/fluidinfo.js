@@ -607,7 +607,7 @@ fluidinfo = function(options) {
       if(options.about === undefined) {
         throw {
           name: "ValueError",
-          message: "Supply either an 'about' or 'id' specification."
+          message: "You must supply an 'about' value."
         }
       }
       if(!authorizationToken) {
