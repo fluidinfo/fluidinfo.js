@@ -346,7 +346,7 @@ var fluidinfo = function(options) {
         result.status = xhr.status;
         result.statusText = xhr.statusText;
         result.headers = getHeaders(xhr);
-        result.raw_data = xhr.responseText;
+        result.rawData = xhr.responseText;
         if(isJSONData(result.headers['Content-Type'])) {
           result.data = JSON.parse(xhr.responseText);
         } else {
