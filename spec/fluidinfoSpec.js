@@ -1093,16 +1093,16 @@ describe("Fluidinfo.js", function() {
      */
     describe("Delete function", function() {
       it("should produce the correct request to Fluidinfo", function(){
-        var values = ["ntoll/rating", "ntoll/description"];
+        var tags = ["ntoll/rating", "ntoll/description"];
         var where = "terrycojones/rating < 2";
-        this.fi.delete({values: values, where: where,
+        this.fi.delete({tags: tags, where: where,
           onSuccess: function(result){}, onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Frating&tag=ntoll%2Fdescription&query=terrycojones%2Frating%20%3C%202";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("DELETE");
       });
 
-      it("should insist on a values attribute in options", function() {
+      it("should insist on a tags attribute in options", function() {
         try {
           var where = "terrycojones/rating < 2";
           this.fi.delete({where: where, onSuccess: function(result){},
@@ -1115,8 +1115,8 @@ describe("Fluidinfo.js", function() {
 
       it("should insist on a where object", function() {
         try {
-          var values = ["ntoll/rating", "ntoll/description"];
-          this.fi.delete({values: values, onSuccess: function(result){},
+          var tags = ["ntoll/rating", "ntoll/description"];
+          this.fi.delete({tags: tags, onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -1125,14 +1125,14 @@ describe("Fluidinfo.js", function() {
       });
 
       it("should call onSuccess as appropriate", function() {
-        var values = ["ntoll/rating", "ntoll/description"];
+        var tags = ["ntoll/rating", "ntoll/description"];
         var where = "terrycojones/rating < 2";
         var spy = sinon.spy();
         var onSuccess = function(result) {
           expect(result.status).toEqual(204);
           spy();
         };
-        this.fi.delete({values: values, where: where, onSuccess: onSuccess,
+        this.fi.delete({tags: tags, where: where, onSuccess: onSuccess,
           onError: function(result){}});
         var responseStatus = 204;
         var responseHeaders = {"Content-Type": "text/html",
@@ -1142,7 +1142,7 @@ describe("Fluidinfo.js", function() {
       });
 
       it("should call onError as appropriate", function() {
-        var values = ["ntoll/rating", "ntoll/description"];
+        var tags = ["ntoll/rating", "ntoll/description"];
         var where = "terrycojones/rating < 2";
         var spy = sinon.spy();
         var onError= function(result) {
@@ -1150,7 +1150,7 @@ describe("Fluidinfo.js", function() {
           spy();
         };
         var onSuccess = function() {};
-        this.fi.delete({values: values, where: where, onSuccess: onSuccess,
+        this.fi.delete({tags: tags, where: where, onSuccess: onSuccess,
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",

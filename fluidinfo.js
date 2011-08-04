@@ -541,10 +541,10 @@ var fluidinfo = function(options) {
      */
     session.delete = function(options) {
       // process the options
-      if(options.values === undefined) {
+      if(options.tags === undefined) {
         throw {
           name: "ValueError",
-          message: "Missing values option."
+          message: "Missing tags option."
         }
       }
       if(options.where === undefined) {
@@ -554,7 +554,7 @@ var fluidinfo = function(options) {
         }
       }
       options.path = "values";
-      options.args = {tag: options.values, query: options.where };
+      options.args = {tag: options.tags, query: options.where };
       // Make the appropriate call to Fluidinfo
       this.api.delete(options);
     }
