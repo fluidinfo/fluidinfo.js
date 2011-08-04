@@ -1371,23 +1371,85 @@ describe("Fluidinfo.js", function() {
      */
     describe("createObject function", function() {
       it("should complain if the user isn't logged in", function() {
+        var fi = fluidinfo(); // anonymous user
+        try{
+          fi.createObject({about: "foo", onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValdationError");
       });
 
       it("should insist on an about value", function() {
+        try{
+          fi.createObject({onSuccess: function(result){},
+            onError: function(result){}});
+        } catch(e) {
+          var exception = e;
+        }
+        expect(exception.name).toEqual("ValueError");
       });
 
       it("should send the correct request to Fluidinfo", function() {
+        fi.createObject({about: "foo", onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/about/foo";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("POST");
       });
 
       it("should return an object with 'id' and 'fluiddb/about' attributes", function() {
+        var onSuccess = function(result) {
+          var obj = result.data;
+          expect(result.status).toEqual(201);
+          expect(obj.id).toEqual("12345");
+          expect(obj["fluiddb/about"]).toEqual("foo");
+        };
+        fi.createObject({about: "foo", onSuccess: onSuccess,
+          onError: function(result) {}});
+        var responseStatus = 201;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Location": "http://fluiddb.fluidinfo.com/about/foo",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/about/foo"}';
+        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
       });
 
       it("should appropriately call onSuccess", function() {
+        var spy = sinon.spy();
+        var onSuccess = function(result) {
+          expect(result.status).toEqual(201);
+          spy();
+        };
+        fi.createObject({about: "foo", onSuccess: onSuccess,
+          onError: function(result) {}});
+        var responseStatus = 201;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Location": "http://fluiddb.fluidinfo.com/about/foo",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/about/foo"}';
+        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+        expect(spy.calledOnce).toBeTruthy();
       });
 
       it("should appropriately call onError", function() {
+        var spy = sinon.spy();
+        var onError = function(result) {
+          expect(result.status).toEqual(401);
+          spy();
+        };
+        fi.createObject({about: "foo", onSuccess: function(result){},
+          onError: onError});
+        var responseStatus = 401;
+        var responseHeaders = {"Content-Type": "text/html",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        this.server.requests[0].respond(responseStatus, responseHeaders, "");
+        expect(spy.calledOnce).toBeTruthy();
       });
-    }
+    });
   });
 
   afterEach(function() {
