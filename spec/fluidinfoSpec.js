@@ -1381,20 +1381,18 @@ describe("Fluidinfo.js", function() {
         expect(exception.name).toEqual("AuthorizationError");
       });
 
-      it("should insist on an about value", function() {
-        try{
-          this.fi.createObject({onSuccess: function(result){},
-            onError: function(result){}});
-        } catch(e) {
-          var exception = e;
-        }
-        expect(exception.name).toEqual("ValueError");
-      });
-
-      it("should send the correct request to Fluidinfo", function() {
+      it("should send the correct request to Fluidinfo with an about value", function() {
         this.fi.createObject({about: "foo", onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/about/foo";
+        expect(this.server.requests[0].url).toEqual(expected);
+        expect(this.server.requests[0].method).toEqual("POST");
+      });
+
+      it("should send the correct request to Fluidinfo as an anonymous object", function() {
+        this.fi.createObject({onSuccess: function(result){},
+          onError: function(result){}});
+        expected = "https://fluiddb.fluidinfo.com/objects";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("POST");
       });
@@ -1415,6 +1413,25 @@ describe("Fluidinfo.js", function() {
               "Location": "http://fluiddb.fluidinfo.com/about/foo",
               "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
         var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/about/foo"}';
+        this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
+      });
+
+      it("should return an object with just an 'id' attribute for an anonymous object", function() {
+        var onSuccess = function(result) {
+          var obj = result.data;
+          expect(typeof(obj)).toEqual("object");
+          expect(result.status).toEqual(201);
+          expect(obj.id).toEqual("12345");
+          expect(obj["fluiddb/about"]).toEqual(undefined);
+        };
+        this.fi.createObject({onSuccess: onSuccess,
+          onError: function(result) {}});
+        var responseStatus = 201;
+        var responseHeaders = {"Content-Type": "application/json",
+              "Content-Length": "28926",
+              "Location": "http://fluiddb.fluidinfo.com/objects/12345",
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/objects/12345"}';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
       });
 

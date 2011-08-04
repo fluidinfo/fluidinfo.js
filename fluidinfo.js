@@ -604,23 +604,23 @@ fluidinfo = function(options) {
      * Enables a user to create a new object about something
      */
     session.createObject = function(options) {
-      if(options.about === undefined) {
-        throw {
-          name: "ValueError",
-          message: "You must supply an 'about' value."
-        }
-      }
       if(!authorizationToken) {
         throw {
           name: "AuthorizationError",
           message: "You must be signed in to create a new object."
         }
       }
-      options.path = ["about", options.about];
+      if(options.about) {
+        options.path = ["about", options.about];
+      } else {
+        options.path = "objects";
+      }
       var userOnSuccess = options.onSuccess;
       var onSuccess = function(result) {
         var newObject = new Object();
-        newObject["fluiddb/about"] = options.about;
+        if(options.about){
+          newObject["fluiddb/about"] = options.about;
+        }
         newObject["id"] = result.data.id;
         result.data = newObject;
         if(userOnSuccess){
