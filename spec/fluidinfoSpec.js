@@ -268,7 +268,7 @@ describe("Fluidinfo.js", function() {
           }
           spy();
         };
-        fi.api.post(options);
+        this.fi.api.post(options);
         var responseStatus = 201;
         var responseHeaders = new Object();
         var h = "";
