@@ -583,9 +583,9 @@ describe("Fluidinfo.js", function() {
     });
 
     /**
-     * Checks the library correctly identithis.fi.s primitive values.
+     * Checks the library correctly identies primitive values.
      */
-    describe("Primitive identithis.fi.ation", function() {
+    describe("Primitive identification", function() {
       it("should identify an integer as primitive", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
@@ -1065,7 +1065,7 @@ describe("Fluidinfo.js", function() {
       describe("Delete function", function() {
           it("should insist on a values attribute in options", function() {
               try {
-                  var where = "has terrycojones < 2";
+                  var where = "has terrycojones/rating < 2";
                   this.fi.delete({where: where, onSuccess: function(result){},
                                   onError: function(result){}});
               } catch(e) {
@@ -1076,8 +1076,8 @@ describe("Fluidinfo.js", function() {
 
           it("should insist on a where object", function() {
               try {
-                  var vals = ["ntoll/rating", "ntoll/description"];
-                  this.fi.delete({values: vals, onSuccess: function(result){},
+                  var values = ["ntoll/rating", "ntoll/description"];
+                  this.fi.delete({values: values, onSuccess: function(result){},
                                   onError: function(result){}});
               } catch(e) {
                   var exception = e;
@@ -1086,14 +1086,14 @@ describe("Fluidinfo.js", function() {
           });
 
         it("should call onSuccess as appropriate", function() {
-            var vals = ["ntoll/rating", "ntoll/description"];
-            var where = "has terrycojones < 2";
+            var values = ["ntoll/rating", "ntoll/description"];
+            var where = "has terrycojones/rating < 2";
             var spy = sinon.spy();
             var onSuccess = function(result) {
                 expect(result.status).toEqual(204);
                 spy();
             };
-            this.fi.delete({values: vals, where: where, onSuccess: onSuccess,
+            this.fi.delete({values: values, where: where, onSuccess: onSuccess,
                             onError: function(result){}});
             var responseStatus = 204;
             var responseHeaders = {"Content-Type": "text/html",
@@ -1103,8 +1103,8 @@ describe("Fluidinfo.js", function() {
         });
 
         it("should call onError as appropriate", function() {
-            var vals = ["ntoll/rating", "ntoll/description"];
-            var where = "has terrycojones < 2";
+            var values = ["ntoll/rating", "ntoll/description"];
+            var where = "has terrycojones/rating < 2";
             var about = "foo";
             var spy = sinon.spy();
             var onError= function(result) {
@@ -1112,7 +1112,7 @@ describe("Fluidinfo.js", function() {
                 spy();
             };
             var onSuccess = function() {};
-            this.fi.delete({values: vals, where: where, onSuccess: onSuccess,
+            this.fi.delete({values: values, where: where, onSuccess: onSuccess,
                             onError: onError});
             var responseStatus = 401;
             var responseHeaders = {"Content-Type": "text/html",
