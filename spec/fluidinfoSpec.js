@@ -24,7 +24,7 @@ function it_should_be_a_standard_ajax_request() {
  */
 function it_should_have_an_empty_payload () {
   it("should have an empty payload", function() {
-    expect(this.server.requests[0].data)
+    expect(this.server.requests[0]["data"])
       .toEqual(null);
   });
 }
@@ -145,8 +145,8 @@ describe("Fluidinfo.js", function() {
         var options = new Object();
         options.path = "objects/fakeObjectID/username/tag";
         this.fi.api.get(options);
-        expected = "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag";
-        actual = this.server.requests[0].url;
+        var expected = "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag";
+        var actual = this.server.requests[0].url;
         expect(actual).toEqual(expected);
       });
 

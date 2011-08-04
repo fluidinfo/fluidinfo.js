@@ -17,7 +17,7 @@
  * </dl>
  * returns {Object} An object through which one interacts with Fluidinfo.
  */
-fluidinfo = function(options) {
+var fluidinfo = function(options) {
     /**
      * Encodes strings into base64. Adapted from:
      * http://www.webtoolkit.info/javascript-base64.html
@@ -151,6 +151,7 @@ fluidinfo = function(options) {
       // check the easy type matches first
       var valueType = typeof(value);
       var primitiveTypes = ["number", "string", "boolean"];
+      var i;
       for(i=0; i<primitiveTypes.length; i++) {
         if(valueType === primitiveTypes[i]) {
           return true;
@@ -163,8 +164,9 @@ fluidinfo = function(options) {
       // check for an array (potential set) and validate it only contains
       // strings (currently multi-type arrays are not allowed)
       if(isArray(value)) {
+        var i;
         for(i=0; i<value.length; i++) {
-          memberType = typeof(value[i]);
+          var memberType = typeof(value[i]);
           if(memberType !== "string") {
             return false;
           }
@@ -227,6 +229,7 @@ fluidinfo = function(options) {
         for(arg in args) {
           if(typeof args[arg] !== "function") {
               if(isArray(args[arg])) {
+                var j;
                 for(j=0; j<args[arg].length; j++) {
                   result += "&" + encodeURIComponent(arg)+"="+encodeURIComponent(args[arg][j]);
                 }
@@ -443,7 +446,7 @@ fluidinfo = function(options) {
        * @param {Object} The raw result from Fluidinfo that is to be processed
        */
       var processResult = function(raw) {
-        result = [];
+        var result = [];
         var data = raw.data.results;
         var objectID;
         for(objectID in data.id){
