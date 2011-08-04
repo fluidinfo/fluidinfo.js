@@ -506,23 +506,23 @@ fluidinfo = function(options) {
      * /values.
      */
     session.delete = function(options) {
-        // process the options
-        if(options.values === undefined) {
-            throw {
-                name: "ValueError",
-                message: "Missing values option."
-            }
+      // process the options
+      if(options.values === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Missing values option."
         }
-        if(options.where === undefined) {
-            throw {
-                name: "ValueError",
-                message: "Missing where option."
-            }
+      }
+      if(options.where === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Missing where option."
         }
-        options.path = "values";
-        options.args = {tag: options.values, query: options.where };
-        // Make the appropriate call to Fluidinfo
-        this.api.delete(options);
+      }
+      options.path = "values";
+      options.args = {tag: options.values, query: options.where };
+      // Make the appropriate call to Fluidinfo
+      this.api.delete(options);
     }
 
     /**

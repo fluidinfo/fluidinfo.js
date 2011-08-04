@@ -1063,62 +1063,62 @@ describe("Fluidinfo.js", function() {
      */
 
       describe("Delete function", function() {
-          it("should insist on a values attribute in options", function() {
-              try {
-                  var where = "has terrycojones/rating < 2";
-                  this.fi.delete({where: where, onSuccess: function(result){},
-                                  onError: function(result){}});
-              } catch(e) {
-                  var exception = e;
-              }
-              expect(exception.name).toEqual("ValueError");
-          });
+        it("should insist on a values attribute in options", function() {
+          try {
+            var where = "has terrycojones/rating < 2";
+            this.fi.delete({where: where, onSuccess: function(result){},
+                            onError: function(result){}});
+          } catch(e) {
+            var exception = e;
+          }
+          expect(exception.name).toEqual("ValueError");
+        });
 
-          it("should insist on a where object", function() {
-              try {
-                  var values = ["ntoll/rating", "ntoll/description"];
-                  this.fi.delete({values: values, onSuccess: function(result){},
-                                  onError: function(result){}});
-              } catch(e) {
-                  var exception = e;
-              }
-              expect(exception.name).toEqual("ValueError");
-          });
+        it("should insist on a where object", function() {
+          try {
+            var values = ["ntoll/rating", "ntoll/description"];
+            this.fi.delete({values: values, onSuccess: function(result){},
+                            onError: function(result){}});
+          } catch(e) {
+            var exception = e;
+          }
+          expect(exception.name).toEqual("ValueError");
+        });
 
         it("should call onSuccess as appropriate", function() {
-            var values = ["ntoll/rating", "ntoll/description"];
-            var where = "has terrycojones/rating < 2";
-            var spy = sinon.spy();
-            var onSuccess = function(result) {
-                expect(result.status).toEqual(204);
-                spy();
-            };
-            this.fi.delete({values: values, where: where, onSuccess: onSuccess,
-                            onError: function(result){}});
-            var responseStatus = 204;
-            var responseHeaders = {"Content-Type": "text/html",
-                                   "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
-            this.server.requests[0].respond(responseStatus, responseHeaders, '');
-            expect(spy.calledOnce).toBeTruthy();
+          var values = ["ntoll/rating", "ntoll/description"];
+          var where = "has terrycojones/rating < 2";
+          var spy = sinon.spy();
+          var onSuccess = function(result) {
+            expect(result.status).toEqual(204);
+            spy();
+          };
+          this.fi.delete({values: values, where: where, onSuccess: onSuccess,
+                        onError: function(result){}});
+          var responseStatus = 204;
+          var responseHeaders = {"Content-Type": "text/html",
+                               "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          this.server.requests[0].respond(responseStatus, responseHeaders, '');
+          expect(spy.calledOnce).toBeTruthy();
         });
 
         it("should call onError as appropriate", function() {
-            var values = ["ntoll/rating", "ntoll/description"];
-            var where = "has terrycojones/rating < 2";
-            var about = "foo";
-            var spy = sinon.spy();
-            var onError= function(result) {
-                expect(result.status).toEqual(401);
-                spy();
-            };
-            var onSuccess = function() {};
-            this.fi.delete({values: values, where: where, onSuccess: onSuccess,
-                            onError: onError});
-            var responseStatus = 401;
-            var responseHeaders = {"Content-Type": "text/html",
-                                   "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
-            this.server.requests[0].respond(responseStatus, responseHeaders, '');
-            expect(spy.calledOnce).toBeTruthy();
+          var values = ["ntoll/rating", "ntoll/description"];
+          var where = "has terrycojones/rating < 2";
+          var about = "foo";
+          var spy = sinon.spy();
+          var onError= function(result) {
+            expect(result.status).toEqual(401);
+            spy();
+          };
+          var onSuccess = function() {};
+          this.fi.delete({values: values, where: where, onSuccess: onSuccess,
+                        onError: onError});
+          var responseStatus = 401;
+          var responseHeaders = {"Content-Type": "text/html",
+                               "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          this.server.requests[0].respond(responseStatus, responseHeaders, '');
+          expect(spy.calledOnce).toBeTruthy();
         });
     });
 
