@@ -458,6 +458,7 @@ fluidinfo = function(options) {
         }
       }
       if(options.where === undefined) {
+
         throw {
           name: "ValueError",
           message: "Missing where option."
@@ -499,20 +500,30 @@ fluidinfo = function(options) {
       this.update(options);
     };
 
-    session.delete  = function(options) {
-      if(options.about === undefined && options.id === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Supply either an 'about' or 'id' specification."
+
+    /**
+     * Easily delete tag-value instances from Fluidinfo using a query to
+     * /values.
+     */
+    session.delete = function(options) {
+        // process the options
+        if(options.values === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing values option."
+            }
         }
-      }
-      if(options.about) {
-        options.where = 'fluiddb/about="'+options.about+'"';
-      } else if(options.id) {
-        options.where = 'fluiddb/id="'+options.id+'"';
-      }
-      this.api.delete(options);
-    };
+        if(options.where === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing where option."
+            }
+        }
+        options.path = "values";
+        options.args = {tag: options.values, query: options.where };
+        // Make the appropriate call to Fluidinfo
+        this.api.delete(options);
+    }
 
     /**
      * Get tags for a specific object
