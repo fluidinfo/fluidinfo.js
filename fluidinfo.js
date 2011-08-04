@@ -600,5 +600,36 @@ fluidinfo = function(options) {
       session.query(options);
     };
 
+    /**
+     * Enables a user to create a new object about something
+     */
+    session.createObject = function(options) {
+      if(options.about === undefined) {
+        throw {
+          name: "ValueError",
+          message: "Supply either an 'about' or 'id' specification."
+        }
+      }
+      if(!authorizationToken) {
+        throw {
+          name: "AuthorizationError",
+          message: "You must be signed in to create a new object."
+        }
+      }
+      options.path = ["about", options.about];
+      var userOnSuccess = options.onSuccess;
+      var onSuccess = function(result) {
+        var newObject = new Object();
+        newObject["fluiddb/about"] = options.about;
+        newObject["id"] = result.data.id;
+        result.data = newObject;
+        if(userOnSuccess){
+          userOnSuccess(result);
+        }
+      }
+      options.onSuccess = onSuccess;
+      session.api.post(options)
+    };
+
     return session;
 }

@@ -1378,12 +1378,12 @@ describe("Fluidinfo.js", function() {
         } catch(e) {
           var exception = e;
         }
-        expect(exception.name).toEqual("ValdationError");
+        expect(exception.name).toEqual("AuthorizationError");
       });
 
       it("should insist on an about value", function() {
         try{
-          fi.createObject({onSuccess: function(result){},
+          this.fi.createObject({onSuccess: function(result){},
             onError: function(result){}});
         } catch(e) {
           var exception = e;
@@ -1392,7 +1392,7 @@ describe("Fluidinfo.js", function() {
       });
 
       it("should send the correct request to Fluidinfo", function() {
-        fi.createObject({about: "foo", onSuccess: function(result){},
+        this.fi.createObject({about: "foo", onSuccess: function(result){},
           onError: function(result){}});
         expected = "https://fluiddb.fluidinfo.com/about/foo";
         expect(this.server.requests[0].url).toEqual(expected);
@@ -1402,11 +1402,12 @@ describe("Fluidinfo.js", function() {
       it("should return an object with 'id' and 'fluiddb/about' attributes", function() {
         var onSuccess = function(result) {
           var obj = result.data;
+          expect(typeof(obj)).toEqual("object");
           expect(result.status).toEqual(201);
           expect(obj.id).toEqual("12345");
           expect(obj["fluiddb/about"]).toEqual("foo");
         };
-        fi.createObject({about: "foo", onSuccess: onSuccess,
+        this.fi.createObject({about: "foo", onSuccess: onSuccess,
           onError: function(result) {}});
         var responseStatus = 201;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1423,7 +1424,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(201);
           spy();
         };
-        fi.createObject({about: "foo", onSuccess: onSuccess,
+        this.fi.createObject({about: "foo", onSuccess: onSuccess,
           onError: function(result) {}});
         var responseStatus = 201;
         var responseHeaders = {"Content-Type": "application/json",
@@ -1441,7 +1442,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(401);
           spy();
         };
-        fi.createObject({about: "foo", onSuccess: function(result){},
+        this.fi.createObject({about: "foo", onSuccess: function(result){},
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
