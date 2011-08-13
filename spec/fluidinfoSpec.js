@@ -335,6 +335,30 @@ describe("Fluidinfo.js", function() {
         expect(spy.calledOnce).toBeTruthy();
       });
 
+      it("should return a simple response object for onSuccess when async=False", function() {
+        var options = new Object();
+        options.path = "namespaces/test";
+        var payload = {name: "foo", description: "bar"};
+        options.data = payload;
+        options.async = false;
+        var responseStatus = 201;
+        var responseHeaders = {"Content-Type": "application/json",
+          "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
+          "Content-Length": 107,
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+        var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
+        this.server.respondWith([responseStatus, responseHeaders, responseText]);
+        result = this.fi.api.post(options);
+        expect(typeof(result)).toEqual("object");
+        expect(result.status).toEqual(201);
+        expect(result.statusText).toEqual("Created");
+        expect(typeof(result.headers)).toEqual("object");
+        expect(result.headers["Content-Type"]).toEqual("application/json");
+        expect(result.data).toBeTruthy();
+        expect(typeof(result.rawData)).toEqual("string");
+        expect(typeof(result.request)).toEqual("object"); // original XHR
+      });
+
       it("should serialise Javascript objects into JSON", function() {
         var options = new Object();
         options.path = "namespaces/test";
