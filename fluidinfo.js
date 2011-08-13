@@ -297,6 +297,27 @@ var fluidinfo = function(options) {
     }
 
     /**
+     * Builds a simplified (nice to use) result object
+     * @param xhr {Object} the XmlHttpRequest instance from which to build the
+     * result.
+     */
+    function createNiceResult(xhr) {
+      // build a simple result object
+      var result = new Object();
+      result.status = xhr.status;
+      result.statusText = xhr.statusText;
+      result.headers = getHeaders(xhr);
+      result.rawData = xhr.responseText;
+      if(isJSONData(result.headers['Content-Type'])) {
+        result.data = JSON.parse(xhr.responseText);
+      } else {
+        result.data = xhr.responseText;
+      }
+      result.request = xhr;
+      return result;
+    }
+
+    /**
      * Sends an appropriate XMLHTTPRequest based request to Fluidinfo.
      * @param options {Object} An object containing the following named options:
      * <dl>
@@ -325,9 +346,14 @@ var fluidinfo = function(options) {
       var method = options.type.toUpperCase() || "GET";
       var args = createArgs(options.args);
       var url = session.baseURL+options.path+args;
-      var async = options.async || true;
+      var async = true;
+      if (options.async !== undefined) {
+        async = options.async;
+      }
       var xhr = createXMLHTTPObject();
-      if(!xhr) return;
+      if(!xhr) {
+        return;
+      }
       xhr.open(method, url, async);
       if(authorizationToken != ""){
         xhr.setRequestHeader("Authorization", "Basic " + authorizationToken);
@@ -341,18 +367,7 @@ var fluidinfo = function(options) {
       }
       xhr.onreadystatechange = function() {
         if(xhr.readyState != 4) return;
-        // build a simple result object
-        var result = new Object();
-        result.status = xhr.status;
-        result.statusText = xhr.statusText;
-        result.headers = getHeaders(xhr);
-        result.rawData = xhr.responseText;
-        if(isJSONData(result.headers['Content-Type'])) {
-          result.data = JSON.parse(xhr.responseText);
-        } else {
-          result.data = xhr.responseText;
-        }
-        result.request = xhr;
+        var result = createNiceResult(xhr);
         // call the event handlers
         if(xhr.status < 300 || xhr.status == 304) {
           if(options.onSuccess){
@@ -364,6 +379,10 @@ var fluidinfo = function(options) {
         }
       }
       xhr.send(options.data)
+      if(!async) {
+        var result = createNiceResult(xhr);
+        return result;
+      }
     }
 
     /**
@@ -378,7 +397,7 @@ var fluidinfo = function(options) {
     api.get = function(options){
       options.type = "GET";
       options.data = null;
-      sendRequest(options);
+      return sendRequest(options);
     }
 
     /**
@@ -387,7 +406,7 @@ var fluidinfo = function(options) {
      */
     api.post = function(options){
       options.type = "POST";
-      sendRequest(options);
+      return sendRequest(options);
     }
 
     /**
@@ -396,7 +415,7 @@ var fluidinfo = function(options) {
      */
     api.put = function(options){
       options.type = "PUT";
-      sendRequest(options);
+      return sendRequest(options);
     }
 
     /**
@@ -406,7 +425,7 @@ var fluidinfo = function(options) {
     api.delete = function(options){
       options.type = "DELETE";
       options.data = null;
-      sendRequest(options);
+      return sendRequest(options);
     }
 
     /**
@@ -416,7 +435,7 @@ var fluidinfo = function(options) {
     api.head = function(options){
       options.type = "HEAD";
       options.data = null;
-      sendRequest(options);
+      return sendRequest(options);
     }
 
     session.api = api;
