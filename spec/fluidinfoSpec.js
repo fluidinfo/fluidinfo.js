@@ -348,7 +348,7 @@ describe("Fluidinfo.js", function() {
           "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
         var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
         this.server.respondWith([responseStatus, responseHeaders, responseText]);
-        result = this.fi.api.post(options);
+        var result = this.fi.api.post(options);
         expect(typeof(result)).toEqual("object");
         expect(result.status).toEqual(201);
         expect(result.statusText).toEqual("Created");
