@@ -1,1 +1,22 @@
-fluidinfo.js is a javascript client library to access Fluidinfo.
+fluidinfo.js is a javascript client library to access Fluidinfo (http://fluidinfo.com/).
+
+Documentation for using the library can be found in fluidinfo.js's wiki, found here:
+
+https://github.com/fluidinfo/fluidinfo.js/wiki
+
+To sign up for Fluidinfo see here:
+
+https://fluidinfo.com/accounts/new/
+
+An overview of Fluidinfo itself can be found here:
+
+https://github.com/fluidinfo/fluidinfo.js/wiki/Fluidinfo
+
+and here:
+
+http://www.slideshare.net/fluidinfo/fluidinfo-in-a-nutshell
+
+Any questions? Please don't hesitate to submit an issue or get in touch with the developers:
+
+Emanuel Carnevale (http://twitter.com/onigiri)
+Nicholas Tollervey (http://twitter.com/ntoll)
