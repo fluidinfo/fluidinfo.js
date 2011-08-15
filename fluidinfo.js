@@ -103,6 +103,7 @@ var fluidinfo = function(options) {
       }
       if((options.username != undefined) && (options.password != undefined)) {
         authorizationToken = Base64.encode(options.username + ":" + options.password);
+        session.username = options.username;
       }
     }
 

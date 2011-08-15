@@ -132,7 +132,7 @@ describe("Fluidinfo.js", function() {
       fi.api.get({path: "users/ntoll"})
       expect(this.server.requests[0].requestHeaders['Authorization'])
             .toEqual(undefined);
-      expect(this.fi.username).toEqual(undefined);
+      expect(fi.username).toEqual(undefined);
     });
   });
 
