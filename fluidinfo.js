@@ -260,7 +260,8 @@ var fluidinfo = function(options) {
         "X-FluidDB-Path", "X-FluidDB-Message", "X-FluidDB-ObjectId",
         "X-FluidDB-Query", "X-FluidDB-Name", "X-FluidDB-Category",
         "X-FluidDB-Action", "X-FluidDB-Rangetype", "X-FluidDB-Fieldname",
-        "X-FluidDB-Type", "X-FluidDB-Argument", "X-FluidDB-Access-Token"];
+        "X-FluidDB-Type", "X-FluidDB-Argument", "X-FluidDB-Access-Token",
+        "X-FluidDB-New-User", "X-FluidDB-Username"];
       var h = "";
       for(h in HEADERS){
         var header = HEADERS[h];
