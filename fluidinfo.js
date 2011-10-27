@@ -286,10 +286,10 @@ var fluidinfo = function(options) {
      */
     function createXMLHTTPObject() {
       var XMLHttpFactories = [
-        function () {return new XMLHttpRequest()},
-        function () {return new ActiveXObject("Msxml2.XMLHTTP")},
-        function () {return new ActiveXObject("Msxml3.XMLHTTP")},
-        function () {return new ActiveXObject("Microsoft.XMLHTTP")}
+        function () {return new XMLHttpRequest();},
+        function () {return new ActiveXObject("Msxml2.XMLHTTP");},
+        function () {return new ActiveXObject("Msxml3.XMLHTTP");},
+        function () {return new ActiveXObject("Microsoft.XMLHTTP");}
       ];
       var xhr = false;
       for(var i=0; i<XMLHttpFactories.length; i++) {
@@ -359,7 +359,7 @@ var fluidinfo = function(options) {
       }
       var xhr = createXMLHTTPObject();
       if(!xhr) {
-        return;
+        return undefined;
       }
       xhr.open(method, url, async);
       if(OAuthAccessToken === ''){
@@ -398,12 +398,13 @@ var fluidinfo = function(options) {
           // there appears to be a problem
           options.onError(result);
         }
-      }
-      xhr.send(options.data)
+      };
+      xhr.send(options.data);
       if(!async) {
         var result = createNiceResult(xhr);
         return result;
       }
+      return undefined;
     }
 
     /**
@@ -419,7 +420,7 @@ var fluidinfo = function(options) {
       options.type = "GET";
       options.data = null;
       return sendRequest(options);
-    }
+    };
 
     /**
      * Makes an HTTP POST call to the Fluidinfo API
@@ -428,7 +429,7 @@ var fluidinfo = function(options) {
     api.post = function(options){
       options.type = "POST";
       return sendRequest(options);
-    }
+    };
 
     /**
      * Makes an HTTP PUT call to the Fluidinfo API
@@ -437,7 +438,7 @@ var fluidinfo = function(options) {
     api.put = function(options){
       options.type = "PUT";
       return sendRequest(options);
-    }
+    };
 
     /**
      * Makes an HTTP DELETE call to the Fluidinfo API
@@ -447,7 +448,7 @@ var fluidinfo = function(options) {
       options.type = "DELETE";
       options.data = null;
       return sendRequest(options);
-    }
+    };
 
     /**
      * Makes an HTTP HEAD call to the Fluidinfo API
@@ -457,7 +458,7 @@ var fluidinfo = function(options) {
       options.type = "HEAD";
       options.data = null;
       return sendRequest(options);
-    }
+    };
 
     session.api = api;
 
@@ -470,13 +471,13 @@ var fluidinfo = function(options) {
         throw {
           name: "ValueError",
           message: "Missing select option."
-        }
+        };
       }
       if(options.where === undefined) {
         throw {
           name: "ValueError",
           message: "Missing where option."
-        }
+        };
       }
       /**
        * Takes the raw result from Fluidinfo and turns it into an easy-to-use
@@ -511,14 +512,14 @@ var fluidinfo = function(options) {
         }
         raw.data = result;
         if(options.onSuccess){
-          options.onSuccess(raw)
+          options.onSuccess(raw);
         };
-      }
+      };
       // Make the appropriate call to Fluidinfo
       this.api.get({path: "values",
         args: {tag: options.select, query: options.where},
         onSuccess: processResult, onError: options.onError});
-    }
+    };
 
     /**
      * Easily updates objects in Fluidinfo.
@@ -529,14 +530,13 @@ var fluidinfo = function(options) {
         throw {
           name: "ValueError",
           message: "Missing values option."
-        }
+        };
       }
       if(options.where === undefined) {
-
         throw {
           name: "ValueError",
           message: "Missing where option."
-        }
+        };
       }
       var payload = new Object();
       var queries = [];
@@ -554,7 +554,7 @@ var fluidinfo = function(options) {
       // Make the appropriate call to Fluidinfo
       this.api.put({path: "values", data: payload,
         onSuccess: options.onSuccess, onError: options.onError});
-    }
+    };
 
     /**
      * Easily tag a specified object
@@ -564,7 +564,7 @@ var fluidinfo = function(options) {
         throw {
           name: "ValueError",
           message: "Supply either an 'about' or 'id' specification."
-        }
+        };
       }
       if(options.about) {
         options.where = 'fluiddb/about="'+options.about+'"';
@@ -585,19 +585,19 @@ var fluidinfo = function(options) {
         throw {
           name: "ValueError",
           message: "Missing tags option."
-        }
+        };
       }
       if(options.where === undefined) {
         throw {
           name: "ValueError",
           message: "Missing where option."
-        }
+        };
       }
       options.path = "values";
       options.args = {tag: options.tags, query: options.where };
       // Make the appropriate call to Fluidinfo
       this.api.delete(options);
-    }
+    };
 
     /**
      * Get tags for a specific object
@@ -607,7 +607,7 @@ var fluidinfo = function(options) {
         throw {
           name: "ValueError",
           message: "Supply either an 'about' or 'id' specification."
-        }
+        };
       }
       if(options.about) {
         options.where = 'fluiddb/about="'+options.about+'"';
@@ -669,10 +669,10 @@ var fluidinfo = function(options) {
         if(userOnSuccess){
           userOnSuccess(result);
         }
-      }
+      };
       options.onSuccess = onSuccess;
-      session.api.post(options)
+      session.api.post(options);
     };
 
     return session;
-}
+};
