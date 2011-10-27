@@ -71,13 +71,14 @@ var fluidinfo = function(options) {
             }
             return utftext;
         }
-    }
+    };
 
     /**
      * Represents a session with Fluidinfo.
      */
     var session = new Object();
-    var authorizationToken = "";
+    var authorizationBase64Fragment = '';
+    var OAuthAccessToken = '';
 
     if(options) {
       if(options.instance) {
@@ -90,7 +91,7 @@ var fluidinfo = function(options) {
             break;
           default:
               // validate the bespoke instance
-              var urlRegex = /^(http|https):\/\/[\w\-_\.]+\/$/;
+              var urlRegex = /^(http|https):\/\/.+\/$/;
               if(urlRegex.exec(options.instance)) {
                 session.baseURL = options.instance;
               } else {
@@ -101,8 +102,11 @@ var fluidinfo = function(options) {
               }
         }
       }
+      if(options.access_token != undefined){
+        OAuthAccessToken = options.access_token;
+      }
       if((options.username != undefined) && (options.password != undefined)) {
-        authorizationToken = Base64.encode(options.username + ":" + options.password);
+        authorizationBase64Fragment = Base64.encode(options.username + ":" + options.password);
         // Makes sure the logged in user's username is available via the
         // username attribute
         session.username = options.username;
@@ -358,9 +362,23 @@ var fluidinfo = function(options) {
         return;
       }
       xhr.open(method, url, async);
-      if(authorizationToken != ""){
-        xhr.setRequestHeader("Authorization", "Basic " + authorizationToken);
-      };
+      if(OAuthAccessToken === ''){
+        // Basic Auth
+        if(authorizationBase64Fragment !== ''){
+          xhr.setRequestHeader('Authorization', 'basic ' + authorizationBase64Fragment);
+        }
+      }
+      else {
+        // OAuth2
+        if(authorizationBase64Fragment === ''){
+          // The Consumer is the anonymous user.
+          xhr.setRequestHeader('Authorization', 'oauth2');
+        }
+        else {
+          // Use a specific Consumer.
+          xhr.setRequestHeader('Authorization', 'oauth2 ' + authorizationBase64Fragment);
+        }
+      }
       var contentType = detectContentType(options);
       if(contentType) {
         xhr.setRequestHeader("Content-Type", contentType);
@@ -629,11 +647,11 @@ var fluidinfo = function(options) {
      * Enables a user to create a new object about something
      */
     session.createObject = function(options) {
-      if(!authorizationToken) {
+      if(!authorizationBase64Fragment && !OAuthAccessToken) {
         throw {
           name: "AuthorizationError",
           message: "You must be signed in to create a new object."
-        }
+        };
       }
       if(options.about) {
         options.path = ["about", options.about];
