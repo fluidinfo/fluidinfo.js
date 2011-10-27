@@ -123,8 +123,9 @@ describe("Fluidinfo.js", function() {
 
     it("should work as a logged in user", function() {
       this.fi.api.get({path: "users/ntoll"});
-      expect(this.server.requests[0].requestHeaders['Authorization'])
-            .not.toEqual(undefined);
+      var authHeader = this.server.requests[0].requestHeaders['Authorization'];
+      // The following string contains the base64 encoding of username:password
+      expect(authHeader).toEqual('basic dXNlcm5hbWU6cGFzc3dvcmQ=');
       expect(this.fi.username).toEqual("username");
     });
 
@@ -136,6 +137,34 @@ describe("Fluidinfo.js", function() {
             .toEqual(undefined);
       expect(fi.username).toEqual(undefined);
     });
+
+    it("should be able to send anonymous OAuth2 requests", function() {
+      var token = 'a token of my affection';
+      var fi = fluidinfo({access_token: token});
+      fi.api.get({path: "users/ntoll"});
+      var authHeader = this.server.requests[0].requestHeaders['Authorization'];
+      expect(authHeader).toEqual('oauth2');
+      expect(this.server.requests[0].requestHeaders['X-FluidDB-Access-Token'])
+            .toEqual(token);
+      expect(fi.username).toEqual(undefined);
+    });
+
+    it("should be able to send non-anonymous OAuth2 requests", function() {
+      var token = 'a token of my affection';
+      var fi = fluidinfo({
+                           access_token: token,
+                           username: 'fred',
+                           password: 'supersecret'
+                         });
+      fi.api.get({path: "users/ntoll"});
+      var authHeader = this.server.requests[0].requestHeaders['Authorization'];
+      // The following string contains the base64 encoding of fred:supersecret
+      expect(authHeader).toEqual('oauth2 ZnJlZDpzdXBlcnNlY3JldA==');
+      expect(this.server.requests[0].requestHeaders['X-FluidDB-Access-Token'])
+            .toEqual(token);
+      expect(fi.username).toEqual('fred');
+    });
+
   });
 
   /**

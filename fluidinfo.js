@@ -370,6 +370,7 @@ var fluidinfo = function(options) {
       }
       else {
         // OAuth2
+        xhr.setRequestHeader('X-FluidDB-Access-Token', OAuthAccessToken);
         if(authorizationBase64Fragment === ''){
           // The Consumer is the anonymous user.
           xhr.setRequestHeader('Authorization', 'oauth2');
