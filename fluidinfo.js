@@ -254,7 +254,7 @@ var fluidinfo = function(options) {
      * Returns an object representing the headers returned from Fluidinfo
      */
     function getHeaders(xhr) {
-      var result = new Object();
+      var result = {};
       var HEADERS = ["Content-Type", "Content-Length", "Location", "Date",
         "WWW-Authenticate", "Cache-Control", "X-FluidDB-Error-Class",
         "X-FluidDB-Path", "X-FluidDB-Message", "X-FluidDB-ObjectId",
@@ -262,19 +262,18 @@ var fluidinfo = function(options) {
         "X-FluidDB-Action", "X-FluidDB-Rangetype", "X-FluidDB-Fieldname",
         "X-FluidDB-Type", "X-FluidDB-Argument", "X-FluidDB-Access-Token",
         "X-FluidDB-New-User", "X-FluidDB-Username"];
-      var h = "";
-      for(h in HEADERS){
-        var header = HEADERS[h];
+      for (var i = 0; i < HEADERS.length; i++) {
+        var header = HEADERS[i];
         try{
           var value = xhr.getResponseHeader(header);
-          if(value){
-            result[header] = value;
-          }
         } catch(e){
           // we expect an exception to be thrown by the browser when it
           // encounters "unsafe" headers (those that are in HEADERS but were
           // not returned by Fluidinfo).
           continue;
+        }
+        if (value){
+          result[header] = value;
         }
       }
       return result;
