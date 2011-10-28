@@ -67,73 +67,104 @@ describe("Fluidinfo.js", function() {
    * Describes the expected behaviour of a new Fluidinfo session object.
    */
   describe("Configuration", function() {
+    var exception;
+    var fi;
     it("should default to point to the main instance", function() {
       expect(this.fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the main instance", function() {
-      var fi = fluidinfo({ username: "username",
-                           password: "password",
-                           instance: "main"
-                         });
+      fi = fluidinfo({ username: "username",
+                       password: "password",
+                       instance: "main"
+                     });
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
     });
 
     it("should set the lib to point to the sandbox", function() {
-      var fi = fluidinfo({ username: "username",
-                           password: "password",
-                           instance: "sandbox"
-                         });
+      fi = fluidinfo({ username: "username",
+                       password: "password",
+                       instance: "sandbox"
+                     });
       expect(fi.baseURL).toEqual("https://sandbox.fluidinfo.com/");
     });
 
     it("should set the lib to point to any other instance", function() {
-      var fi = fluidinfo({instance: "https://localhost/"});
+      fi = fluidinfo({instance: "https://localhost/"});
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
     it("should validate bespoke instances are valid addresses", function() {
       // missing http[s]:// and trailing slash
       try {
-        var fi = fluidinfo({instance: "localhost"});
+        fi = fluidinfo({instance: "localhost"});
       } catch(e) {
-        var exception = e;
+        exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // missing the trailing slash
       try {
-        var fi = fluidinfo({instance: "http://localhost"});
+        fi = fluidinfo({instance: "http://localhost"});
       } catch(e) {
-        var exception = e;
+        exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // missing http[s]://
       try {
-        var fi = fluidinfo({instance: "localhost/"});
+        fi = fluidinfo({instance: "localhost/"});
       } catch(e) {
-        var exception = e;
+        exception = e;
       }
       expect(exception.name).toEqual("ValueError");
       // valid case
-      var fi = fluidinfo({instance: "https://localhost/"});
+      fi = fluidinfo({instance: "https://localhost/"});
       expect(fi.baseURL).toEqual("https://localhost/");
     });
 
     it("should work as a logged in user", function() {
-      this.fi.api.get({path: "users/ntoll"})
-      expect(this.server.requests[0].requestHeaders['Authorization'])
-            .not.toEqual(undefined);
+      this.fi.api.get({path: "users/ntoll"});
+      var authHeader = this.server.requests[0].requestHeaders['Authorization'];
+      // The following string contains the base64 encoding of username:password
+      expect(authHeader).toEqual('basic dXNlcm5hbWU6cGFzc3dvcmQ=');
       expect(this.fi.username).toEqual("username");
     });
 
     it("should work as anonymous user", function() {
       var fi = fluidinfo();
       expect(fi.baseURL).toEqual("https://fluiddb.fluidinfo.com/");
-      fi.api.get({path: "users/ntoll"})
+      fi.api.get({path: "users/ntoll"});
       expect(this.server.requests[0].requestHeaders['Authorization'])
             .toEqual(undefined);
       expect(fi.username).toEqual(undefined);
     });
+
+    it("should be able to send anonymous OAuth2 requests", function() {
+      var token = 'a token of my affection';
+      var fi = fluidinfo({access_token: token});
+      fi.api.get({path: "users/ntoll"});
+      var authHeader = this.server.requests[0].requestHeaders['Authorization'];
+      expect(authHeader).toEqual('oauth2');
+      expect(this.server.requests[0].requestHeaders['X-FluidDB-Access-Token'])
+            .toEqual(token);
+      expect(fi.username).toEqual(undefined);
+    });
+
+    it("should be able to send non-anonymous OAuth2 requests", function() {
+      var token = 'a token of my affection';
+      var fi = fluidinfo({
+                           access_token: token,
+                           username: 'fred',
+                           password: 'supersecret'
+                         });
+      fi.api.get({path: "users/ntoll"});
+      var authHeader = this.server.requests[0].requestHeaders['Authorization'];
+      // The following string contains the base64 encoding of fred:supersecret
+      expect(authHeader).toEqual('oauth2 ZnJlZDpzdXBlcnNlY3JldA==');
+      expect(this.server.requests[0].requestHeaders['X-FluidDB-Access-Token'])
+            .toEqual(token);
+      expect(fi.username).toEqual('fred');
+    });
+
   });
 
   /**
@@ -143,12 +174,14 @@ describe("Fluidinfo.js", function() {
   describe("API", function() {
 
     describe("Request configuration", function() {
+      var expected;
+      var actual;
       it("should correctly use the full URL", function() {
         var options = new Object();
         options.path = "objects/fakeObjectID/username/tag";
         this.fi.api.get(options);
-        var expected = "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag";
-        var actual = this.server.requests[0].url;
+        expected = "https://fluiddb.fluidinfo.com/objects/fakeObjectID/username/tag";
+        actual = this.server.requests[0].url;
         expect(actual).toEqual(expected);
       });
 
@@ -246,7 +279,7 @@ describe("Fluidinfo.js", function() {
         this.fi.api.post(options);
         expect(this.server.requests[0].url)
           .toEqual(this.fi.baseURL+"about/%C3%A4n%2F-%20object/namespace/tag");
-      })
+      });
     });
 
     describe("Response handling", function() {
@@ -305,7 +338,7 @@ describe("Fluidinfo.js", function() {
         var responseHeaders = {"Content-Type": "application/json",
           "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
           "Content-Length": 107,
-          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         expect(spy.calledOnce).toBeTruthy();
@@ -331,7 +364,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
           "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
-          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         var responseText = '';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         expect(spy.calledOnce).toBeTruthy();
@@ -347,7 +380,7 @@ describe("Fluidinfo.js", function() {
         var responseHeaders = {"Content-Type": "application/json",
           "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
           "Content-Length": 107,
-          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
         this.server.respondWith([responseStatus, responseHeaders, responseText]);
         var result = this.fi.api.post(options);
@@ -367,12 +400,12 @@ describe("Fluidinfo.js", function() {
         var payload = {name: "foo", description: "bar"};
         options.data = payload;
         this.fi.api.post(options);
-        expected = "application/json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        var expected = "application/json";
+        var actual = this.server.requests[0].requestHeaders['Content-Type'];
         expect(actual).toContain(expected);
         expect(this.server.requests[0].requestBody)
           .toEqual(JSON.stringify(payload));
-      })
+      });
 
       it("should de-serialise JSON payloads to Javascript objects", function() {
         var options = new Object();
@@ -385,7 +418,7 @@ describe("Fluidinfo.js", function() {
         };
         this.fi.api.post(options);
         this.server.requests[0].respond(201, {"Content-Type": "application/json"}, '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/foo/bar"}');
-      })
+      });
     });
 
     describe("GET", function() {
@@ -403,7 +436,7 @@ describe("Fluidinfo.js", function() {
                    throw { name: "XHRError", message: "Bad response"};
                  }
           });
-          this.server.respond()
+          this.server.respond();
         });
 
         it_should_be_a_standard_ajax_request();
@@ -435,7 +468,7 @@ describe("Fluidinfo.js", function() {
           var responseHeaders = {"Content-Type": "application/json",
               "Location": "http://fluiddb.fluidinfo.com/namespaces/test/foo",
               "Content-Length": 107,
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
           var responseText = '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", "URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
           this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
@@ -472,7 +505,7 @@ describe("Fluidinfo.js", function() {
           });
           var responseStatus = 204;
           var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
           var responseText = '';
           this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
@@ -508,7 +541,7 @@ describe("Fluidinfo.js", function() {
           });
           var responseStatus = 204;
           var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
           var responseText = '';
           this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
@@ -524,7 +557,7 @@ describe("Fluidinfo.js", function() {
 
         it_should_have_an_empty_payload();
 
-      })
+      });
     });
 
     describe("HEAD", function() {
@@ -544,7 +577,7 @@ describe("Fluidinfo.js", function() {
           var responseStatus = 200;
           var responseHeaders = {"Content-Type": "text/html",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
           var responseText = '';
           this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         });
@@ -574,6 +607,8 @@ describe("Fluidinfo.js", function() {
      * the eventual value of the Content-Type header of a request.
      */
     describe("Content-Type detection", function() {
+      var expected;
+      var actual;
       it("should identify a primitive in a PUT to 'objects'", function() {
         var options = new Object();
         options.path = "objects/fakeObjectID/username/tag";
@@ -642,6 +677,8 @@ describe("Fluidinfo.js", function() {
      * Checks the library correctly identies primitive values.
      */
     describe("Primitive identification", function() {
+      var expected;
+      var actual;
       it("should identify an integer as primitive", function() {
         var options = new Object();
         options.path = "about/fakeAboutValue/username/tag";
@@ -763,7 +800,7 @@ describe("Fluidinfo.js", function() {
         var where = "has esteve/rating > 7";
         this.fi.query({select: select, where: where, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
+        var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
@@ -799,7 +836,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         // expect the onSuccess function to be called only once
         expect(onSuccess.once()).toBeTruthy();
@@ -813,7 +850,7 @@ describe("Fluidinfo.js", function() {
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         // expect the onError function to be called only once
         expect(onError.once()).toBeTruthy();
@@ -833,7 +870,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -853,7 +890,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -873,7 +910,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -896,7 +933,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -968,7 +1005,7 @@ describe("Fluidinfo.js", function() {
           onError: function(result){}});
         var responseStatus = 204;
         var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, '');
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -988,7 +1025,7 @@ describe("Fluidinfo.js", function() {
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, '');
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1032,7 +1069,7 @@ describe("Fluidinfo.js", function() {
         var about = "foo";
         this.fi.tag({values: vals, about: about, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values";
+        var expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("PUT");
         expect(this.server.requests[0].requestHeaders["Content-Type"])
@@ -1056,7 +1093,7 @@ describe("Fluidinfo.js", function() {
         var id = "SOMEUUID";
         this.fi.tag({values: vals, id: id, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values";
+        var expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("PUT");
         expect(this.server.requests[0].requestHeaders["Content-Type"])
@@ -1087,7 +1124,7 @@ describe("Fluidinfo.js", function() {
           onError: function(result){}});
         var responseStatus = 204;
         var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, '');
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1107,7 +1144,7 @@ describe("Fluidinfo.js", function() {
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, '');
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1123,7 +1160,7 @@ describe("Fluidinfo.js", function() {
         var where = "terrycojones/rating < 2";
         this.fi.delete({tags: tags, where: where,
           onSuccess: function(result){}, onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Frating&tag=ntoll%2Fdescription&query=terrycojones%2Frating%20%3C%202";
+        var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Frating&tag=ntoll%2Fdescription&query=terrycojones%2Frating%20%3C%202";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("DELETE");
       });
@@ -1162,7 +1199,7 @@ describe("Fluidinfo.js", function() {
           onError: function(result){}});
         var responseStatus = 204;
         var responseHeaders = {"Content-Type": "text/html",
-          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, '');
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1180,7 +1217,7 @@ describe("Fluidinfo.js", function() {
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
-          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+          "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, '');
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1203,7 +1240,7 @@ describe("Fluidinfo.js", function() {
                 },
                 "terrycojones/bar": {
                   "value-type": "image/png",
-                  "size": 179393,
+                  "size": 179393
                 }
             }
           }}
@@ -1237,7 +1274,7 @@ describe("Fluidinfo.js", function() {
         var about = "foo";
         this.fi.getObject({select: select, about: about, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fabout%3D%22foo%22";
+        var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fabout%3D%22foo%22";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
@@ -1247,7 +1284,7 @@ describe("Fluidinfo.js", function() {
         var id = "SOMEUUID";
         this.fi.getObject({select: select, id: id, onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fid%3D%22SOMEUUID%22";
+        var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fid%3D%22SOMEUUID%22";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("GET");
       });
@@ -1266,7 +1303,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1286,7 +1323,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1306,7 +1343,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1329,7 +1366,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1341,7 +1378,7 @@ describe("Fluidinfo.js", function() {
         var onSuccess = function(result) {
           var obj = result.data;
           expect(typeof(obj)).toEqual("object");
-          expect(obj.id).toEqual(undefined); 
+          expect(obj.id).toEqual(undefined);
           spy();
         };
         this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
@@ -1349,7 +1386,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, '{"results": {"id": {}}}');
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1367,7 +1404,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 200;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1385,7 +1422,7 @@ describe("Fluidinfo.js", function() {
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
         expect(spy.calledOnce).toBeTruthy();
       });
@@ -1410,7 +1447,7 @@ describe("Fluidinfo.js", function() {
       it("should send the correct request to Fluidinfo with an about value", function() {
         this.fi.createObject({about: "foo", onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/about/foo";
+        var expected = "https://fluiddb.fluidinfo.com/about/foo";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("POST");
       });
@@ -1418,7 +1455,7 @@ describe("Fluidinfo.js", function() {
       it("should send the correct request to Fluidinfo as an anonymous object", function() {
         this.fi.createObject({onSuccess: function(result){},
           onError: function(result){}});
-        expected = "https://fluiddb.fluidinfo.com/objects";
+        var expected = "https://fluiddb.fluidinfo.com/objects";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("POST");
       });
@@ -1437,7 +1474,7 @@ describe("Fluidinfo.js", function() {
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
               "Location": "http://fluiddb.fluidinfo.com/about/foo",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/about/foo"}';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
       });
@@ -1456,7 +1493,7 @@ describe("Fluidinfo.js", function() {
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
               "Location": "http://fluiddb.fluidinfo.com/objects/12345",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/objects/12345"}';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
       });
@@ -1473,7 +1510,7 @@ describe("Fluidinfo.js", function() {
         var responseHeaders = {"Content-Type": "application/json",
               "Content-Length": "28926",
               "Location": "http://fluiddb.fluidinfo.com/about/foo",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/about/foo"}';
         this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
         expect(spy.calledOnce).toBeTruthy();
@@ -1489,7 +1526,7 @@ describe("Fluidinfo.js", function() {
           onError: onError});
         var responseStatus = 401;
         var responseHeaders = {"Content-Type": "text/html",
-              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"}
+              "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
         this.server.requests[0].respond(responseStatus, responseHeaders, "");
         expect(spy.calledOnce).toBeTruthy();
       });
