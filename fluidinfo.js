@@ -445,7 +445,7 @@ var fluidinfo = function(options) {
      * Makes an HTTP DELETE call to the Fluidinfo API
      *
      */
-    api.delete = function(options){
+    api.del = function(options){
       options.type = "DELETE";
       options.data = null;
       return sendRequest(options);
@@ -580,7 +580,7 @@ var fluidinfo = function(options) {
      * Easily delete tag-value instances from Fluidinfo using a query to
      * /values.
      */
-    session.delete = function(options) {
+    session.del = function(options) {
       // process the options
       if(options.tags === undefined) {
         throw {
@@ -597,7 +597,7 @@ var fluidinfo = function(options) {
       options.path = "values";
       options.args = {tag: options.tags, query: options.where };
       // Make the appropriate call to Fluidinfo
-      this.api.delete(options);
+      this.api.del(options);
     };
 
     /**
