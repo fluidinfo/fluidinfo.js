@@ -391,7 +391,7 @@ var fluidinfo = function(options) {
         if(xhr.readyState != 4) return;
         var result = createNiceResult(xhr);
         // call the event handlers
-        if(xhr.status < 300 || xhr.status == 304) {
+        if(xhr.status > 0 && (xhr.status < 300 || xhr.status == 304)) {
           if(options.onSuccess){
             options.onSuccess(result);
           }
