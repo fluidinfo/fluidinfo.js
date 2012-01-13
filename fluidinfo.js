@@ -255,25 +255,15 @@ var fluidinfo = function(options) {
      */
     function getHeaders(xhr) {
       var result = {};
-      var HEADERS = ["Content-Type", "Content-Length", "Location", "Date",
-        "WWW-Authenticate", "Cache-Control", "X-FluidDB-Error-Class",
-        "X-FluidDB-Path", "X-FluidDB-Message", "X-FluidDB-ObjectId",
-        "X-FluidDB-Query", "X-FluidDB-Name", "X-FluidDB-Category",
-        "X-FluidDB-Action", "X-FluidDB-Rangetype", "X-FluidDB-Fieldname",
-        "X-FluidDB-Type", "X-FluidDB-Argument", "X-FluidDB-Access-Token",
-        "X-FluidDB-New-User", "X-FluidDB-Username"];
-      for (var i = 0; i < HEADERS.length; i++) {
-        var header = HEADERS[i];
-        try{
-          var value = xhr.getResponseHeader(header);
-        } catch(e){
-          // we expect an exception to be thrown by the browser when it
-          // encounters "unsafe" headers (those that are in HEADERS but were
-          // not returned by Fluidinfo).
-          continue;
-        }
-        if (value){
-          result[header] = value;
+      var rawHeaders = xhr.getAllResponseHeaders();
+      // Turn the result into an object
+      var i;
+      var splitHeaders = rawHeaders.split("\r\n");
+      for(i=0; i<splitHeaders.length; i++){
+        var rawHeader = splitHeaders[i];
+        if(rawHeader.length > 0) {
+            var splitHeader = rawHeader.split(": ");
+            result[splitHeader[0]] = splitHeader[1];
         }
       }
       return result;
