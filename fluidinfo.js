@@ -258,15 +258,22 @@ var fluidinfo = function(options) {
       var rawHeaders = xhr.getAllResponseHeaders();
       // Turn the result into an object
       if(rawHeaders){ // Mozilla doesn't like getAllResponseHeaders
-          var i;
-          var splitHeaders = rawHeaders.split("\r\n");
-          for(i=0; i<splitHeaders.length; i++){
-            var rawHeader = splitHeaders[i];
-            if(rawHeader.length > 0) {
-                var splitHeader = rawHeader.split(": ");
-                result[splitHeader[0]] = splitHeader[1];
-            }
+        var i;
+        var splitHeaders = rawHeaders.split("\r\n");
+        for(i=0; i<splitHeaders.length; i++){
+          var rawHeader = splitHeaders[i];
+          if(rawHeader.length > 0) {
+            var splitHeader = rawHeader.split(": ");
+            result[splitHeader[0]] = splitHeader[1];
           }
+        }
+      } else {
+        // Attempt to get the content type from the header (due to Mozilla
+        // bug.
+        var contentType = xhr.getResponseHeader("Content-Type");
+        if(contentType){
+            result["Content-Type"] = contentType;
+        }
       }
       return result;
     }
