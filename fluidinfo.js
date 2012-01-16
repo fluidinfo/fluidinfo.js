@@ -257,14 +257,16 @@ var fluidinfo = function(options) {
       var result = {};
       var rawHeaders = xhr.getAllResponseHeaders();
       // Turn the result into an object
-      var i;
-      var splitHeaders = rawHeaders.split("\r\n");
-      for(i=0; i<splitHeaders.length; i++){
-        var rawHeader = splitHeaders[i];
-        if(rawHeader.length > 0) {
-            var splitHeader = rawHeader.split(": ");
-            result[splitHeader[0]] = splitHeader[1];
-        }
+      if(rawHeaders){ // Mozilla doesn't like getAllResponseHeaders
+          var i;
+          var splitHeaders = rawHeaders.split("\r\n");
+          for(i=0; i<splitHeaders.length; i++){
+            var rawHeader = splitHeaders[i];
+            if(rawHeader.length > 0) {
+                var splitHeader = rawHeader.split(": ");
+                result[splitHeader[0]] = splitHeader[1];
+            }
+          }
       }
       return result;
     }
