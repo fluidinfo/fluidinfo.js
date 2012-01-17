@@ -59,7 +59,7 @@ var fluidinfo = function(options) {
                 if (c < 128) {
                     utftext += String.fromCharCode(c);
                 }
-                else if((c > 127) && (c < 2048)) {
+                else if ((c > 127) && (c < 2048)) {
                     utftext += String.fromCharCode((c >> 6) | 192);
                     utftext += String.fromCharCode((c & 63) | 128);
                 }
@@ -80,42 +80,43 @@ var fluidinfo = function(options) {
     var authorizationBase64Fragment = '';
     var OAuthAccessToken = '';
 
-    if(options) {
-      if(options.instance) {
-        switch(options.instance.toLowerCase()) {
-          case "main":
-            session.baseURL = "https://fluiddb.fluidinfo.com/";
-            break;
-          case "sandbox":
-            session.baseURL = "https://sandbox.fluidinfo.com/";
-            break;
-          default:
-              // validate the bespoke instance
-              var urlRegex = /^(http|https):\/\/.+\/$/;
-              if(urlRegex.exec(options.instance)) {
-                session.baseURL = options.instance;
-              } else {
-                throw {
-                  name: "ValueError",
-                  message: "The URL must start with http[s]:// and have a trailing slash ('/') to be valid. E.g. https://localhost/"
-                };
-              }
+    if (options) {
+        if (options.instance) {
+            switch(options.instance.toLowerCase()) {
+            case "main":
+                session.baseURL = "https://fluiddb.fluidinfo.com/";
+                break;
+            case "sandbox":
+                session.baseURL = "https://sandbox.fluidinfo.com/";
+                break;
+            default:
+                // validate the bespoke instance
+                var urlRegex = /^(http|https):\/\/.+\/$/;
+                if (urlRegex.exec(options.instance)) {
+                    session.baseURL = options.instance;
+                } else {
+                    throw {
+                        name: "ValueError",
+                        message: "The URL must start with http[s]:// and have a trailing slash ('/') to be valid. E.g. https://localhost/"
+                    };
+                }
+            }
         }
-      }
-      if(options.access_token != undefined){
-        OAuthAccessToken = options.access_token;
-      }
-      if((options.username != undefined) && (options.password != undefined)) {
-        authorizationBase64Fragment = Base64.encode(options.username + ":" + options.password);
-        // Makes sure the logged in user's username is available via the
-        // username attribute
-        session.username = options.username;
-      }
+        if (options.access_token != undefined){
+            OAuthAccessToken = options.access_token;
+        }
+        if ((options.username != undefined) && (options.password != undefined)) {
+            authorizationBase64Fragment = Base64.encode(
+                options.username + ":" + options.password);
+            // Makes sure the logged in user's username is available via the
+            // username attribute
+            session.username = options.username;
+        }
     }
 
     // Catch-all to make sure the library defaults to the main instance
-    if(session.baseURL === undefined){
-      session.baseURL = "https://fluiddb.fluidinfo.com/";
+    if (session.baseURL === undefined){
+        session.baseURL = "https://fluiddb.fluidinfo.com/";
     }
 
     /**
@@ -126,23 +127,23 @@ var fluidinfo = function(options) {
      * @return {boolean} An indication if the value is an array.
      */
     function isArray(value) {
-      return Object.prototype.toString.apply(value) === "[object Array]";
+        return Object.prototype.toString.apply(value) === "[object Array]";
     };
 
     /**
      * Given a path that is expressed as an array of path elements, will
      * return the correctly encoded URL. e.g. ["a", "b", "c"] -> "/a/b/c"
      *
-     * @param value {Array} A list of values to be appropriately encoded between
-     * '/' values.
+     * @param value {Array} A list of values to be appropriately encoded
+     * between '/' values.
      * @return {string} The appropriately encoded URL.
      */
     function encodeURL(path) {
-      var result = "";
-      for(i=0; i<path.length; i++) {
-        result += "/" + encodeURIComponent(path[i]);
-      }
-      return result.slice(1); // chops the leading slash
+        var result = "";
+        for (i=0; i<path.length; i++) {
+            result += "/" + encodeURIComponent(path[i]);
+        }
+        return result.slice(1); // chops the leading slash
     };
 
     /**
@@ -155,33 +156,33 @@ var fluidinfo = function(options) {
      * @return A boolean indication if the value is a Fluidinfo primitive type.
      */
     function isPrimitive(value) {
-      // check the easy type matches first
-      var valueType = typeof(value);
-      var primitiveTypes = ["number", "string", "boolean"];
-      var i;
-      for(i=0; i<primitiveTypes.length; i++) {
-        if(valueType === primitiveTypes[i]) {
-          return true;
-        }
-      }
-      // A null value is also a primitive
-      if(value===null) {
-        return true;
-      }
-      // check for an array (potential set) and validate it only contains
-      // strings (currently multi-type arrays are not allowed)
-      if(isArray(value)) {
+        // check the easy type matches first
+        var valueType = typeof(value);
+        var primitiveTypes = ["number", "string", "boolean"];
         var i;
-        for(i=0; i<value.length; i++) {
-          var memberType = typeof(value[i]);
-          if(memberType !== "string") {
-            return false;
-          }
+        for (i=0; i<primitiveTypes.length; i++) {
+            if (valueType === primitiveTypes[i]) {
+                return true;
+            }
         }
-        return true;
-      }
-      // value hasn't matched any of the primitive checks
-      return false;
+        // A null value is also a primitive
+        if (value===null) {
+            return true;
+        }
+        // check for an array (potential set) and validate it only contains
+        // strings (currently multi-type arrays are not allowed)
+        if (isArray(value)) {
+            var i;
+            for (i=0; i<value.length; i++) {
+                var memberType = typeof(value[i]);
+                if (memberType !== "string") {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // value hasn't matched any of the primitive checks
+        return false;
     }
 
     /**
@@ -194,24 +195,27 @@ var fluidinfo = function(options) {
      * required.
      */
     function detectContentType(options) {
-      // a "PUT" to objects/ or about/ endpoints means dealing with the MIME
-      // of a tag-value. If no MIME type is passed in the options objects
-      // then check if the value is a Fluidinfo primitive type. Otherwise
-      // complain.
-      var result = null;
-      if(options.type==="PUT" && (options.path.match("^objects\/") || options.path.match("^about\/"))) {
-        if(options.contentType){
-          result = options.contentType;
-        } else if (isPrimitive(options.data)) {
-          result = "application/vnd.fluiddb.value+json";
-        } else {
-          throw { name: "ValueError", message: "Must supply Content-Type"};
+        // a "PUT" to objects/ or about/ endpoints means dealing with the MIME
+        // of a tag-value. If no MIME type is passed in the options objects
+        // then check if the value is a Fluidinfo primitive type. Otherwise
+        // complain.
+        var result = null;
+        if (options.type==="PUT" && (options.path.match("^objects\/") ||
+                                     options.path.match("^about\/"))) {
+            if (options.contentType){
+                result = options.contentType;
+            } else if (isPrimitive(options.data)) {
+                result = "application/vnd.fluiddb.value+json";
+            } else {
+                throw {name: "ValueError",
+                       message: "Must supply Content-Type"};
+            }
+        } else if (options.data) {
+            // all other requests to the API that have payloads will
+            // be passing JSON
+            result = "application/json";
         }
-      } else if (options.data) {
-        // all other requests to the API that have payloads will be passing JSON
-        result = "application/json";
-      }
-      return result;
+        return result;
     }
 
     /**
@@ -222,60 +226,64 @@ var fluidinfo = function(options) {
      * @result {boolean} An indication if the associated content is JSON
      */
     function isJSONData(contentType) {
-      return contentType && (contentType === "application/json" || contentType === "application/vnd.fluiddb.value+json");
+        return contentType && (
+            contentType === "application/json"
+            || contentType === "application/vnd.fluiddb.value+json");
     }
 
     /**
-     * Given an object representing the arguments to append to a URL will return
-     * an appropriately encoded string representation.
+     * Given an object representing the arguments to append to a URL
+     * will return an appropriately encoded string representation.
      */
     function createArgs(args) {
-      var result = "";
-      if(args) {
-        var arg;
-        for(arg in args) {
-          if(typeof args[arg] !== "function") {
-              if(isArray(args[arg])) {
-                var j;
-                for(j=0; j<args[arg].length; j++) {
-                  result += "&" + encodeURIComponent(arg)+"="+encodeURIComponent(args[arg][j]);
+        var result = "";
+        if (args) {
+            var arg;
+            for (arg in args) {
+                if (typeof args[arg] !== "function") {
+                    if (isArray(args[arg])) {
+                        var j;
+                        for (j=0; j<args[arg].length; j++) {
+                            result += "&" + encodeURIComponent(arg) + "=" +
+                                      encodeURIComponent(args[arg][j]);
+                        }
+                    } else {
+                        result += "&" + encodeURIComponent(arg) + "=" +
+                                  encodeURIComponent(args[arg]);
+                    }
                 }
-              } else {
-                result += "&"+encodeURIComponent(arg)+"="+encodeURIComponent(args[arg]);
-              }
             }
+            result = "?" + result.slice(1);
         }
-        result = "?" + result.slice(1);
-      }
-      return result;
+        return result;
     }
 
     /**
      * Returns an object representing the headers returned from Fluidinfo
      */
     function getHeaders(xhr) {
-      var result = {};
-      var rawHeaders = xhr.getAllResponseHeaders();
-      // Turn the result into an object
-      if(rawHeaders){ // Mozilla doesn't like getAllResponseHeaders
-        var i;
-        var splitHeaders = rawHeaders.split("\r\n");
-        for(i=0; i<splitHeaders.length; i++){
-          var rawHeader = splitHeaders[i];
-          if(rawHeader.length > 0) {
-            var splitHeader = rawHeader.split(": ");
-            result[splitHeader[0]] = splitHeader[1];
-          }
+        var result = {};
+        var rawHeaders = xhr.getAllResponseHeaders();
+        // Turn the result into an object
+        if (rawHeaders){ // Mozilla doesn't like getAllResponseHeaders
+            var i;
+            var splitHeaders = rawHeaders.split("\r\n");
+            for (i=0; i<splitHeaders.length; i++){
+                var rawHeader = splitHeaders[i];
+                if (rawHeader.length > 0) {
+                    var splitHeader = rawHeader.split(": ");
+                    result[splitHeader[0]] = splitHeader[1];
+                }
+            }
+        } else {
+            // Attempt to get the content type from the header (due to Mozilla
+            // bug.
+            var contentType = xhr.getResponseHeader("Content-Type");
+            if (contentType){
+                result["Content-Type"] = contentType;
+            }
         }
-      } else {
-        // Attempt to get the content type from the header (due to Mozilla
-        // bug.
-        var contentType = xhr.getResponseHeader("Content-Type");
-        if(contentType){
-            result["Content-Type"] = contentType;
-        }
-      }
-      return result;
+        return result;
     }
 
     /**
@@ -284,22 +292,22 @@ var fluidinfo = function(options) {
      * http://www.quirksmode.org/js/xmlhttp.html
      */
     function createXMLHTTPObject() {
-      var XMLHttpFactories = [
-        function () {return new XMLHttpRequest();},
-        function () {return new ActiveXObject("Msxml2.XMLHTTP");},
-        function () {return new ActiveXObject("Msxml3.XMLHTTP");},
-        function () {return new ActiveXObject("Microsoft.XMLHTTP");}
-      ];
-      var xhr = false;
-      for(var i=0; i<XMLHttpFactories.length; i++) {
-        try {
-          xhr = XMLHttpFactories[i]();
-        } catch(e) {
-          continue;
+        var XMLHttpFactories = [
+            function () {return new XMLHttpRequest();},
+            function () {return new ActiveXObject("Msxml2.XMLHTTP");},
+            function () {return new ActiveXObject("Msxml3.XMLHTTP");},
+            function () {return new ActiveXObject("Microsoft.XMLHTTP");}
+        ];
+        var xhr = false;
+        for (var i=0; i<XMLHttpFactories.length; i++) {
+            try {
+                xhr = XMLHttpFactories[i]();
+            } catch(e) {
+                continue;
+            }
+            break;
         }
-        break;
-      }
-      return xhr;
+        return xhr;
     }
 
     /**
@@ -308,24 +316,25 @@ var fluidinfo = function(options) {
      * result.
      */
     function createNiceResult(xhr) {
-      // build a simple result object
-      var result = new Object();
-      result.status = xhr.status;
-      result.statusText = xhr.statusText;
-      result.headers = getHeaders(xhr);
-      result.rawData = xhr.responseText;
-      if(isJSONData(result.headers['Content-Type'])) {
-        result.data = JSON.parse(xhr.responseText);
-      } else {
-        result.data = xhr.responseText;
-      }
-      result.request = xhr;
-      return result;
+        // build a simple result object
+        var result = new Object();
+        result.status = xhr.status;
+        result.statusText = xhr.statusText;
+        result.headers = getHeaders(xhr);
+        result.rawData = xhr.responseText;
+        if (isJSONData(result.headers['Content-Type'])) {
+            result.data = JSON.parse(xhr.responseText);
+        } else {
+            result.data = xhr.responseText;
+        }
+        result.request = xhr;
+        return result;
     }
 
     /**
      * Sends an appropriate XMLHTTPRequest based request to Fluidinfo.
-     * @param options {Object} An object containing the following named options:
+     * @param options {Object} An object containing the following named
+     * options:
      * <dl>
      *  <dt>type</dt>
      *  <dd>The request's HTTP method. [GET, POST, PUT, DELETE or HEAD]</dd>
@@ -346,65 +355,67 @@ var fluidinfo = function(options) {
      *
      */
     function sendRequest(options) {
-      if(isArray(options.path)) {
-        options.path = encodeURL(options.path);
-      }
-      var method = options.type.toUpperCase() || "GET";
-      var args = createArgs(options.args);
-      var url = session.baseURL+options.path+args;
-      var async = true;
-      if (options.async !== undefined) {
-        async = options.async;
-      }
-      var xhr = createXMLHTTPObject();
-      if(!xhr) {
-        return undefined;
-      }
-      xhr.open(method, url, async);
-      if(OAuthAccessToken === ''){
-        // Basic Auth
-        if(authorizationBase64Fragment !== ''){
-          xhr.setRequestHeader('Authorization', 'basic ' + authorizationBase64Fragment);
+        if (isArray(options.path)) {
+            options.path = encodeURL(options.path);
         }
-      }
-      else {
-        // OAuth2
-        xhr.setRequestHeader('X-FluidDB-Access-Token', OAuthAccessToken);
-        if(authorizationBase64Fragment === ''){
-          // The Consumer is the anonymous user.
-          xhr.setRequestHeader('Authorization', 'oauth2');
+        var method = options.type.toUpperCase() || "GET";
+        var args = createArgs(options.args);
+        var url = session.baseURL + options.path + args;
+        var async = true;
+        if (options.async !== undefined) {
+            async = options.async;
+        }
+        var xhr = createXMLHTTPObject();
+        if (!xhr) {
+            return undefined;
+        }
+        xhr.open(method, url, async);
+        if (OAuthAccessToken === ''){
+            // Basic Auth
+            if (authorizationBase64Fragment !== ''){
+                xhr.setRequestHeader('Authorization',
+                                     'basic ' + authorizationBase64Fragment);
+            }
         }
         else {
-          // Use a specific Consumer.
-          xhr.setRequestHeader('Authorization', 'oauth2 ' + authorizationBase64Fragment);
+            // OAuth2
+            xhr.setRequestHeader('X-FluidDB-Access-Token', OAuthAccessToken);
+            if (authorizationBase64Fragment === ''){
+                // The Consumer is the anonymous user.
+                xhr.setRequestHeader('Authorization', 'oauth2');
+            }
+            else {
+                // Use a specific Consumer.
+                xhr.setRequestHeader('Authorization',
+                                     'oauth2 ' + authorizationBase64Fragment);
+            }
         }
-      }
-      var contentType = detectContentType(options);
-      if(contentType) {
-        xhr.setRequestHeader("Content-Type", contentType);
-        if(isJSONData(contentType)) {
-          options.data = JSON.stringify(options.data);
+        var contentType = detectContentType(options);
+        if (contentType) {
+            xhr.setRequestHeader("Content-Type", contentType);
+            if (isJSONData(contentType)) {
+                options.data = JSON.stringify(options.data);
+            }
         }
-      }
-      xhr.onreadystatechange = function() {
-        if(xhr.readyState != 4) return;
-        var result = createNiceResult(xhr);
-        // call the event handlers
-        if(xhr.status > 0 && (xhr.status < 300 || xhr.status == 304)) {
-          if(options.onSuccess){
-            options.onSuccess(result);
-          }
-        } else if (options.onError){
-          // there appears to be a problem
-          options.onError(result);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
+            var result = createNiceResult(xhr);
+            // call the event handlers
+            if (xhr.status > 0 && (xhr.status < 300 || xhr.status == 304)) {
+                if (options.onSuccess){
+                    options.onSuccess(result);
+                }
+            } else if (options.onError){
+                // there appears to be a problem
+                options.onError(result);
+            }
+        };
+        xhr.send(options.data);
+        if (!async) {
+            var result = createNiceResult(xhr);
+            return result;
         }
-      };
-      xhr.send(options.data);
-      if(!async) {
-        var result = createNiceResult(xhr);
-        return result;
-      }
-      return undefined;
+        return undefined;
     }
 
     /**
@@ -417,9 +428,9 @@ var fluidinfo = function(options) {
      *
      */
     api.get = function(options){
-      options.type = "GET";
-      options.data = null;
-      return sendRequest(options);
+        options.type = "GET";
+        options.data = null;
+        return sendRequest(options);
     };
 
     /**
@@ -427,8 +438,8 @@ var fluidinfo = function(options) {
      *
      */
     api.post = function(options){
-      options.type = "POST";
-      return sendRequest(options);
+        options.type = "POST";
+        return sendRequest(options);
     };
 
     /**
@@ -436,8 +447,8 @@ var fluidinfo = function(options) {
      *
      */
     api.put = function(options){
-      options.type = "PUT";
-      return sendRequest(options);
+        options.type = "PUT";
+        return sendRequest(options);
     };
 
     /**
@@ -445,19 +456,19 @@ var fluidinfo = function(options) {
      *
      */
     api.del = function(options){
-      options.type = "DELETE";
-      options.data = null;
-      return sendRequest(options);
+        options.type = "DELETE";
+        options.data = null;
+        return sendRequest(options);
     };
 
     /**
-     * Makes an HTTP HEAD call to the Fluidinfo API
+     * Makes an HTTP HEAD call to the Fluidinfo API.
      *
      */
     api.head = function(options){
-      options.type = "HEAD";
-      options.data = null;
-      return sendRequest(options);
+        options.type = "HEAD";
+        options.data = null;
+        return sendRequest(options);
     };
 
     session.api = api;
@@ -466,212 +477,214 @@ var fluidinfo = function(options) {
      * Easily gets results from Fluidinfo.
      */
     session.query = function(options) {
-      // process the options
-      if(options.select === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Missing select option."
-        };
-      }
-      if(options.where === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Missing where option."
-        };
-      }
-      /**
-       * Takes the raw result from Fluidinfo and turns it into an easy-to-use
-       * array of useful objects representing the matching results then calls
-       * the onSuccess function with the newly created array.
-       *
-       * @param {Object} The raw result from Fluidinfo that is to be processed
-       */
-      var processResult = function(raw) {
-        var result = [];
-        var data = raw.data.results;
-        var objectID;
-        for(objectID in data.id){
-          if(typeof data.id[objectID] !== "function") {
-            var obj = new Object();
-            obj["id"] = objectID;
-            for(tag in data.id[objectID]) {
-              if(typeof data.id[objectID][tag] !== "function") {
-                if(data.id[objectID][tag].value !== undefined) {
-                  // primitive value
-                  obj[tag] = data.id[objectID][tag].value;
-                } else {
-                  // opaque value
-                  obj[tag] = data.id[objectID][tag];
-                  // add a URL to the opaque value
-                  obj[tag]['url'] = session.baseURL+"objects/"+objectID+"/"+tag;
-                }
-              }
-            }
-            result[result.length] = obj;
-          }
+        // process the options
+        if (options.select === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing select option."
+            };
         }
-        raw.data = result;
-        if(options.onSuccess){
-          options.onSuccess(raw);
+        if (options.where === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing where option."
+            };
+        }
+        /**
+         * Takes the raw result from Fluidinfo and turns it into an easy-to-use
+         * array of useful objects representing the matching results then calls
+         * the onSuccess function with the newly created array.
+         *
+         * @param {Object} The raw result from Fluidinfo that is to be
+         * processed.
+         */
+        var processResult = function(raw) {
+            var result = [];
+            var data = raw.data.results;
+            var objectID;
+            for (objectID in data.id){
+                if (typeof data.id[objectID] !== "function") {
+                    var obj = new Object();
+                    obj["id"] = objectID;
+                    for (tag in data.id[objectID]) {
+                        if (typeof data.id[objectID][tag] !== "function") {
+                            if (data.id[objectID][tag].value !== undefined) {
+                                // primitive value
+                                obj[tag] = data.id[objectID][tag].value;
+                            } else {
+                                // opaque value
+                                obj[tag] = data.id[objectID][tag];
+                                // add a URL to the opaque value
+                                obj[tag]['url'] =
+                                    session.baseURL + "objects/" + objectID +
+                                    "/" + tag;
+                            }
+                        }
+                    }
+                    result[result.length] = obj;
+                }
+            }
+            raw.data = result;
+            if (options.onSuccess){
+                options.onSuccess(raw);
+            };
         };
-      };
-      // Make the appropriate call to Fluidinfo
-      this.api.get({path: "values",
-        args: {tag: options.select, query: options.where},
-        onSuccess: processResult, onError: options.onError});
+        // Make the appropriate call to Fluidinfo
+        this.api.get({path: "values",
+                      args: {tag: options.select, query: options.where},
+                      onSuccess: processResult, onError: options.onError});
     };
 
     /**
      * Easily updates objects in Fluidinfo.
      */
     session.update = function(options) {
-      // process the options
-      if(options.values === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Missing values option."
-        };
-      }
-      if(options.where === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Missing where option."
-        };
-      }
-      var payload = new Object();
-      var queries = [];
-      var updateSpecification = [];
-      updateSpecification[0] = options.where;
-      var valueSpec = new Object();
-      for(val in options.values){
-        if(typeof options.values[val] !== "function") {
-          valueSpec[val]= {value: options.values[val]};
+        // process the options
+        if (options.values === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing values option."
+            };
         }
-      }
-      updateSpecification[1] = valueSpec;
-      queries[0] = updateSpecification;
-      payload["queries"] = queries;
-      // Make the appropriate call to Fluidinfo
-      this.api.put({path: "values", data: payload,
-        onSuccess: options.onSuccess, onError: options.onError});
+        if (options.where === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing where option."
+            };
+        }
+        var payload = new Object();
+        var queries = [];
+        var updateSpecification = [];
+        updateSpecification[0] = options.where;
+        var valueSpec = new Object();
+        for (val in options.values){
+            if (typeof options.values[val] !== "function") {
+                valueSpec[val]= {value: options.values[val]};
+            }
+        }
+        updateSpecification[1] = valueSpec;
+        queries[0] = updateSpecification;
+        payload["queries"] = queries;
+        // Make the appropriate call to Fluidinfo
+        this.api.put({path: "values", data: payload,
+                      onSuccess: options.onSuccess, onError: options.onError});
     };
 
     /**
      * Easily tag a specified object
      */
     session.tag = function(options) {
-      if(options.about === undefined && options.id === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Supply either an 'about' or 'id' specification."
-        };
-      }
-      if(options.about) {
-        options.where = 'fluiddb/about="'+options.about+'"';
-      } else if(options.id) {
-        options.where = 'fluiddb/id="'+options.id+'"';
-      }
-      this.update(options);
+        if (options.about === undefined && options.id === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Supply either an 'about' or 'id' specification."
+            };
+        }
+        if (options.about) {
+            options.where = 'fluiddb/about="' + options.about + '"';
+        } else if (options.id) {
+            options.where = 'fluiddb/id="' + options.id + '"';
+        }
+        this.update(options);
     };
-
 
     /**
      * Easily delete tag-value instances from Fluidinfo using a query to
      * /values.
      */
     session.del = function(options) {
-      // process the options
-      if(options.tags === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Missing tags option."
-        };
-      }
-      if(options.where === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Missing where option."
-        };
-      }
-      options.path = "values";
-      options.args = {tag: options.tags, query: options.where };
-      // Make the appropriate call to Fluidinfo
-      this.api.del(options);
+        // process the options
+        if (options.tags === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing tags option."
+            };
+        }
+        if (options.where === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing where option."
+            };
+        }
+        options.path = "values";
+        options.args = {tag: options.tags, query: options.where };
+        // Make the appropriate call to Fluidinfo
+        this.api.del(options);
     };
 
     /**
      * Get tags for a specific object
      */
     session.getObject = function(options) {
-      if(options.about === undefined && options.id === undefined) {
-        throw {
-          name: "ValueError",
-          message: "Supply either an 'about' or 'id' specification."
-        };
-      }
-      if(options.about) {
-        options.where = 'fluiddb/about="'+options.about+'"';
-      } else if(options.id) {
-        options.where = 'fluiddb/id="'+options.id+'"';
-      }
-
-      var userOnSuccess = options.onSuccess;
-      /**
-       * Takes the result of a call to query() and builds an appropriate
-       * result.
-       */
-      var processResult = function(result) {
-        if(result.data.length === 1) {
-          result.data = result.data[0];
-          if(userOnSuccess){
-            userOnSuccess(result);
-          }
-        } else if (result.data.length === 0) {
-          // no data returned so just pass an empty object
-          result.data = [];
-          if(userOnSuccess){
-            userOnSuccess(result);
-          }
-        } else {
-          if(options.onError){
-            options.onError(result);
-          }
+        if (options.about === undefined && options.id === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Supply either an 'about' or 'id' specification."
+            };
         }
-      };
-      options.onSuccess = processResult;
-      // call the query function
-      session.query(options);
+        if (options.about) {
+            options.where = 'fluiddb/about="' + options.about + '"';
+        } else if (options.id) {
+            options.where = 'fluiddb/id="' + options.id + '"';
+        }
+
+        var userOnSuccess = options.onSuccess;
+        /**
+         * Takes the result of a call to query() and builds an appropriate
+         * result.
+         */
+        var processResult = function(result) {
+            if (result.data.length === 1) {
+                result.data = result.data[0];
+                if (userOnSuccess){
+                    userOnSuccess(result);
+                }
+            } else if (result.data.length === 0) {
+                // no data returned so just pass an empty object
+                result.data = [];
+                if (userOnSuccess){
+                    userOnSuccess(result);
+                }
+            } else {
+                if (options.onError){
+                    options.onError(result);
+                }
+            }
+        };
+        options.onSuccess = processResult;
+        // call the query function
+        session.query(options);
     };
 
     /**
      * Enables a user to create a new object about something
      */
     session.createObject = function(options) {
-      if(!authorizationBase64Fragment && !OAuthAccessToken) {
-        throw {
-          name: "AuthorizationError",
-          message: "You must be signed in to create a new object."
+        if (!authorizationBase64Fragment && !OAuthAccessToken) {
+            throw {
+                name: "AuthorizationError",
+                message: "You must be signed in to create a new object."
+            };
+        }
+        if (options.about) {
+            options.path = ["about", options.about];
+        } else {
+            options.path = "objects";
+        }
+        var userOnSuccess = options.onSuccess;
+        var onSuccess = function(result) {
+            var newObject = new Object();
+            if (options.about){
+                newObject["fluiddb/about"] = options.about;
+            }
+            newObject["id"] = result.data.id;
+            result.data = newObject;
+            if (userOnSuccess){
+                userOnSuccess(result);
+            }
         };
-      }
-      if(options.about) {
-        options.path = ["about", options.about];
-      } else {
-        options.path = "objects";
-      }
-      var userOnSuccess = options.onSuccess;
-      var onSuccess = function(result) {
-        var newObject = new Object();
-        if(options.about){
-          newObject["fluiddb/about"] = options.about;
-        }
-        newObject["id"] = result.data.id;
-        result.data = newObject;
-        if(userOnSuccess){
-          userOnSuccess(result);
-        }
-      };
-      options.onSuccess = onSuccess;
-      session.api.post(options);
+        options.onSuccess = onSuccess;
+        session.api.post(options);
     };
 
     return session;
