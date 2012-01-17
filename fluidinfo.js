@@ -272,15 +272,15 @@ var fluidinfo = function(options) {
                 var rawHeader = splitHeaders[i];
                 if (rawHeader.length > 0) {
                     var splitHeader = rawHeader.split(": ");
-                    result[splitHeader[0]] = splitHeader[1];
+                    result[splitHeader[0].toLowerCase()] = splitHeader[1];
                 }
             }
         } else {
             // Attempt to get the content type from the header (due to Mozilla
             // bug.
-            var contentType = xhr.getResponseHeader("Content-Type");
+            var contentType = xhr.getResponseHeader("content-type");
             if (contentType){
-                result["Content-Type"] = contentType;
+                result["content-type"] = contentType;
             }
         }
         return result;
@@ -322,7 +322,7 @@ var fluidinfo = function(options) {
         result.statusText = xhr.statusText;
         result.headers = getHeaders(xhr);
         result.rawData = xhr.responseText;
-        if (isJSONData(result.headers['Content-Type'])) {
+        if (isJSONData(result.headers['content-type'])) {
             result.data = JSON.parse(xhr.responseText);
         } else {
             result.data = xhr.responseText;
@@ -392,7 +392,7 @@ var fluidinfo = function(options) {
         }
         var contentType = detectContentType(options);
         if (contentType) {
-            xhr.setRequestHeader("Content-Type", contentType);
+            xhr.setRequestHeader("content-type", contentType);
             if (isJSONData(contentType)) {
                 options.data = JSON.stringify(options.data);
             }

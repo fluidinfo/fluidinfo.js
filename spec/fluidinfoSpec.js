@@ -46,7 +46,7 @@ function it_should_be_authenticated() {
  */
 function it_should_have_a_content_type_of(type) {
   it("should have the content-type: "+type, function() {
-    expect(this.server.requests[0].requestHeaders['Content-Type'])
+    expect(this.server.requests[0].requestHeaders['content-type'])
       .toContain(type); // toContain avoids regex
   });
 }
@@ -202,7 +202,7 @@ describe("Fluidinfo.js", function() {
         options.data = 1.234;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -212,7 +212,7 @@ describe("Fluidinfo.js", function() {
         options.data = 1.234;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -223,7 +223,7 @@ describe("Fluidinfo.js", function() {
         options.contentType = "text/html";
         this.fi.api.put(options);
         expected = "text/html";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -234,7 +234,7 @@ describe("Fluidinfo.js", function() {
         options.contentType = "text/html";
         this.fi.api.put(options);
         expected = "text/html";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -268,7 +268,7 @@ describe("Fluidinfo.js", function() {
         options.data = {name: "foo", description: "bar"};
         this.fi.api.post(options);
         expected = "application/json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -299,7 +299,7 @@ describe("Fluidinfo.js", function() {
           var h = "";
           for(h in HEADERS){
             var header = HEADERS[h];
-            expect(result.headers[header]).toEqual("foo");
+            expect(result.headers[header.toLowerCase()]).toEqual("foo");
           }
           spy();
         };
@@ -327,7 +327,7 @@ describe("Fluidinfo.js", function() {
           expect(result.status).toEqual(201);
           expect(result.statusText).toEqual("Created");
           expect(typeof(result.headers)).toEqual("object");
-          expect(result.headers["Content-Type"]).toEqual("application/json");
+          expect(result.headers["content-type"]).toEqual("application/json");
           expect(result.data).toBeTruthy();
           expect(typeof(result.rawData)).toEqual("string");
           expect(typeof(result.request)).toEqual("object"); // original XHR
@@ -413,7 +413,7 @@ describe("Fluidinfo.js", function() {
         expect(result.status).toEqual(201);
         expect(result.statusText).toEqual("Created");
         expect(typeof(result.headers)).toEqual("object");
-        expect(result.headers["Content-Type"]).toEqual("application/json");
+        expect(result.headers["content-type"]).toEqual("application/json");
         expect(result.data).toBeTruthy();
         expect(typeof(result.rawData)).toEqual("string");
         expect(typeof(result.request)).toEqual("object"); // original XHR
@@ -426,7 +426,7 @@ describe("Fluidinfo.js", function() {
         options.data = payload;
         this.fi.api.post(options);
         var expected = "application/json";
-        var actual = this.server.requests[0].requestHeaders['Content-Type'];
+        var actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
         expect(this.server.requests[0].requestBody)
           .toEqual(JSON.stringify(payload));
@@ -594,9 +594,9 @@ describe("Fluidinfo.js", function() {
                    expect(response.status).toEqual(200);
                    expect(response.statusText).toEqual("OK");
                    expect(typeof(response.headers)).toEqual("object");
-                   expect(response.headers["Content-Type"]).toEqual("text/html");
-                   expect(response.headers["Content-Length"]).toEqual("28926");
-                   expect(response.headers["Date"]).toEqual("Mon, 02 Aug 2010 12:40:41 GMT");
+                   expect(response.headers["content-type"]).toEqual("text/html");
+                   expect(response.headers["content-length"]).toEqual("28926");
+                   expect(response.headers["date"]).toEqual("Mon, 02 Aug 2010 12:40:41 GMT");
                  }
           });
           var responseStatus = 200;
@@ -640,7 +640,7 @@ describe("Fluidinfo.js", function() {
         options.data = 1.234;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -650,7 +650,7 @@ describe("Fluidinfo.js", function() {
         options.data = 1.234;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -660,7 +660,7 @@ describe("Fluidinfo.js", function() {
         options.contentType = "text/html";
         this.fi.api.put(options);
         expected = "text/html";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -671,7 +671,7 @@ describe("Fluidinfo.js", function() {
         options.contentType = "text/html";
         this.fi.api.put(options);
         expected = "text/html";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -681,7 +681,7 @@ describe("Fluidinfo.js", function() {
         options.data = {name: "foo", description: "bar"};
         this.fi.api.post(options);
         expected = "application/json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -710,7 +710,7 @@ describe("Fluidinfo.js", function() {
         options.data = 1;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -720,7 +720,7 @@ describe("Fluidinfo.js", function() {
         options.data = 1.234;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -730,7 +730,7 @@ describe("Fluidinfo.js", function() {
         options.data = false;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -740,7 +740,7 @@ describe("Fluidinfo.js", function() {
         options.data = "hello";
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -750,7 +750,7 @@ describe("Fluidinfo.js", function() {
         options.data = null;
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -760,7 +760,7 @@ describe("Fluidinfo.js", function() {
         options.data = ["a", "b", "c"];
         this.fi.api.put(options);
         expected = "application/vnd.fluiddb.value+json";
-        actual = this.server.requests[0].requestHeaders['Content-Type'];
+        actual = this.server.requests[0].requestHeaders['content-type'];
         expect(actual).toContain(expected);
       });
 
@@ -1002,7 +1002,7 @@ describe("Fluidinfo.js", function() {
         expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("PUT");
-        expect(this.server.requests[0].requestHeaders["Content-Type"])
+        expect(this.server.requests[0].requestHeaders["content-type"])
           .toContain("application/json");
         expect(this.server.requests[0].requestBody)
             .not.toEqual(null);
@@ -1097,7 +1097,7 @@ describe("Fluidinfo.js", function() {
         var expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("PUT");
-        expect(this.server.requests[0].requestHeaders["Content-Type"])
+        expect(this.server.requests[0].requestHeaders["content-type"])
           .toContain("application/json");
         expect(this.server.requests[0].requestBody)
             .not.toEqual(null);
@@ -1121,7 +1121,7 @@ describe("Fluidinfo.js", function() {
         var expected = "https://fluiddb.fluidinfo.com/values";
         expect(this.server.requests[0].url).toEqual(expected);
         expect(this.server.requests[0].method).toEqual("PUT");
-        expect(this.server.requests[0].requestHeaders["Content-Type"])
+        expect(this.server.requests[0].requestHeaders["content-type"])
           .toContain("application/json");
         expect(this.server.requests[0].requestBody)
             .not.toEqual(null);
