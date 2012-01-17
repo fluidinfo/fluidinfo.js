@@ -1,7 +1,7 @@
 /**
  * fluidinfo.js - a small and simple client for Fluidinfo written in Javascript.
  *
- * @author <a href="http://twitter.com/onigiri">onigiri</a>, <a href="http://twitter.com/ntoll">ntoll</a> & <a href="http://twitter.com/barshirtcliff">barshirtcliff</a>
+ * @author <a href="http://twitter.com/onigiri">onigiri</a>, <a href="http://twitter.com/ntoll">ntoll</a>, <a href="http://twitter.com/barshirtcliff">barshirtcliff</a> and <a href="http://twitter.com/jkakar">jkakar</a>
  * @version 0.1
  * @constructor
  * @param options {Object} Contains various parameters for the new session with
@@ -21,7 +21,7 @@ var fluidinfo = function(options) {
     /**
      * Encodes strings into base64. Adapted from:
      * http://www.webtoolkit.info/javascript-base64.html
-    */
+     */
     var Base64 = {
         // private property
         _keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
