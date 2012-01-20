@@ -6,7 +6,8 @@
 var JSON_CONTENT_TYPE = "application/vnd.fluiddb.value+json";
 
 /**
- * Describes the behaviour expected of a standard AJAX request from the library.
+ * Describes the behaviour expected of a standard AJAX request from
+ * the library.
  */
 function it_should_be_a_standard_ajax_request() {
     it("should send one request", function() {
@@ -90,7 +91,8 @@ describe("Fluidinfo.js", function() {
             expect(fi.baseURL).toEqual("https://localhost/");
         });
 
-        it("should validate bespoke instances are valid addresses", function() {
+        it("should validate bespoke instances are valid addresses",
+           function() {
             // missing http[s]:// and trailing slash
             try {
                 fi = fluidinfo({instance: "localhost"});
@@ -375,7 +377,8 @@ describe("Fluidinfo.js", function() {
               expect(spy.calledOnce).toBeTruthy();
           });
 
-          it("should provide a simple response object for onError", function() {
+          it("should provide a simple response object for onError",
+             function() {
               var options = new Object();
               options.path = "namespaces/test";
               var payload = {name: "foo", description: "bar"};
@@ -548,7 +551,8 @@ describe("Fluidinfo.js", function() {
                       "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
                   var responseText =
                       '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", ' +
-                      '"URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
+                      '"URI": "http://fluiddb.fluidinfo.com/' +
+                              'namespaces/test/foo"}';
                   this.server.requests[0].respond(
                       responseStatus, responseHeaders, responseText);
               });
@@ -686,160 +690,166 @@ describe("Fluidinfo.js", function() {
      */
     describe("API utilities", function() {
 
-      /**
-       * Checks the library correctly detects the appropriate MIME
-       * type to set for the eventual value of the Content-Type header
-       * of a request.
-       */
-      describe("Content-Type detection", function() {
-        var expected;
-        var actual;
-        it("should identify a primitive in a PUT to 'objects'", function() {
-          var options = new Object();
-          options.path = "objects/fakeObjectID/username/tag";
-          options.data = 1.234;
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
+        /**
+         * Checks the library correctly detects the appropriate MIME
+         * type to set for the eventual value of the Content-Type header
+         * of a request.
+         */
+        describe("Content-Type detection", function() {
+            var expected;
+            var actual;
+            it("should identify a primitive in a PUT to 'objects'",
+               function() {
+                var options = new Object();
+                options.path = "objects/fakeObjectID/username/tag";
+                options.data = 1.234;
+                this.fi.api.put(options);
+                var request = this.server.requests[0];
+                actual = request.requestHeaders['content-type'];
+                expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
+
+            it("should identify a primitive in a PUT to 'about'", function() {
+                var options = new Object();
+                options.path = "about/fakeAboutValue/username/tag";
+                options.data = 1.234;
+                this.fi.api.put(options);
+                var request = this.server.requests[0];
+                actual = request.requestHeaders['content-type'];
+                expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
+
+            it("should identify a given MIME in a PUT to 'objects'",
+               function() {
+                var options = new Object();
+                options.path = "objects/fakeObjectID/username/tag";
+                options.contentType = "text/html";
+                this.fi.api.put(options);
+                var request = this.server.requests[0];
+                actual = request.requestHeaders['content-type'];
+                expect(actual).toContain("text/html");
+            });
+
+            it("should identify a given MIME in a PUT to 'about'", function() {
+                var options = new Object();
+                options.type = "PUT";
+                options.path = "about/fakeAboutValue/username/tag";
+                options.contentType = "text/html";
+                this.fi.api.put(options);
+                var request = this.server.requests[0];
+                actual = request.requestHeaders['content-type'];
+                expect(actual).toContain("text/html");
+            });
+
+            it("should default to JSON for all other requests with data",
+               function() {
+                var options = new Object();
+                options.path = "namespaces/test";
+                options.data = {name: "foo", description: "bar"};
+                this.fi.api.post(options);
+                expected = "application/json";
+                var request = this.server.requests[0];
+                actual = request.requestHeaders['content-type'];
+                expect(actual).toContain(expected);
+            });
+
+            it("should complain if it can't detect the MIME", function() {
+                var options = new Object();
+                options.path = "about/fakeAboutValue/username/tag";
+                options.data = new Object();
+                try {
+                    this.fi.api.put(options);
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
         });
 
-        it("should identify a primitive in a PUT to 'about'", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = 1.234;
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
-        });
-
-        it("should identify a given MIME in a PUT to 'objects'", function() {
-          var options = new Object();
-          options.path = "objects/fakeObjectID/username/tag";
-          options.contentType = "text/html";
-          this.fi.api.put(options);
-          expected = "text/html";
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(expected);
-        });
-
-        it("should identify a given MIME in a PUT to 'about'", function() {
-          var options = new Object();
-          options.type = "PUT";
-          options.path = "about/fakeAboutValue/username/tag";
-          options.contentType = "text/html";
-          this.fi.api.put(options);
-          expected = "text/html";
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(expected);
-        });
-
-        it("should default to JSON for all other requests with data", function() {
-          var options = new Object();
-          options.path = "namespaces/test";
-          options.data = {name: "foo", description: "bar"};
-          this.fi.api.post(options);
-          expected = "application/json";
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(expected);
-        });
-
-        it("should complain if it can't detect the MIME", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = new Object();
-          try {
+        /**
+         * Checks the library correctly identies primitive values.
+         */
+        describe("Primitive identification", function() {
+          var expected;
+          var actual;
+          it("should identify an integer as primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = 1;
             this.fi.api.put(options);
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
-      });
+            actual = this.server.requests[0].requestHeaders['content-type'];
+            expect(actual).toContain(JSON_CONTENT_TYPE);
+          });
 
-      /**
-       * Checks the library correctly identies primitive values.
-       */
-      describe("Primitive identification", function() {
-        var expected;
-        var actual;
-        it("should identify an integer as primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = 1;
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
-        });
-
-        it("should identify a float as primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = 1.234;
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
-        });
-
-        it("should identify a boolean as primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = false;
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
-        });
-
-        it("should identify a string as primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = "hello";
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
-        });
-
-        it("should identify a null as primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = null;
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
-        });
-
-        it("should identify a string array as primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = ["a", "b", "c"];
-          this.fi.api.put(options);
-          actual = this.server.requests[0].requestHeaders['content-type'];
-          expect(actual).toContain(JSON_CONTENT_TYPE);
-        });
-
-        it("should identify a mixed array as NOT primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = ["a", "b", 1];
-          try {
+          it("should identify a float as primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = 1.234;
             this.fi.api.put(options);
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
+            actual = this.server.requests[0].requestHeaders['content-type'];
+            expect(actual).toContain(JSON_CONTENT_TYPE);
+          });
 
-        it("should identify an object as NOT primitive", function() {
-          var options = new Object();
-          options.path = "about/fakeAboutValue/username/tag";
-          options.data = {foo: "bar"};
-          try {
+          it("should identify a boolean as primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = false;
             this.fi.api.put(options);
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
+            actual = this.server.requests[0].requestHeaders['content-type'];
+            expect(actual).toContain(JSON_CONTENT_TYPE);
+          });
+
+          it("should identify a string as primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = "hello";
+            this.fi.api.put(options);
+            actual = this.server.requests[0].requestHeaders['content-type'];
+            expect(actual).toContain(JSON_CONTENT_TYPE);
+          });
+
+          it("should identify a null as primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = null;
+            this.fi.api.put(options);
+            actual = this.server.requests[0].requestHeaders['content-type'];
+            expect(actual).toContain(JSON_CONTENT_TYPE);
+          });
+
+          it("should identify a string array as primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = ["a", "b", "c"];
+            this.fi.api.put(options);
+            actual = this.server.requests[0].requestHeaders['content-type'];
+            expect(actual).toContain(JSON_CONTENT_TYPE);
+          });
+
+          it("should identify a mixed array as NOT primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = ["a", "b", 1];
+            try {
+              this.fi.api.put(options);
+            } catch(e) {
+              var exception = e;
+            }
+            expect(exception.name).toEqual("ValueError");
+          });
+
+          it("should identify an object as NOT primitive", function() {
+            var options = new Object();
+            options.path = "about/fakeAboutValue/username/tag";
+            options.data = {foo: "bar"};
+            try {
+              this.fi.api.put(options);
+            } catch(e) {
+              var exception = e;
+            }
+            expect(exception.name).toEqual("ValueError");
+          });
         });
-      });
     });
 
     /**
