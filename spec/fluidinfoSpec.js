@@ -770,857 +770,1034 @@ describe("Fluidinfo.js", function() {
          * Checks the library correctly identies primitive values.
          */
         describe("Primitive identification", function() {
-          var expected;
-          var actual;
-          it("should identify an integer as primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = 1;
-            this.fi.api.put(options);
-            actual = this.server.requests[0].requestHeaders['content-type'];
-            expect(actual).toContain(JSON_CONTENT_TYPE);
-          });
-
-          it("should identify a float as primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = 1.234;
-            this.fi.api.put(options);
-            actual = this.server.requests[0].requestHeaders['content-type'];
-            expect(actual).toContain(JSON_CONTENT_TYPE);
-          });
-
-          it("should identify a boolean as primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = false;
-            this.fi.api.put(options);
-            actual = this.server.requests[0].requestHeaders['content-type'];
-            expect(actual).toContain(JSON_CONTENT_TYPE);
-          });
-
-          it("should identify a string as primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = "hello";
-            this.fi.api.put(options);
-            actual = this.server.requests[0].requestHeaders['content-type'];
-            expect(actual).toContain(JSON_CONTENT_TYPE);
-          });
-
-          it("should identify a null as primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = null;
-            this.fi.api.put(options);
-            actual = this.server.requests[0].requestHeaders['content-type'];
-            expect(actual).toContain(JSON_CONTENT_TYPE);
-          });
-
-          it("should identify a string array as primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = ["a", "b", "c"];
-            this.fi.api.put(options);
-            actual = this.server.requests[0].requestHeaders['content-type'];
-            expect(actual).toContain(JSON_CONTENT_TYPE);
-          });
-
-          it("should identify a mixed array as NOT primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = ["a", "b", 1];
-            try {
+            var expected;
+            var actual;
+            it("should identify an integer as primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = 1;
               this.fi.api.put(options);
-            } catch(e) {
-              var exception = e;
-            }
-            expect(exception.name).toEqual("ValueError");
-          });
+              actual = this.server.requests[0].requestHeaders['content-type'];
+              expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
 
-          it("should identify an object as NOT primitive", function() {
-            var options = new Object();
-            options.path = "about/fakeAboutValue/username/tag";
-            options.data = {foo: "bar"};
-            try {
+            it("should identify a float as primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = 1.234;
               this.fi.api.put(options);
-            } catch(e) {
-              var exception = e;
-            }
-            expect(exception.name).toEqual("ValueError");
-          });
+              actual = this.server.requests[0].requestHeaders['content-type'];
+              expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
+
+            it("should identify a boolean as primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = false;
+              this.fi.api.put(options);
+              actual = this.server.requests[0].requestHeaders['content-type'];
+              expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
+
+            it("should identify a string as primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = "hello";
+              this.fi.api.put(options);
+              actual = this.server.requests[0].requestHeaders['content-type'];
+              expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
+
+            it("should identify a null as primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = null;
+              this.fi.api.put(options);
+              actual = this.server.requests[0].requestHeaders['content-type'];
+              expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
+
+            it("should identify a string array as primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = ["a", "b", "c"];
+              this.fi.api.put(options);
+              actual = this.server.requests[0].requestHeaders['content-type'];
+              expect(actual).toContain(JSON_CONTENT_TYPE);
+            });
+
+            it("should identify a mixed array as NOT primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = ["a", "b", 1];
+              try {
+                this.fi.api.put(options);
+              } catch(e) {
+                var exception = e;
+              }
+              expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should identify an object as NOT primitive", function() {
+              var options = new Object();
+              options.path = "about/fakeAboutValue/username/tag";
+              options.data = {foo: "bar"};
+              try {
+                this.fi.api.put(options);
+              } catch(e) {
+                var exception = e;
+              }
+              expect(exception.name).toEqual("ValueError");
+            });
         });
     });
 
     /**
-     * Checks the library correctly implements the various utility functions for
-     * common tasks.
+     * Checks the library correctly implements the various utility
+     * functions for common tasks.
      */
     describe("Utility functions", function() {
-      /**
-       * See semi-specification described here:
-       * https://github.com/fluidinfo/fluidinfo.js/issues/9#issuecomment-1700115
-       */
-      describe("Query function", function() {
+        /**
+         * See semi-specification described here:
+         *   http://git.io/utility-function-specification
+         */
+        describe("Query function", function() {
+            beforeEach(function() {
+                this.responseText = JSON.stringify({
+                    results: {
+                        id: {
+                            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
+                                "fluiddb/about": {
+                                    "value": "foo"
+                                },
+                                "ntoll/foo": {
+                                    "value": 5
+                                },
+                                "terrycojones/bar": {
+                                    "value-type": "image/png",
+                                    "size": 179393
+                                }
+                            }
+                        }
+                    }
+                });
+            });
 
-        beforeEach(function() {
-          this.responseText = JSON.stringify({
-            results: {id: {
-              "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
-                  "fluiddb/about": {
-                    "value": "foo"
-                  },
-                  "ntoll/foo": {
-                    "value": 5
-                  },
-                  "terrycojones/bar": {
-                    "value-type": "image/png",
-                    "size": 179393
-                  }
-              }
-            }}
-          });
+            it("should send an appropriate query to /values", function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var where = "has esteve/rating > 7";
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: function(result) {},
+                               onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "tag=ntoll%2Ffoo&" +
+                               "tag=terrycojones%2Fbar&" +
+                               "tag=fluiddb%2Fabout&" +
+                               "query=has%20esteve%2Frating%20%3E%207";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should insist on a 'select' argument", function() {
+                try {
+                    var where = "has esteve/rating>7";
+                    this.fi.query({where: where,
+                                   onSuccess: function(result) {},
+                                   onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should insist on a 'where' argument", function() {
+                try {
+                    var select = ["ntoll/foo", "terrycojones/bar"];
+                    this.fi.query({select: select,
+                                   onSuccess: function(result) {},
+                                   onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should appropriately call onSuccess function", function() {
+                var select = ["ntoll/foo", "terrycojones/bar"];
+                var where = "has esteve/rating>7";
+                var onSuccess = sinon.mock();
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: onSuccess,
+                               onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                // expect the onSuccess function to be called only once
+                expect(onSuccess.once()).toBeTruthy();
+            });
+
+            it("should appropriately call onError function", function() {
+                var select = ["ntoll/foo", "terrycojones/bar"];
+                var where = "has esteve/rating>7";
+                var onError = sinon.mock();
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: function(result) {},
+                               onError: onError});
+                var responseStatus = 401;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                // expect the onError function to be called only once
+                expect(onError.once()).toBeTruthy();
+            });
+
+            it("should build a result array correctly", function() {
+                var select = ["ntoll/foo", "terrycojones/bar"];
+                var where = "has esteve/rating>7";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(Object.prototype.toString.apply(result.data))
+                        .toEqual("[object Array]");
+                    spy();
+                };
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: onSuccess,
+                               onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should produce objects with id and original result in rawData",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar"];
+                var where = "has esteve/rating>7";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data[0];
+                    expect(obj.id)
+                        .toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
+                    expect(typeof(result.rawData)).toEqual("string");
+                    spy();
+                };
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: onSuccess,
+                               onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should produce objects where values can be referenced by" +
+               " tag path", function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var where = "has esteve/rating>7";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data[0];
+                    expect(obj["fluiddb/about"]).toEqual("foo");
+                    expect(obj["ntoll/foo"]).toEqual(5);
+                    spy();
+                };
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: onSuccess,
+                               onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should produce objects that correctly represent opaque values",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var where = "has esteve/rating>7";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data[0];
+                    expect(typeof(obj["terrycojones/bar"])).toEqual("object");
+                    expect(obj["terrycojones/bar"]["value-type"])
+                        .toEqual("image/png");
+                    expect(obj["terrycojones/bar"]["size"]).toEqual(179393);
+                    var expected = "https://fluiddb.fluidinfo.com/objects/" +
+                                   "05eee31e-fbd1-43cc-9500-0469707a9bc3/" +
+                                   "terrycojones/bar";
+                    expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
+                    spy();
+                };
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: onSuccess,
+                               onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
         });
 
-        it("should send an appropriate query to /values", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var where = "has esteve/rating > 7";
-          this.fi.query({select: select, where: where, onSuccess: function(result) {},
-            onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=has%20esteve%2Frating%20%3E%207";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("GET");
+        /**
+         * See semi-specification described here:
+         * https://github.com/fluidinfo/fluidinfo.js/issues/10
+         */
+        describe("Update function", function() {
+            it("should insist on a values object", function() {
+                try {
+                    var where = "has esteve/rating>7";
+                    this.fi.update({where: where,
+                                    onSuccess: function(result) {},
+                                    onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should insist on a where object", function() {
+                try {
+                    var vals = {"foo/bar": "baz"};
+                    this.fi.update({values: vals,
+                                    onSuccess: function(result) {},
+                                    onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should produce the correct JSON payload", function() {
+                var vals = {"ntoll/rating": 7,
+                            "ntoll/description": "I like it!"};
+                var where = "has terrycojones < 2";
+                this.fi.update({values: vals,
+                                where: where,
+                                onSuccess: function(result) {},
+                                onError: function(result) {}});
+                expected = "https://fluiddb.fluidinfo.com/values";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("PUT");
+                expect(this.server.requests[0].requestHeaders["content-type"])
+                  .toContain("application/json");
+                expect(this.server.requests[0].requestBody)
+                    .not.toEqual(null);
+                var body = JSON.parse(this.server.requests[0].requestBody);
+                expect(Object.prototype.toString.apply(body.queries))
+                    .toEqual("[object Array]");
+                var updateSpecification = body.queries[0];
+                expect(updateSpecification[0]).toEqual(where);
+                expect(updateSpecification[1]["ntoll/rating"].value)
+                    .toEqual(7);
+                expect(updateSpecification[1]["ntoll/description"].value)
+                    .toEqual("I like it!");
+            });
+
+            it("should call onSuccess appropriately", function() {
+                var vals = {"ntoll/rating": 7,
+                            "ntoll/description": "I like it!"};
+                var where = "has terrycojones < 2";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(result.status).toEqual(204);
+                    spy();
+                };
+                this.fi.update({values: vals,
+                                where: where,
+                                onSuccess: onSuccess,
+                                onError: function(result) {}});
+                var responseStatus = 204;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, '');
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should call onError when a problem occurs", function() {
+                var vals = {"ntoll/rating": 7,
+                            "ntoll/description": "I like it!"};
+                var where = "has terrycojones < 2";
+                var spy = sinon.spy();
+                var onError = function(result) {
+                    expect(result.status).toEqual(401);
+                    spy();
+                };
+                this.fi.update({values: vals,
+                                where: where,
+                                onSuccess: function(result) {},
+                                onError: onError});
+                var responseStatus = 401;
+                var responseHeaders = {"Content-Type": "text/html",
+                      "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, '');
+                expect(spy.calledOnce).toBeTruthy();
+            });
         });
 
-        it("should insist on a 'select' argument", function() {
-          try {
-            var where = "has esteve/rating>7";
-            this.fi.query({where: where, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
+        /**
+         * See semi-specification described here:
+         * https://github.com/fluidinfo/fluidinfo.js/issues/11
+         */
+        describe("Tag function", function() {
+            it("should insist on a values attribute in options", function() {
+                try {
+                    var about = "foo";
+                    this.fi.tag({about: about,
+                                 onSuccess: function(result) {},
+                                 onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should insist on either an id or about attribute in options",
+                function() {
+                try {
+                    var values = {"ntoll/rating": 7,
+                                  "ntoll/comment": "I like it!"};
+                    this.fi.tag({values: values,
+                                 onSuccess: function(result) {},
+                                 onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should send the correct JSON payload using fluiddb/about",
+               function() {
+                var vals = {
+                  "ntoll/rating": 7,
+                  "ntoll/description": "I like it!"
+                };
+                var about = "foo";
+                this.fi.tag({values: vals,
+                             about: about,
+                             onSuccess: function(result) {},
+                             onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("PUT");
+                expect(this.server.requests[0].requestHeaders["content-type"])
+                    .toContain("application/json");
+                expect(this.server.requests[0].requestBody)
+                    .not.toEqual(null);
+                var body = JSON.parse(this.server.requests[0].requestBody);
+                expect(Object.prototype.toString.apply(body.queries))
+                    .toEqual("[object Array]");
+                var updateSpecification = body.queries[0];
+                expect(updateSpecification[0]).toEqual('fluiddb/about="foo"');
+                expect(updateSpecification[1]["ntoll/rating"].value)
+                    .toEqual(7);
+                expect(updateSpecification[1]["ntoll/description"].value)
+                    .toEqual("I like it!");
+            });
+
+            it("should send the correct JSON payload using fluiddb/id",
+               function() {
+                var vals = {"ntoll/rating": 7,
+                            "ntoll/description": "I like it!"};
+                var id = "SOMEUUID";
+                this.fi.tag({values: vals, id: id,
+                             onSuccess: function(result) {},
+                             onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("PUT");
+                expect(this.server.requests[0].requestHeaders["content-type"])
+                    .toContain("application/json");
+                expect(this.server.requests[0].requestBody)
+                    .not.toEqual(null);
+                var body = JSON.parse(this.server.requests[0].requestBody);
+                expect(Object.prototype.toString.apply(body.queries))
+                    .toEqual("[object Array]");
+                var updateSpecification = body.queries[0];
+                expect(updateSpecification[0])
+                    .toEqual('fluiddb/id="SOMEUUID"');
+                expect(updateSpecification[1]["ntoll/rating"].value)
+                    .toEqual(7);
+                expect(updateSpecification[1]["ntoll/description"].value)
+                    .toEqual("I like it!");
+            });
+
+            it("should call onSuccess as appropriate", function() {
+                var vals = {"ntoll/rating": 7,
+                          "ntoll/description": "I like it!"};
+                var about = "foo";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(result.status).toEqual(204);
+                    spy();
+                };
+                this.fi.tag({values: vals,
+                             about: about,
+                             onSuccess: onSuccess,
+                             onError: function(result) {}});
+                var responseStatus = 204;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, '');
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should call onError as appropriate", function() {
+                var vals = {"ntoll/rating": 7,
+                            "ntoll/description": "I like it!"};
+                var about = "foo";
+                var spy = sinon.spy();
+                var onError= function(result) {
+                    expect(result.status).toEqual(401);
+                    spy();
+                };
+                this.fi.tag({values: vals,
+                             about: about,
+                             onSuccess: function() {},
+                             onError: onError});
+                var responseStatus = 401;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, '');
+                expect(spy.calledOnce).toBeTruthy();
+            });
         });
 
-        it("should insist on a 'where' argument", function() {
-          try {
-            var select = ["ntoll/foo", "terrycojones/bar"];
-            this.fi.query({select: select, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
+        /**
+         * See semi-specification described here:
+         * https://github.com/fluidinfo/fluidinfo.js/issues/29
+         */
+        describe("Delete function", function() {
+            it("should produce the correct request to Fluidinfo", function() {
+                var tags = ["ntoll/rating", "ntoll/description"];
+                var where = "terrycojones/rating < 2";
+                this.fi.del({tags: tags,
+                             where: where,
+                             onSuccess: function(result) {},
+                             onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "tag=ntoll%2Frating&" +
+                               "tag=ntoll%2Fdescription&" +
+                               "query=terrycojones%2Frating%20%3C%202";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("DELETE");
+            });
+
+            it("should insist on a tags attribute in options", function() {
+                try {
+                    var where = "terrycojones/rating < 2";
+                    this.fi.del({where: where,
+                                 onSuccess: function(result) {},
+                                 onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should insist on a where object", function() {
+                try {
+                    var tags = ["ntoll/rating", "ntoll/description"];
+                    this.fi.del({tags: tags,
+                                 onSuccess: function(result) {},
+                                 onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should call onSuccess as appropriate", function() {
+                var tags = ["ntoll/rating", "ntoll/description"];
+                var where = "terrycojones/rating < 2";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(result.status).toEqual(204);
+                    spy();
+                };
+                this.fi.del({tags: tags,
+                             where: where,
+                             onSuccess: onSuccess,
+                             onError: function(result) {}});
+                var responseStatus = 204;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, '');
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should call onError as appropriate", function() {
+                var tags = ["ntoll/rating", "ntoll/description"];
+                var where = "terrycojones/rating < 2";
+                var spy = sinon.spy();
+                var onError= function(result) {
+                    expect(result.status).toEqual(401);
+                    spy();
+                };
+                var onSuccess = function() {};
+                this.fi.del({tags: tags,
+                             where: where,
+                             onSuccess: onSuccess,
+                             onError: onError});
+                var responseStatus = 401;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, '');
+                expect(spy.calledOnce).toBeTruthy();
+            });
         });
 
-        it("should appropriately call onSuccess function", function() {
-          var select = ["ntoll/foo", "terrycojones/bar"];
-          var where = "has esteve/rating>7";
-          var onSuccess = sinon.mock();
-          this.fi.query({select: select, where: where, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          // expect the onSuccess function to be called only once
-          expect(onSuccess.once()).toBeTruthy();
+        /**
+         * See semi-specification described here:
+         * https://github.com/fluidinfo/fluidinfo.js/issues/12
+         */
+        describe("getObject function", function() {
+            beforeEach(function() {
+                this.responseText = JSON.stringify({
+                    results: {
+                        id: {
+                            "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
+                                "fluiddb/about": {
+                                    "value": "foo"
+                                },
+                                "ntoll/foo": {
+                                    "value": 5
+                                },
+                                "terrycojones/bar": {
+                                    "value-type": "image/png",
+                                    "size": 179393
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+
+            it("should insist on a select value", function() {
+                try {
+                    var about = "foo";
+                    this.fi.getObject({about: about,
+                                       onSuccess: function(result) {},
+                                       onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should insist on either an id or about attribute in options",
+               function() {
+                try {
+                    var select = ["fluiddb/about", "ntoll/foo",
+                                  "terrycojones/bar"];
+                    this.fi.getObject({select: select,
+                                       onSuccess: function(result) {},
+                                       onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should result in the correct request to Fluidinfo for 'about'",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+                var about = "foo";
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: function(result) {},
+                                   onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "tag=ntoll%2Ffoo&" +
+                               "tag=terrycojones%2Fbar&" +
+                               "tag=fluiddb%2Fabout&" +
+                               "query=fluiddb%2Fabout%3D%22foo%22";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should result in the correct request to Fluidinfo for 'id'",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var id = "SOMEUUID";
+                this.fi.getObject({select: select,
+                                   id: id,
+                                   onSuccess: function(result) {},
+                                   onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "tag=ntoll%2Ffoo&" +
+                               "tag=terrycojones%2Fbar&" +
+                               "tag=fluiddb%2Fabout&" +
+                               "query=fluiddb%2Fid%3D%22SOMEUUID%22";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should result in a single appropriate JS object",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "foo";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(typeof (result.data)).toEqual("object");
+                    spy();
+                };
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: onSuccess,
+                                   onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should produce an object with id and original result in " +
+               "rawData", function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "foo";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data;
+                    expect(obj.id)
+                        .toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
+                    expect(typeof(result.rawData)).toEqual("string");
+                    spy();
+                };
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: onSuccess,
+                                   onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {"Content-Type": "application/json",
+                      "Content-Length": "28926",
+                      "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should produce an object where values can be referenced by " +
+               "tag path", function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "foo";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data;
+                    expect(obj["fluiddb/about"]).toEqual("foo");
+                    expect(obj["ntoll/foo"]).toEqual(5);
+                    spy();
+                };
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: onSuccess,
+                                   onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should produce an object that correctly represents opaque " +
+               "values", function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "about";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data;
+                    expect(typeof(obj["terrycojones/bar"])).toEqual("object");
+                    expect(obj["terrycojones/bar"]["value-type"])
+                        .toEqual("image/png");
+                    expect(obj["terrycojones/bar"]["size"]).toEqual(179393);
+                    var expected = "https://fluiddb.fluidinfo.com/objects/" +
+                                   "05eee31e-fbd1-43cc-9500-0469707a9bc3/" +
+                                   "terrycojones/bar";
+                    expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
+                    spy();
+                };
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: onSuccess,
+                                   onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should produce and *empty* object when no result is returned",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "about";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data;
+                    expect(typeof(obj)).toEqual("object");
+                    expect(obj.id).toEqual(undefined);
+                    spy();
+                };
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: onSuccess,
+                                   onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                '{"results": {"id": {}}}');
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should appropriately call the onSuccess function", function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "about";
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(result.status).toEqual(200);
+                    spy();
+                };
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: onSuccess,
+                                   onError: function(result) {}});
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should appropriately call the onError function", function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "about";
+                var spy = sinon.spy();
+                var onError= function(result) {
+                    expect(result.status).toEqual(401);
+                    spy();
+                };
+                this.fi.getObject({select: select,
+                                   about: about,
+                                   onSuccess: function(result) {},
+                                   onError: onError});
+                var responseStatus = 401;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders,
+                                                this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
         });
 
-        it("should appropriately call onError function", function() {
-          var select = ["ntoll/foo", "terrycojones/bar"];
-          var where = "has esteve/rating>7";
-          var onError = sinon.mock();
-          this.fi.query({select: select, where: where, onSuccess: function(result) {},
-            onError: onError});
-          var responseStatus = 401;
-          var responseHeaders = {"Content-Type": "text/html",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          // expect the onError function to be called only once
-          expect(onError.once()).toBeTruthy();
-        });
+        /**
+         * See semi-specification described here:
+         * https://github.com/fluidinfo/fluidinfo.js/issues/37
+         */
+        describe("createObject function", function() {
+            it("should complain if the user isn't logged in", function() {
+                var fi = fluidinfo(); // anonymous user
+                try {
+                    fi.createObject({about: "foo",
+                                     onSuccess: function(result) {},
+                                     onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("AuthorizationError");
+            });
 
-        it("should build a result array correctly", function() {
-          var select = ["ntoll/foo", "terrycojones/bar"];
-          var where = "has esteve/rating>7";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            expect(Object.prototype.toString.apply(result.data))
-              .toEqual("[object Array]");
-            spy();
-          };
-          this.fi.query({select: select, where: where, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
+            it("should send the correct request to Fluidinfo with an about " +
+               "value", function() {
+                this.fi.createObject({about: "foo",
+                                      onSuccess: function(result) {},
+                                      onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/about/foo";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("POST");
+            });
 
-        it("should produce objects with id and original result in rawData", function() {
-          var select = ["ntoll/foo", "terrycojones/bar"];
-          var where = "has esteve/rating>7";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            var obj = result.data[0];
-            expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
-            expect(typeof(result.rawData)).toEqual("string");
-            spy();
-          };
-          this.fi.query({select: select, where: where, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
+            it("should send the correct request to Fluidinfo as an " +
+               "anonymous object", function() {
+                this.fi.createObject({onSuccess: function(result) {},
+                                      onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/objects";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("POST");
+            });
 
-        it("should produce objects where values can be referenced by tag path", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var where = "has esteve/rating>7";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            var obj = result.data[0];
-            expect(obj["fluiddb/about"]).toEqual("foo");
-            expect(obj["ntoll/foo"]).toEqual(5);
-            spy();
-          };
-          this.fi.query({select: select, where: where, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
+            it("should return an object with 'id' and 'fluiddb/about' " +
+               "attributes", function() {
+                var onSuccess = function(result) {
+                    var obj = result.data;
+                    expect(typeof(obj)).toEqual("object");
+                    expect(result.status).toEqual(201);
+                    expect(obj.id).toEqual("12345");
+                    expect(obj["fluiddb/about"]).toEqual("foo");
+                };
+                this.fi.createObject({about: "foo",
+                                      onSuccess: onSuccess,
+                                      onError: function(result) {}});
+                var responseStatus = 201;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/about/foo",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '{"id": "12345", ' +
+                    '"URI": "http://fluiddb.fluidinfo.com/about/foo"}';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+            });
 
-        it("should produce objects that correctly represent opaque values", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var where = "has esteve/rating>7";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            var obj = result.data[0];
-            expect(typeof(obj["terrycojones/bar"])).toEqual("object");
-            expect(obj["terrycojones/bar"]["value-type"]).toEqual("image/png");
-            expect(obj["terrycojones/bar"]["size"]).toEqual(179393);
-            var expected = "https://fluiddb.fluidinfo.com/objects/05eee31e-fbd1-43cc-9500-0469707a9bc3/terrycojones/bar";
-            expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
-            spy();
-          };
-          this.fi.query({select: select, where: where, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-      });
+            it("should return an object with just an 'id' attribute for an " +
+               "anonymous object", function() {
+                var onSuccess = function(result) {
+                    var obj = result.data;
+                    expect(typeof(obj)).toEqual("object");
+                    expect(result.status).toEqual(201);
+                    expect(obj.id).toEqual("12345");
+                    expect(obj["fluiddb/about"]).toEqual(undefined);
+                };
+                this.fi.createObject({onSuccess: onSuccess,
+                                      onError: function(result) {}});
+                var responseStatus = 201;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/objects/12345",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '{"id": "12345", ' +
+                    '"URI": "http://fluiddb.fluidinfo.com/objects/12345"}';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+            });
 
-      /**
-       * See semi-specification described here:
-       * https://github.com/fluidinfo/fluidinfo.js/issues/10
-       */
-      describe("Update function", function() {
-        it("should insist on a values object", function() {
-          try {
-            var where = "has esteve/rating>7";
-            this.fi.update({where: where, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
+            it("should appropriately call onSuccess", function() {
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(result.status).toEqual(201);
+                    spy();
+                };
+                this.fi.createObject({about: "foo",
+                                      onSuccess: onSuccess,
+                                      onError: function(result) {}});
+                var responseStatus = 201;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/about/foo",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '{"id": "12345", ' +
+                    '"URI": "http://fluiddb.fluidinfo.com/about/foo"}';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
 
-        it("should insist on a where object", function() {
-          try {
-            var vals = {"foo/bar": "baz"};
-            this.fi.update({values: vals, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
+            it("should appropriately call onError", function() {
+                var spy = sinon.spy();
+                var onError = function(result) {
+                    expect(result.status).toEqual(401);
+                    spy();
+                };
+                this.fi.createObject({about: "foo",
+                                      onSuccess: function(result) {},
+                                      onError: onError});
+                var responseStatus = 401;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, "");
+                expect(spy.calledOnce).toBeTruthy();
+            });
         });
-
-        it("should produce the correct JSON payload", function() {
-          var vals = {
-            "ntoll/rating": 7,
-            "ntoll/description": "I like it!"
-          };
-          var where = "has terrycojones < 2";
-          this.fi.update({values: vals, where: where, onSuccess: function(result) {},
-            onError: function(result) {}});
-          expected = "https://fluiddb.fluidinfo.com/values";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("PUT");
-          expect(this.server.requests[0].requestHeaders["content-type"])
-            .toContain("application/json");
-          expect(this.server.requests[0].requestBody)
-              .not.toEqual(null);
-          var body = JSON.parse(this.server.requests[0].requestBody);
-          expect(Object.prototype.toString.apply(body.queries))
-              .toEqual("[object Array]");
-          var updateSpecification = body.queries[0];
-          expect(updateSpecification[0]).toEqual(where);
-          expect(updateSpecification[1]["ntoll/rating"].value).toEqual(7);
-          expect(updateSpecification[1]["ntoll/description"].value).toEqual("I like it!");
-        });
-
-        it("should call onSuccess appropriately", function() {
-          var vals = {
-            "ntoll/rating": 7,
-            "ntoll/description": "I like it!"
-          };
-          var where = "has terrycojones < 2";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            expect(result.status).toEqual(204);
-            spy();
-          };
-          this.fi.update({values: vals, where: where, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 204;
-          var responseHeaders = {"Content-Type": "text/html",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, '');
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should call onError when a problem occurs", function() {
-          var vals = {
-            "ntoll/rating": 7,
-            "ntoll/description": "I like it!"
-          };
-          var where = "has terrycojones < 2";
-          var spy = sinon.spy();
-          var onError = function(result) {
-            expect(result.status).toEqual(401);
-            spy();
-          };
-          this.fi.update({values: vals, where: where, onSuccess: function(result) {},
-            onError: onError});
-          var responseStatus = 401;
-          var responseHeaders = {"Content-Type": "text/html",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, '');
-          expect(spy.calledOnce).toBeTruthy();
-        });
-      });
-
-      /**
-       * See semi-specification described here:
-       * https://github.com/fluidinfo/fluidinfo.js/issues/11
-       */
-      describe("Tag function", function() {
-        it("should insist on a values attribute in options", function() {
-          try {
-            var about = "foo";
-            this.fi.tag({about: about, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
-
-        it("should insist on either an id or about attribute in options", function() {
-          try {
-            var values = {
-              "ntoll/rating": 7,
-              "ntoll/comment": "I like it!"
-            };
-            this.fi.tag({values: values, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
-
-        it("should send the correct JSON payload using fluiddb/about", function() {
-          var vals = {
-            "ntoll/rating": 7,
-            "ntoll/description": "I like it!"
-          };
-          var about = "foo";
-          this.fi.tag({values: vals, about: about, onSuccess: function(result) {},
-            onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/values";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("PUT");
-          expect(this.server.requests[0].requestHeaders["content-type"])
-            .toContain("application/json");
-          expect(this.server.requests[0].requestBody)
-              .not.toEqual(null);
-          var body = JSON.parse(this.server.requests[0].requestBody);
-          expect(Object.prototype.toString.apply(body.queries))
-              .toEqual("[object Array]");
-          var updateSpecification = body.queries[0];
-          expect(updateSpecification[0]).toEqual('fluiddb/about="foo"');
-          expect(updateSpecification[1]["ntoll/rating"].value).toEqual(7);
-          expect(updateSpecification[1]["ntoll/description"].value).toEqual("I like it!");
-        });
-
-        it("should send the correct JSON payload using fluiddb/id", function() {
-          var vals = {
-            "ntoll/rating": 7,
-            "ntoll/description": "I like it!"
-          };
-          var id = "SOMEUUID";
-          this.fi.tag({values: vals, id: id, onSuccess: function(result) {},
-            onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/values";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("PUT");
-          expect(this.server.requests[0].requestHeaders["content-type"])
-            .toContain("application/json");
-          expect(this.server.requests[0].requestBody)
-              .not.toEqual(null);
-          var body = JSON.parse(this.server.requests[0].requestBody);
-          expect(Object.prototype.toString.apply(body.queries))
-              .toEqual("[object Array]");
-          var updateSpecification = body.queries[0];
-          expect(updateSpecification[0]).toEqual('fluiddb/id="SOMEUUID"');
-          expect(updateSpecification[1]["ntoll/rating"].value).toEqual(7);
-          expect(updateSpecification[1]["ntoll/description"].value).toEqual("I like it!");
-        });
-
-        it("should call onSuccess as appropriate", function() {
-          var vals = {
-            "ntoll/rating": 7,
-            "ntoll/description": "I like it!"
-          };
-          var about = "foo";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            expect(result.status).toEqual(204);
-            spy();
-          };
-          this.fi.tag({values: vals, about: about, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 204;
-          var responseHeaders = {"Content-Type": "text/html",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, '');
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should call onError as appropriate", function() {
-          var vals = {
-            "ntoll/rating": 7,
-            "ntoll/description": "I like it!"
-          };
-          var about = "foo";
-          var spy = sinon.spy();
-          var onError= function(result) {
-            expect(result.status).toEqual(401);
-            spy();
-          };
-          this.fi.tag({values: vals, about: about, onSuccess: function() {},
-            onError: onError});
-          var responseStatus = 401;
-          var responseHeaders = {"Content-Type": "text/html",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, '');
-          expect(spy.calledOnce).toBeTruthy();
-        });
-      });
-
-      /**
-       * See semi-specification described here:
-       * https://github.com/fluidinfo/fluidinfo.js/issues/29
-       */
-      describe("Delete function", function() {
-        it("should produce the correct request to Fluidinfo", function() {
-          var tags = ["ntoll/rating", "ntoll/description"];
-          var where = "terrycojones/rating < 2";
-          this.fi.del({tags: tags, where: where,
-            onSuccess: function(result) {}, onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Frating&tag=ntoll%2Fdescription&query=terrycojones%2Frating%20%3C%202";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("DELETE");
-        });
-
-        it("should insist on a tags attribute in options", function() {
-          try {
-            var where = "terrycojones/rating < 2";
-            this.fi.del({where: where, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
-
-        it("should insist on a where object", function() {
-          try {
-            var tags = ["ntoll/rating", "ntoll/description"];
-            this.fi.del({tags: tags, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
-
-        it("should call onSuccess as appropriate", function() {
-          var tags = ["ntoll/rating", "ntoll/description"];
-          var where = "terrycojones/rating < 2";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            expect(result.status).toEqual(204);
-            spy();
-          };
-          this.fi.del({tags: tags, where: where, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 204;
-          var responseHeaders = {"Content-Type": "text/html",
-            "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, '');
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should call onError as appropriate", function() {
-          var tags = ["ntoll/rating", "ntoll/description"];
-          var where = "terrycojones/rating < 2";
-          var spy = sinon.spy();
-          var onError= function(result) {
-            expect(result.status).toEqual(401);
-            spy();
-          };
-          var onSuccess = function() {};
-          this.fi.del({tags: tags, where: where, onSuccess: onSuccess,
-            onError: onError});
-          var responseStatus = 401;
-          var responseHeaders = {"Content-Type": "text/html",
-            "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, '');
-          expect(spy.calledOnce).toBeTruthy();
-        });
-      });
-
-      /**
-       * See semi-specification described here:
-       * https://github.com/fluidinfo/fluidinfo.js/issues/12
-       */
-      describe("getObject function", function() {
-        beforeEach(function() {
-          this.responseText = JSON.stringify({
-            results: {id: {
-              "05eee31e-fbd1-43cc-9500-0469707a9bc3": {
-                  "fluiddb/about": {
-                    "value": "foo"
-                  },
-                  "ntoll/foo": {
-                    "value": 5
-                  },
-                  "terrycojones/bar": {
-                    "value-type": "image/png",
-                    "size": 179393
-                  }
-              }
-            }}
-          });
-        });
-
-        it("should insist on a select value", function() {
-          try {
-            var about = "foo";
-            this.fi.getObject({about: about, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
-
-        it("should insist on either an id or about attribute in options", function() {
-          try {
-            var select = ["fluiddb/about", "ntoll/foo", "terrycojones/bar"];
-            this.fi.getObject({select: select, onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("ValueError");
-        });
-
-        it("should result in the correct request to Fluidinfo for 'about'", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "foo";
-          this.fi.getObject({select: select, about: about, onSuccess: function(result) {},
-            onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fabout%3D%22foo%22";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("GET");
-        });
-
-        it("should result in the correct request to Fluidinfo for 'id'", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var id = "SOMEUUID";
-          this.fi.getObject({select: select, id: id, onSuccess: function(result) {},
-            onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/values?tag=ntoll%2Ffoo&tag=terrycojones%2Fbar&tag=fluiddb%2Fabout&query=fluiddb%2Fid%3D%22SOMEUUID%22";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("GET");
-        });
-
-        it("should result in a single appropriate JS object", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "foo";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            expect(typeof (result.data))
-              .toEqual("object");
-            spy();
-          };
-          this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should produce an object with id and original result in rawData", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "foo";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            var obj = result.data;
-            expect(obj.id).toEqual("05eee31e-fbd1-43cc-9500-0469707a9bc3");
-            expect(typeof(result.rawData)).toEqual("string");
-            spy();
-          };
-          this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should produce an object where values can be referenced by tag path", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "foo";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            var obj = result.data;
-            expect(obj["fluiddb/about"]).toEqual("foo");
-            expect(obj["ntoll/foo"]).toEqual(5);
-            spy();
-          };
-          this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should produce an object that correctly represents opaque values", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "about";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            var obj = result.data;
-            expect(typeof(obj["terrycojones/bar"])).toEqual("object");
-            expect(obj["terrycojones/bar"]["value-type"]).toEqual("image/png");
-            expect(obj["terrycojones/bar"]["size"]).toEqual(179393);
-            var expected = "https://fluiddb.fluidinfo.com/objects/05eee31e-fbd1-43cc-9500-0469707a9bc3/terrycojones/bar";
-            expect(obj["terrycojones/bar"]["url"]).toEqual(expected);
-            spy();
-          };
-          this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should produce and *empty* object when no result is returned", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "about";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            var obj = result.data;
-            expect(typeof(obj)).toEqual("object");
-            expect(obj.id).toEqual(undefined);
-            spy();
-          };
-          this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, '{"results": {"id": {}}}');
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should appropriately call the onSuccess function", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "about";
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            expect(result.status).toEqual(200);
-            spy();
-          };
-          this.fi.getObject({select: select, about: about, onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 200;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should appropriately call the onError function", function() {
-          var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
-          var about = "about";
-          var spy = sinon.spy();
-          var onError= function(result) {
-            expect(result.status).toEqual(401);
-            spy();
-          };
-          this.fi.getObject({select: select, about: about,
-            onSuccess: function(result) {}, onError: onError});
-          var responseStatus = 401;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, this.responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-      });
-
-      /**
-       * See semi-specification described here:
-       * https://github.com/fluidinfo/fluidinfo.js/issues/37
-       */
-      describe("createObject function", function() {
-        it("should complain if the user isn't logged in", function() {
-          var fi = fluidinfo(); // anonymous user
-          try{
-            fi.createObject({about: "foo", onSuccess: function(result) {},
-              onError: function(result) {}});
-          } catch(e) {
-            var exception = e;
-          }
-          expect(exception.name).toEqual("AuthorizationError");
-        });
-
-        it("should send the correct request to Fluidinfo with an about value", function() {
-          this.fi.createObject({about: "foo", onSuccess: function(result) {},
-            onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/about/foo";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("POST");
-        });
-
-        it("should send the correct request to Fluidinfo as an anonymous object", function() {
-          this.fi.createObject({onSuccess: function(result) {},
-            onError: function(result) {}});
-          var expected = "https://fluiddb.fluidinfo.com/objects";
-          expect(this.server.requests[0].url).toEqual(expected);
-          expect(this.server.requests[0].method).toEqual("POST");
-        });
-
-        it("should return an object with 'id' and 'fluiddb/about' attributes", function() {
-          var onSuccess = function(result) {
-            var obj = result.data;
-            expect(typeof(obj)).toEqual("object");
-            expect(result.status).toEqual(201);
-            expect(obj.id).toEqual("12345");
-            expect(obj["fluiddb/about"]).toEqual("foo");
-          };
-          this.fi.createObject({about: "foo", onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 201;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Location": "http://fluiddb.fluidinfo.com/about/foo",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/about/foo"}';
-          this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
-        });
-
-        it("should return an object with just an 'id' attribute for an anonymous object", function() {
-          var onSuccess = function(result) {
-            var obj = result.data;
-            expect(typeof(obj)).toEqual("object");
-            expect(result.status).toEqual(201);
-            expect(obj.id).toEqual("12345");
-            expect(obj["fluiddb/about"]).toEqual(undefined);
-          };
-          this.fi.createObject({onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 201;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Location": "http://fluiddb.fluidinfo.com/objects/12345",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/objects/12345"}';
-          this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
-        });
-
-        it("should appropriately call onSuccess", function() {
-          var spy = sinon.spy();
-          var onSuccess = function(result) {
-            expect(result.status).toEqual(201);
-            spy();
-          };
-          this.fi.createObject({about: "foo", onSuccess: onSuccess,
-            onError: function(result) {}});
-          var responseStatus = 201;
-          var responseHeaders = {"Content-Type": "application/json",
-                "Content-Length": "28926",
-                "Location": "http://fluiddb.fluidinfo.com/about/foo",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          var responseText = '{"id": "12345", "URI": "http://fluiddb.fluidinfo.com/about/foo"}';
-          this.server.requests[0].respond(responseStatus, responseHeaders, responseText);
-          expect(spy.calledOnce).toBeTruthy();
-        });
-
-        it("should appropriately call onError", function() {
-          var spy = sinon.spy();
-          var onError = function(result) {
-            expect(result.status).toEqual(401);
-            spy();
-          };
-          this.fi.createObject({about: "foo", onSuccess: function(result) {},
-            onError: onError});
-          var responseStatus = 401;
-          var responseHeaders = {"Content-Type": "text/html",
-                "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-          this.server.requests[0].respond(responseStatus, responseHeaders, "");
-          expect(spy.calledOnce).toBeTruthy();
-        });
-      });
     });
 
     afterEach(function() {
-      this.server.restore();
+        this.server.restore();
     });
 });
