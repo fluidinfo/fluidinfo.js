@@ -1,19 +1,35 @@
 fluidinfo.js is a javascript client library to access Fluidinfo
-(http://fluidinfo.com/):
+(http://fluidinfo.com/).
+
+
+Getting started
+---------------
 
 ```javascript
-var fi = fluidinfo({username: "username", password: "password"});
+var client = fluidinfo({username: "username", password: "password"});
 var onSuccess = function(result) {
-  // A callback to do something with the result
+    // A callback to do something with the result.
 };
 var onError = function(result) {
-  // A callback to handle when things go wrong
+    // A callback to do something when things go wrong.
 };
-fi.query({select: ["fluiddb/about", "ntoll/rating", "terrycojones/comment"],
-          where: 'oreilly.com/title matches "Javascript"',
-          onSuccess: onSuccess,
-          onError: onError});
+client.query({select: ["fluiddb/about", "ntoll/rating", "terrycojones/comment"],
+              where: 'oreilly.com/title matches "Javascript"',
+              onSuccess: onSuccess,
+              onError: onError});
 ```
+
+
+Running the tests
+-----------------
+
+fluidinfo.js uses the Jasmine behaviour-driven development framework
+for it's test suite.  Run the tests by opening `SpecRunner.html` in
+your web browser.
+
+
+Learning more
+-------------
 
 Documentation for using the library can be found in fluidinfo.js's
 wiki, found here:
