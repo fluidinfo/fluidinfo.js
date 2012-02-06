@@ -408,36 +408,6 @@ describe("Fluidinfo.js", function() {
               expect(spy.calledOnce).toBeTruthy();
           });
 
-          it("should provide a simple response object for onError when the " +
-             "response status is zero", function() {
-              var options = new Object();
-              options.path = "namespaces/test";
-              var payload = {name: "foo", description: "bar"};
-              options.data = payload;
-              var spy = sinon.spy();
-              options.onError = function(result) {
-                  expect(typeof(result)).toEqual("object");
-                  expect(result.status).toEqual(0);
-                  expect(typeof(result.headers)).toEqual("object");
-                  expect(result.data).toEqual("");
-                  expect(result.rawData).toEqual("");
-                  // original XHR:
-                  expect(typeof(result.request)).toEqual("object");
-                  spy(); // to prove the function was called
-              };
-              this.fi.api.post(options);
-              var responseStatus = 0;
-              var responseHeaders = {
-                  "Content-Type": "text/html",
-                  "Location": "http://fluiddb.fluidinfo.com/" +
-                              "namespaces/test/foo",
-                  "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-              var responseText = '';
-              this.server.requests[0].respond(responseStatus, responseHeaders,
-                                              responseText);
-              expect(spy.calledOnce).toBeTruthy();
-          });
-
           it("should return a simple response object for onSuccess when " +
              "async=False", function() {
               var options = new Object();
