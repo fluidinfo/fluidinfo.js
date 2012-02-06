@@ -397,24 +397,40 @@ var fluidinfo = function(options) {
                 options.data = JSON.stringify(options.data);
             }
         }
-        xhr.onerror = function() {
-            // handle stuff nicely
-            var result = createNiceResult(xhr);
-            options.onError(result);
-        };
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState != 4) return;
-            var result = createNiceResult(xhr);
-            // call the event handlers
-            if (xhr.status < 300 || xhr.status == 304) {
-                if (options.onSuccess){
-                    options.onSuccess(result);
-                }
-            } else if (options.onError){
-                // there appears to be a problem
-                options.onError(result);
+        try {
+            if('onprogress' in xhr) {
+                xhr.onerror = function() {
+                    // handle problems nicely.
+                    var result = createNiceResult(xhr);
+                    options.onError(result);
+                };
+                xhr.onload = function() {
+                    // process a good result.
+                    var result = createNiceResult(xhr);
+                    if (options.onSuccess){
+                        options.onSuccess(result);
+                    }
+                };
+            } else {
+                xhr.onreadystatechange = function() {
+                    // Old skool handling of XHR for older browsers.
+                    if (xhr.readyState != 4) return;
+                    var result = createNiceResult(xhr);
+                    if (xhr.status < 300) {
+                        // process a good result.
+                        if (options.onSuccess){
+                            options.onSuccess(result);
+                        }
+                    } else if (options.onError){
+                        // handle problems nicely.
+                        options.onError(result);
+                    }
+                };
             }
-        };
+        } catch (e) {
+            // Browser is IE6 or 7 so can't do cross origin requests anyway.
+            return undefined;
+        }
         xhr.send(options.data);
         if (!async) {
             var result = createNiceResult(xhr);
