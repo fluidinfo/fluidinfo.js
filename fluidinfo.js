@@ -397,11 +397,16 @@ var fluidinfo = function(options) {
                 options.data = JSON.stringify(options.data);
             }
         }
+        xhr.onerror = function() {
+            // handle stuff nicely
+            var result = createNiceResult(xhr);
+            options.onError(result);
+        };
         xhr.onreadystatechange = function() {
             if (xhr.readyState != 4) return;
             var result = createNiceResult(xhr);
             // call the event handlers
-            if (xhr.status > 0 && (xhr.status < 300 || xhr.status == 304)) {
+            if (xhr.status < 300 || xhr.status == 304) {
                 if (options.onSuccess){
                     options.onSuccess(result);
                 }
