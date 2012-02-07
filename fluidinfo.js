@@ -398,7 +398,9 @@ var fluidinfo = function(options) {
             }
         }
         try {
-            if('onprogress' in xhr) {
+            // A hack due to bugs in Android browsers
+            var isAndroid = navigator.userAgent.toLowerCase().indexOf("android") >= 0;
+            if('onprogress' in xhr && !isAndroid) {
                 xhr.onerror = function() {
                     // handle problems nicely.
                     var result = createNiceResult(xhr);
