@@ -743,7 +743,7 @@ var fluidinfo = function(options) {
             var result = [];
             var data = raw.data;
             var i;
-            for (i=0; i<data.length; i++){
+            for (i = 0; i < data.length; i++){
                 var obj = data[i];
                 obj.date = new Date(obj.timestamp);
                 if (obj.value["value-type"] !== undefined) {
