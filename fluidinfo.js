@@ -742,19 +742,17 @@ var fluidinfo = function(options) {
         var processResult = function(raw) {
             var result = [];
             var data = raw.data;
-            var tag;
-            for (tag in data){
-                if (typeof data[tag] === "object") {
-                    var obj = data[tag];
-                    obj.date = new Date(obj.timestamp);
-                    if (obj.value["value-type"] !== undefined) {
-                        // opaque value
-                        obj.value["url"] =
-                            session.baseURL + "objects/" + obj.object_id +
-                            "/" + obj.tag;
-                    }
-                    result.push(obj);
+            var i;
+            for (i=0; i<data.length; i++){
+                var obj = data[i];
+                obj.date = new Date(obj.timestamp);
+                if (obj.value["value-type"] !== undefined) {
+                    // opaque value
+                    obj.value["url"] =
+                        session.baseURL + "objects/" + obj.object_id +
+                        "/" + obj.tag;
                 }
+                result.push(obj);
             }
             raw.data = result;
             if (userOnSuccess){
