@@ -1765,6 +1765,212 @@ describe("Fluidinfo.js", function() {
                 expect(spy.calledOnce).toBeTruthy();
             });
         });
+
+        /**
+         * See semi-specification described here:
+         * https://github.com/fluidinfo/fluidinfo.js/issues/67
+         */
+        describe("recent function", function() {
+            it("should expect either id, about or user args", function() {
+                try {
+                    this.fi.recent({});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
+            });
+
+            it("should send the correct request to Fluidinfo with an " +
+               "id", function() {
+                var id = "1f11fb74-0676-4922-9239-4d3c7e881984";
+                this.fi.recent({
+                    id: id
+                });
+                var endpoint = "https://fluiddb.fluidinfo.com/recent/objects/";
+                var expected = endpoint + id;
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should send the correct request to Fluidinfo with an about " +
+               "value", function() {
+                var about = "foo";
+                this.fi.recent({
+                    about: about
+                });
+                var endpoint = "https://fluiddb.fluidinfo.com/recent/about/";
+                var expected = endpoint + about;
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should send the correct request to Fluidinfo with a " +
+               "username", function() {
+                var user = "test";
+                this.fi.recent({
+                    user: user
+                });
+                var endpoint = "https://fluiddb.fluidinfo.com/recent/users/";
+                var expected = endpoint + user;
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should return an array of objects", function() {
+                var isArray = function(obj){
+                    // Thanks Doug Crockford
+                    return obj && typeof(obj)==="object" && obj.constructor===Array;
+                }
+                var onSuccess = function(result) {
+                    expect(isArray(result.data)).toEqual(true);
+                    expect(result.status).toEqual(200);
+                };
+                this.fi.recent({
+                    about: 'foo',
+                    onSuccess: onSuccess
+                });
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '[{' +
+                    '"username": "terrycojones",' +
+                    '"tag": "terrycojones/like",' +
+                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
+                    '"about": "foo",' +
+                    '"value": "bar",' +
+                    '"timestamp": "2012-01-26T16:00:09Z"' +
+                    '}]';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+            });
+
+            it("should return objects with date attributes as Date type" +
+               "objects", function() {
+                var isDate = function(obj){
+                    return obj && typeof(obj)==="object" && obj.constructor===Date;
+                };
+                var onSuccess = function(result) {
+                    var obj = result.data[0];
+                    expect(isDate(obj.date)).toEqual(true);
+                };
+                this.fi.recent({
+                    about: 'foo',
+                    onSuccess: onSuccess
+                });
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '[{' +
+                    '"username": "terrycojones",' +
+                    '"tag": "terrycojones/like",' +
+                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
+                    '"about": "foo",' +
+                    '"value": "bar",' +
+                    '"timestamp": "2012-01-26T16:00:09Z"' +
+                    '}]';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+            });
+
+            it("should produce objects that correctly represent opaque values",
+               function() {
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data[0];
+                    expect(typeof(obj["value"])).toEqual("object");
+                    expect(obj["value"]["value-type"])
+                        .toEqual("image/png");
+                    expect(obj["value"]["size"]).toEqual(179393);
+                    var expected = "https://fluiddb.fluidinfo.com/objects/" +
+                                   "3b57f6b7-c239-481a-9595-beeffa2958c3/" +
+                                   "terrycojones/like";
+                    expect(obj["value"]["url"]).toEqual(expected);
+                    spy();
+                };
+                this.fi.recent({
+                    about: 'foo',
+                    onSuccess: onSuccess
+                });
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '[{' +
+                    '"username": "terrycojones",' +
+                    '"tag": "terrycojones/like",' +
+                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
+                    '"about": "foo",' +
+                    '"value": {' +
+                    '"value-type": "image/png",' +
+                    '"size": 179393' +
+                    '},' +
+                    '"timestamp": "2012-01-26T16:00:09Z"' +
+                    '}]';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should appropriately call onSuccess", function() {
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    expect(result.status).toEqual(200);
+                    spy();
+                };
+                this.fi.recent({
+                    about: 'foo',
+                    onSuccess: onSuccess
+                });
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '[{' +
+                    '"username": "terrycojones",' +
+                    '"tag": "terrycojones/like",' +
+                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
+                    '"about": "foo",' +
+                    '"value": "bar",' +
+                    '"timestamp": "2012-01-26T16:00:09Z"' +
+                    '}]';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should appropriately call onError", function() {
+                var spy = sinon.spy();
+                var onError = function(result) {
+                    expect(result.status).toEqual(401);
+                    spy();
+                };
+                this.fi.recent({
+                    about: 'foo',
+                    onError: onError
+                });
+                var responseStatus = 401;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, "");
+                expect(spy.calledOnce).toBeTruthy();
+            });
+        });
     });
 
     afterEach(function() {

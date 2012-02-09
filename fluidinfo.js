@@ -710,5 +710,60 @@ var fluidinfo = function(options) {
         session.api.post(options);
     };
 
+    /**
+     * Finds the most recent 10 tags and values for the specified object
+     * (using either id or about) or user.
+     */
+    session.recent = function(options) {
+        if (options.about === undefined && options.id === undefined &&
+          options.user === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Supply either an 'about', 'id' or 'user' to look up."
+            };
+        }
+        if (options.about) {
+            options.path = ["recent", "about", options.about];
+        } else if (options.id) {
+            options.path = ["recent", "objects", options.id];
+        } else {
+            options.path = ["recent", "users", options.user]
+        }
+
+        var userOnSuccess = options.onSuccess;
+        /**
+         * Takes the raw result from Fluidinfo and turns it into an easy-to-use
+         * array of useful objects representing the matching results then calls
+         * the onSuccess function with the newly created array.
+         *
+         * @param {Object} The raw result from Fluidinfo that is to be
+         * processed.
+         */
+        var processResult = function(raw) {
+            var result = [];
+            var data = raw.data;
+            var tag;
+            for (tag in data){
+                if (typeof data[tag] === "object") {
+                    var obj = data[tag];
+                    obj.date = new Date(obj.timestamp);
+                    if (obj.value["value-type"] !== undefined) {
+                        // opaque value
+                        obj.value["url"] =
+                            session.baseURL + "objects/" + obj.object_id +
+                            "/" + obj.tag;
+                    }
+                    result.push(obj);
+                }
+            }
+            raw.data = result;
+            if (userOnSuccess){
+                userOnSuccess(raw);
+            };
+        };
+        options.onSuccess = processResult;
+        session.api.get(options);
+    };
+
     return session;
 };
