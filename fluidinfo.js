@@ -727,7 +727,7 @@ var fluidinfo = function(options) {
         } else if (options.id) {
             options.path = ["recent", "objects", options.id];
         } else {
-            options.path = ["recent", "users", options.user]
+            options.path = ["recent", "users", options.user];
         }
 
         var userOnSuccess = options.onSuccess;
