@@ -1053,6 +1053,7 @@ describe("Fluidinfo.js", function() {
                     expect(result.status).toEqual(404);
                     spy();
                 };
+
                 this.fi.query({select: select,
                                where: where,
                                onSuccess: function(result) {},

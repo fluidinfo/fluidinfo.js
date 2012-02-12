@@ -398,6 +398,19 @@ var fluidinfo = function(options) {
             }
         }
         try {
+            var handleResult = function() {
+                var result = createNiceResult(xhr);
+                if (xhr.status < 300) {
+                    // process a good result.
+                    if (options.onSuccess){
+                        options.onSuccess(result);
+                    }
+                } else if (options.onError){
+                    // handle problems nicely.
+                    options.onError(result);
+                }
+            };
+
             // A hack due to bugs in Android browsers
             var isAndroid =
                 navigator.userAgent.toLowerCase().indexOf("android") >= 0;
@@ -409,25 +422,13 @@ var fluidinfo = function(options) {
                 };
                 xhr.onload = function() {
                     // process a good result.
-                    var result = createNiceResult(xhr);
-                    if (options.onSuccess) {
-                        options.onSuccess(result);
-                    }
+                    handleResult();
                 };
             } else {
                 xhr.onreadystatechange = function() {
                     // Old skool handling of XHR for older browsers.
                     if (xhr.readyState != 4) return;
-                    var result = createNiceResult(xhr);
-                    if (xhr.status < 300) {
-                        // process a good result.
-                        if (options.onSuccess){
-                            options.onSuccess(result);
-                        }
-                    } else if (options.onError){
-                        // handle problems nicely.
-                        options.onError(result);
-                    }
+                    handleResult();
                 };
             }
         } catch (e) {
