@@ -1780,8 +1780,8 @@ describe("Fluidinfo.js", function() {
                 expect(exception.name).toEqual("ValueError");
             });
 
-            it("should send the correct request to Fluidinfo with an " +
-               "id", function() {
+            it("should send the correct request to Fluidinfo with an id",
+               function() {
                 var id = "1f11fb74-0676-4922-9239-4d3c7e881984";
                 this.fi.recent({
                     id: id
@@ -1837,15 +1837,13 @@ describe("Fluidinfo.js", function() {
                     "Content-Length": "28926",
                     "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
                     "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-                var responseText =
-                    '[{' +
-                    '"username": "terrycojones",' +
-                    '"tag": "terrycojones/like",' +
-                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
-                    '"about": "foo",' +
-                    '"value": "bar",' +
-                    '"timestamp": "2012-01-26T16:00:09Z"' +
-                    '}]';
+                var responseText = JSON.stringify(
+                    [{"username": "terrycojones",
+                      "tag": "terrycojones/like",
+                      "object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",
+                      "about": "foo",
+                      "value": "bar",
+                      "timestamp": "2012-01-26T16:00:09Z"}]);
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders, responseText);
             });
@@ -1869,15 +1867,13 @@ describe("Fluidinfo.js", function() {
                     "Content-Length": "28926",
                     "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
                     "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-                var responseText =
-                    '[{' +
-                    '"username": "terrycojones",' +
-                    '"tag": "terrycojones/like",' +
-                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
-                    '"about": "foo",' +
-                    '"value": "bar",' +
-                    '"timestamp": "2012-01-26T16:00:09Z"' +
-                    '}]';
+                var responseText = JSON.stringify(
+                    [{"username": "terrycojones",
+                      "tag": "terrycojones/like",
+                      "object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",
+                      "about": "foo",
+                      "value": "bar",
+                      "timestamp": "2012-01-26T16:00:09Z"}]);
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders, responseText);
             });
@@ -1907,18 +1903,14 @@ describe("Fluidinfo.js", function() {
                     "Content-Length": "28926",
                     "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
                     "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-                var responseText =
-                    '[{' +
-                    '"username": "terrycojones",' +
-                    '"tag": "terrycojones/like",' +
-                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
-                    '"about": "foo",' +
-                    '"value": {' +
-                    '"value-type": "image/png",' +
-                    '"size": 179393' +
-                    '},' +
-                    '"timestamp": "2012-01-26T16:00:09Z"' +
-                    '}]';
+                var responseText = JSON.stringify(
+                    [{"username": "terrycojones",
+                      "tag": "terrycojones/like",
+                      "object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",
+                      "about": "foo",
+                      "value": {"value-type": "image/png",
+                                "size": 179393},
+                      "timestamp": "2012-01-26T16:00:09Z"}]);
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders, responseText);
                 expect(spy.calledOnce).toBeTruthy();
@@ -1939,13 +1931,13 @@ describe("Fluidinfo.js", function() {
                     "Content-Length": "28926",
                     "Location": "http://fluiddb.fluidinfo.com/recent/about/yo",
                     "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-                var responseText =
-                    '[{"username": "terrycojones",' +
-                    '  "about": "9801",' +
-                    '  "timestamp": "2012-02-11T19:58:10.142469",' +
-                    '  "value": null,' +
-                    '  "tag": "terrycojones/neat-number",' +
-                    '  "object_id": "c2784b35-d6b6-4168-913d-8ef62b0a041d"}]';
+                var responseText = JSON.stringify(
+                    [{"username": "terrycojones",
+                      "about": "9801",
+                      "timestamp": "2012-02-11T19:58:10.142469",
+                      "value": null,
+                      "tag": "terrycojones/neat-number",
+                      "object_id": "c2784b35-d6b6-4168-913d-8ef62b0a041d"}]);
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders, responseText);
                 expect(spy.calledOnce).toBeTruthy();
@@ -1967,15 +1959,13 @@ describe("Fluidinfo.js", function() {
                     "Content-Length": "28926",
                     "Location": "http://fluiddb.fluidinfo.com/recent/about/foo",
                     "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
-                var responseText =
-                    '[{' +
-                    '"username": "terrycojones",' +
-                    '"tag": "terrycojones/like",' +
-                    '"object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",' +
-                    '"about": "foo",' +
-                    '"value": "bar",' +
-                    '"timestamp": "2012-01-26T16:00:09Z"' +
-                    '}]';
+                var responseText = JSON.stringify(
+                    [{"username": "terrycojones",
+                      "tag": "terrycojones/like",
+                      "object_id": "3b57f6b7-c239-481a-9595-beeffa2958c3",
+                      "about": "foo",
+                      "value": "bar",
+                      "timestamp": "2012-01-26T16:00:09Z"}]);
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders, responseText);
                 expect(spy.calledOnce).toBeTruthy();
