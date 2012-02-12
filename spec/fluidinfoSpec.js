@@ -1015,7 +1015,7 @@ describe("Fluidinfo.js", function() {
                function() {
                 var select = ["ntoll/foo", "terrycojones/bar",
                               "fluiddb/about"];
-                var where = "has esteve/rating>7";
+                var where = "has esteve/rating > 7";
                 var spy = sinon.spy();
                 var onSuccess = function(result) {
                     var obj = result.data[0];
@@ -1041,6 +1041,28 @@ describe("Fluidinfo.js", function() {
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders,
                                                 this.responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should call onError when an HTTP 404 response is received",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar"];
+                var where = "has terrycojones < 2";
+                var spy = sinon.spy();
+                var onError = function(result) {
+                    expect(result.status).toEqual(404);
+                    spy();
+                };
+                this.fi.query({select: select,
+                               where: where,
+                               onSuccess: function(result) {},
+                               onError: onError});
+                var responseStatus = 404;
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, '');
                 expect(spy.calledOnce).toBeTruthy();
             });
         });
@@ -1136,8 +1158,9 @@ describe("Fluidinfo.js", function() {
                                 onSuccess: function(result) {},
                                 onError: onError});
                 var responseStatus = 401;
-                var responseHeaders = {"Content-Type": "text/html",
-                      "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseHeaders = {
+                    "Content-Type": "text/html",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders, '');
                 expect(spy.calledOnce).toBeTruthy();
