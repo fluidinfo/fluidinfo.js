@@ -415,6 +415,8 @@ var fluidinfo = function(options) {
             var isAndroid =
                 navigator.userAgent.toLowerCase().indexOf("android") >= 0;
             if('onprogress' in xhr && !isAndroid) {
+                // DANGER Be very careful here.  This branch is not
+                // tested by the FakeXHRHttpRequest we use in tests!
                 xhr.onerror = function() {
                     // handle problems nicely.
                     var result = createNiceResult(xhr);
