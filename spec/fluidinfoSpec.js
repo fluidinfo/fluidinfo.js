@@ -1819,8 +1819,10 @@ describe("Fluidinfo.js", function() {
             it("should return an array of objects", function() {
                 var isArray = function(obj){
                     // Thanks Doug Crockford
-                    return obj && typeof(obj)==="object" && obj.constructor===Array;
-                }
+                    return obj
+                           && typeof(obj) === "object"
+                           && obj.constructor === Array;
+                };
                 var onSuccess = function(result) {
                     expect(isArray(result.data)).toEqual(true);
                     expect(result.status).toEqual(200);
@@ -1917,6 +1919,33 @@ describe("Fluidinfo.js", function() {
                     '},' +
                     '"timestamp": "2012-01-26T16:00:09Z"' +
                     '}]';
+                this.server.requests[0].respond(responseStatus,
+                                                responseHeaders, responseText);
+                expect(spy.calledOnce).toBeTruthy();
+            });
+
+            it("should handle objects with null values", function() {
+                var spy = sinon.spy();
+                var onSuccess = function(result) {
+                    var obj = result.data[0];
+                    expect(obj["value"]).toEqual(null);
+                    spy();
+                };
+                this.fi.recent({about: 'foo', onSuccess: onSuccess});
+
+                var responseStatus = 200;
+                var responseHeaders = {
+                    "Content-Type": "application/json",
+                    "Content-Length": "28926",
+                    "Location": "http://fluiddb.fluidinfo.com/recent/about/yo",
+                    "Date": "Mon, 02 Aug 2010 12:40:41 GMT"};
+                var responseText =
+                    '[{"username": "terrycojones",' +
+                    '  "about": "9801",' +
+                    '  "timestamp": "2012-02-11T19:58:10.142469",' +
+                    '  "value": null,' +
+                    '  "tag": "terrycojones/neat-number",' +
+                    '  "object_id": "c2784b35-d6b6-4168-913d-8ef62b0a041d"}]';
                 this.server.requests[0].respond(responseStatus,
                                                 responseHeaders, responseText);
                 expect(spy.calledOnce).toBeTruthy();
