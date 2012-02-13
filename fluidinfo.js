@@ -746,7 +746,8 @@ var fluidinfo = function(options) {
             for (i = 0; i < data.length; i++){
                 var obj = data[i];
                 obj.date = new Date(obj.timestamp);
-                if (obj.value["value-type"] !== undefined) {
+                if (obj.value !== null
+                    && obj.value["value-type"] !== undefined) {
                     // opaque value
                     obj.value["url"] =
                         session.baseURL + "objects/" + obj.object_id +
