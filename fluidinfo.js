@@ -749,12 +749,12 @@ var fluidinfo = function(options) {
             var i;
             for (i = 0; i < data.length; i++){
                 var obj = data[i];
-                obj.date = new Date(obj.timestamp);
+                obj.date = new Date(obj["updated-at"]);
                 if (obj.value !== null
                     && obj.value["value-type"] !== undefined) {
                     // opaque value
                     obj.value["url"] =
-                        session.baseURL + "objects/" + obj.object_id +
+                        session.baseURL + "objects/" + obj.id +
                         "/" + obj.tag;
                 }
                 result.push(obj);
