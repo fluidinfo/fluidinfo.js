@@ -586,7 +586,11 @@ var fluidinfo = function(options) {
         var valueSpec = new Object();
         for (val in options.values){
             if (typeof options.values[val] !== "function") {
-                valueSpec[val]= {value: options.values[val]};
+                if(options.values[val] === undefined) {
+                    valueSpec[val]= {value: null};
+                } else {
+                    valueSpec[val]= {value: options.values[val]};
+                }
             }
         }
         updateSpecification[1] = valueSpec;

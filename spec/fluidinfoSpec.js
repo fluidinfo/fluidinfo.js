@@ -1099,7 +1099,8 @@ describe("Fluidinfo.js", function() {
 
             it("should produce the correct JSON payload", function() {
                 var vals = {"ntoll/rating": 7,
-                            "ntoll/description": "I like it!"};
+                            "ntoll/description": "I like it!",
+                            "ntoll/foo": undefined};
                 var where = "has terrycojones < 2";
                 this.fi.update({values: vals,
                                 where: where,
@@ -1121,6 +1122,8 @@ describe("Fluidinfo.js", function() {
                     .toEqual(7);
                 expect(updateSpecification[1]["ntoll/description"].value)
                     .toEqual("I like it!");
+                expect(updateSpecification[1]["ntoll/foo"].value === null)
+                    .toEqual(true);
             });
 
             it("should call onSuccess appropriately", function() {
