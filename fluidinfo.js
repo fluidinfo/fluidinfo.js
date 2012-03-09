@@ -405,7 +405,7 @@ var fluidinfo = function(options) {
                     if (options.onSuccess){
                         options.onSuccess(result);
                     }
-                } else if (options.onError){
+                } else if (options.onError) {
                     // handle problems nicely.
                     options.onError(result);
                 }
@@ -417,11 +417,13 @@ var fluidinfo = function(options) {
             if('onprogress' in xhr && !isAndroid) {
                 // DANGER Be very careful here.  This branch is not
                 // tested by the FakeXHRHttpRequest we use in tests!
-                xhr.onerror = function() {
-                    // handle problems nicely.
-                    var result = createNiceResult(xhr);
-                    options.onError(result);
-                };
+                if (options.onError) {
+                    xhr.onerror = function() {
+                        // handle problems nicely.
+                        var result = createNiceResult(xhr);
+                        options.onError(result);
+                    };
+                }
                 xhr.onload = function() {
                     // process a good result.
                     handleResult();
