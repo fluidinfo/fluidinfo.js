@@ -333,9 +333,9 @@ describe("Fluidinfo.js", function() {
                   var header = HEADERS[h];
                   responseHeaders[header] = "foo";
               }
-              var responseText =
-                  '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", ' +
-                  '"URI": "http://fluiddb.fluidinfo.com/namespaces/test/foo"}';
+              var responseText = JSON.stringify(
+                  {id: "e9c97fa8-05ed-4905-9f72-8d00b7390f9b",
+                   URI: "http://fluiddb.fluidinfo.com/namespaces/test/foo"});
               this.server.requests[0].respond(responseStatus, responseHeaders,
                                               responseText);
               expect(spy.calledOnce).toBeTruthy();

@@ -140,7 +140,7 @@ var fluidinfo = function(options) {
      */
     function encodeURL(path) {
         var result = "";
-        for (i=0; i<path.length; i++) {
+        for (i = 0; i < path.length; i++) {
             result += "/" + encodeURIComponent(path[i]);
         }
         return result.slice(1); // chops the leading slash
@@ -160,20 +160,20 @@ var fluidinfo = function(options) {
         var valueType = typeof(value);
         var primitiveTypes = ["number", "string", "boolean"];
         var i;
-        for (i=0; i<primitiveTypes.length; i++) {
+        for (i = 0; i < primitiveTypes.length; i++) {
             if (valueType === primitiveTypes[i]) {
                 return true;
             }
         }
         // A null value is also a primitive
-        if (value===null) {
+        if (value === null) {
             return true;
         }
         // check for an array (potential set) and validate it only contains
         // strings (currently multi-type arrays are not allowed)
         if (isArray(value)) {
             var i;
-            for (i=0; i<value.length; i++) {
+            for (i = 0; i < value.length; i++) {
                 var memberType = typeof(value[i]);
                 if (memberType !== "string") {
                     return false;
@@ -243,7 +243,7 @@ var fluidinfo = function(options) {
                 if (typeof args[arg] !== "function") {
                     if (isArray(args[arg])) {
                         var j;
-                        for (j=0; j<args[arg].length; j++) {
+                        for (j = 0; j <args[arg].length; j++) {
                             result += "&" + encodeURIComponent(arg) + "=" +
                                       encodeURIComponent(args[arg][j]);
                         }
@@ -267,12 +267,16 @@ var fluidinfo = function(options) {
         // Turn the result into an object
         if (rawHeaders){ // Mozilla doesn't like getAllResponseHeaders
             var i;
-            var splitHeaders = rawHeaders.split("\r\n");
-            for (i=0; i<splitHeaders.length; i++){
+            // Split on newline only, even though a proper HTTP
+            // request separates headers with \r\n, because the header
+            // blob only has newline when parsed in a Firefox extension.
+            var splitHeaders = rawHeaders.split("\n");
+            for (i = 0; i < splitHeaders.length; i++){
                 var rawHeader = splitHeaders[i];
                 if (rawHeader.length > 0) {
                     var splitHeader = rawHeader.split(": ");
-                    result[splitHeader[0].toLowerCase()] = splitHeader[1];
+                    var value = splitHeader[1].trim();
+                    result[splitHeader[0].toLowerCase()] = value;
                 }
             }
         } else {
@@ -299,7 +303,7 @@ var fluidinfo = function(options) {
             function () {return new ActiveXObject("Microsoft.XMLHTTP");}
         ];
         var xhr = false;
-        for (var i=0; i<XMLHttpFactories.length; i++) {
+        for (var i = 0; i < XMLHttpFactories.length; i++) {
             try {
                 xhr = XMLHttpFactories[i]();
             } catch(e) {
