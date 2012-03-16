@@ -862,24 +862,25 @@ describe("Fluidinfo.js", function() {
                                onSuccess: function(result) {},
                                onError: function(result) {}});
                 var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "query=has%20esteve%2Frating%20%3E%207&" +
                                "tag=ntoll%2Ffoo&" +
                                "tag=terrycojones%2Fbar&" +
-                               "tag=fluiddb%2Fabout&" +
-                               "query=has%20esteve%2Frating%20%3E%207";
+                               "tag=fluiddb%2Fabout"
+                               ;
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("GET");
             });
 
-            it("should insist on a 'select' argument", function() {
-                try {
-                    var where = "has esteve/rating>7";
-                    this.fi.query({where: where,
-                                   onSuccess: function(result) {},
-                                   onError: function(result) {}});
-                } catch(e) {
-                    var exception = e;
-                }
-                expect(exception.name).toEqual("ValueError");
+            it("should not include 'tag' parameters when the 'select' " +
+               "argument is not provided", function() {
+                var where = "has esteve/rating > 7";
+                this.fi.query({where: where,
+                               onSuccess: function(result) {},
+                               onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "query=has%20esteve%2Frating%20%3E%207";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
             });
 
             it("should insist on a 'where' argument", function() {
@@ -1417,16 +1418,16 @@ describe("Fluidinfo.js", function() {
                 });
             });
 
-            it("should insist on a select value", function() {
-                try {
-                    var about = "foo";
-                    this.fi.getObject({about: about,
-                                       onSuccess: function(result) {},
-                                       onError: function(result) {}});
-                } catch(e) {
-                    var exception = e;
-                }
-                expect(exception.name).toEqual("ValueError");
+            it("should not include 'tag' parameters when the 'select' " +
+               "argument is not provided", function() {
+                var about = "foo";
+                this.fi.getObject({about: about,
+                                   onSuccess: function(result) {},
+                                   onError: function(result) {}});
+                var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "query=fluiddb%2Fabout%3D%22foo%22";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
             });
 
             it("should insist on either an id or about attribute in options",
@@ -1445,17 +1446,18 @@ describe("Fluidinfo.js", function() {
 
             it("should result in the correct request to Fluidinfo for 'about'",
                function() {
-                var select = ["ntoll/foo", "terrycojones/bar", "fluiddb/about"];
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
                 var about = "foo";
                 this.fi.getObject({select: select,
                                    about: about,
                                    onSuccess: function(result) {},
                                    onError: function(result) {}});
                 var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "query=fluiddb%2Fabout%3D%22foo%22&" +
                                "tag=ntoll%2Ffoo&" +
                                "tag=terrycojones%2Fbar&" +
-                               "tag=fluiddb%2Fabout&" +
-                               "query=fluiddb%2Fabout%3D%22foo%22";
+                               "tag=fluiddb%2Fabout";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("GET");
             });
@@ -1470,10 +1472,10 @@ describe("Fluidinfo.js", function() {
                                    onSuccess: function(result) {},
                                    onError: function(result) {}});
                 var expected = "https://fluiddb.fluidinfo.com/values?" +
+                               "query=fluiddb%2Fid%3D%22SOMEUUID%22&" +
                                "tag=ntoll%2Ffoo&" +
                                "tag=terrycojones%2Fbar&" +
-                               "tag=fluiddb%2Fabout&" +
-                               "query=fluiddb%2Fid%3D%22SOMEUUID%22";
+                               "tag=fluiddb%2Fabout";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("GET");
             });
