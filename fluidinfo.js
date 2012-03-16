@@ -511,18 +511,13 @@ var fluidinfo = function(options) {
      */
     session.query = function(options) {
         // process the options
-        if (options.select === undefined) {
-            throw {
-                name: "ValueError",
-                message: "Missing select option."
-            };
-        }
         if (options.where === undefined) {
             throw {
                 name: "ValueError",
                 message: "Missing where option."
             };
         }
+
         /**
          * Takes the raw result from Fluidinfo and turns it into an easy-to-use
          * array of useful objects representing the matching results then calls
@@ -562,9 +557,14 @@ var fluidinfo = function(options) {
                 options.onSuccess(raw);
             };
         };
+
+        var arguments = {query: options.where};
+        if (options.select !== undefined) {
+            arguments.tag = options.select;
+        }
+
         // Make the appropriate call to Fluidinfo
-        this.api.get({path: "values",
-                      args: {tag: options.select, query: options.where},
+        this.api.get({path: "values", args: arguments,
                       onSuccess: processResult, onError: options.onError});
     };
 
