@@ -1800,7 +1800,8 @@ describe("Fluidinfo.js", function() {
          * https://github.com/fluidinfo/fluidinfo.js/issues/67
          */
         describe("recent function", function() {
-            it("should expect either id, about or user args", function() {
+            it("should expect either id, where, about or user args",
+               function() {
                 try {
                     this.fi.recent({});
                 } catch(e) {
@@ -1817,6 +1818,18 @@ describe("Fluidinfo.js", function() {
                 });
                 var endpoint = "https://fluiddb.fluidinfo.com/recent/objects/";
                 var expected = endpoint + id;
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should send the correct request to Fluidinfo with a 'where'",
+               function() {
+                var query = "has user/follows";
+                this.fi.recent({
+                    where: query
+                });
+                var expected = "https://fluiddb.fluidinfo.com/recent/objects" +
+                               "?query=has%20user%2Ffollows";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("GET");
             });
