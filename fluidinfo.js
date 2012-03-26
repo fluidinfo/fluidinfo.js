@@ -721,23 +721,29 @@ var fluidinfo = function(options) {
     };
 
     /**
-     * Finds the most recent 10 tags and values for the specified object
-     * (using either id or about) or user.
+     * Finds the most recent 20 tags and values on the specified objects
+     * (using either id, about or query) or created by the given user.
      */
     session.recent = function(options) {
-        if (options.about === undefined && options.id === undefined &&
-          options.user === undefined) {
-            throw {
-                name: "ValueError",
-                message: "Supply either an 'about', 'id' or 'user' to look up."
-            };
+        if (options == undefined) {
+            var options = {};
         }
+
         if (options.about) {
             options.path = ["recent", "about", options.about];
         } else if (options.id) {
             options.path = ["recent", "objects", options.id];
-        } else {
+        } else if (options.where) {
+            options.path = ["recent", "objects"];
+            options.args = {"query": options.where};
+        } else if (options.user) {
             options.path = ["recent", "users", options.user];
+        } else {
+            throw {
+                name: "ValueError",
+                message: "Supply either an 'about', 'id', 'where' or " +
+                         "'user' to look up."
+            };
         }
 
         var userOnSuccess = options.onSuccess;
