@@ -468,6 +468,30 @@ describe("Fluidinfo.js", function() {
                   '{"id": "e9c97fa8-05ed-4905-9f72-8d00b7390f9b", ' +
                   '"URI": "http://fluiddb.fluidinfo.com/namespaces/foo/bar"}');
             });
+
+          it("should not mutate the user-provided option object", function() {
+            var options = {
+                values: {
+                    "ntoll/rating": 7,
+                    "ntoll/description": "I like it!"
+                },
+                about: "foo",
+                onSuccess: function(result) {},
+                onError: function(result) {}
+            }; // must not mutate
+            this.fi.tag(options);
+            var expected = ["values", "about", "onSuccess", "onError"];
+            for(attribute in options) {
+                var isExpected = false;
+                var i;
+                for(i = 0; i < expected.length; i++) {
+                    if(expected[i] === attribute) {
+                        isExpected = true;
+                    }
+                }
+                expect(isExpected).toEqual(true);
+            }
+        });
       });
 
       describe("GET", function() {
