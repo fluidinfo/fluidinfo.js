@@ -469,29 +469,6 @@ describe("Fluidinfo.js", function() {
                   '"URI": "http://fluiddb.fluidinfo.com/namespaces/foo/bar"}');
             });
 
-          it("should not mutate the user-provided option object", function() {
-            var options = {
-                values: {
-                    "ntoll/rating": 7,
-                    "ntoll/description": "I like it!"
-                },
-                about: "foo",
-                onSuccess: function(result) {},
-                onError: function(result) {}
-            }; // must not mutate
-            this.fi.tag(options);
-            var expected = ["values", "about", "onSuccess", "onError"];
-            for(attribute in options) {
-                var isExpected = false;
-                var i;
-                for(i = 0; i < expected.length; i++) {
-                    if(expected[i] === attribute) {
-                        isExpected = true;
-                    }
-                }
-                expect(isExpected).toEqual(true);
-            }
-        });
       });
 
       describe("GET", function() {
@@ -522,6 +499,33 @@ describe("Fluidinfo.js", function() {
               });
 
               it_should_have_an_empty_payload();
+
+              it("should not mutate the user-provided option object",
+                function() {
+                  var path = "objects/fakeObjectID/username/tag";
+                  var onSuccess = function(result) {};
+                  var onError = function(result) {};
+                  var options = {
+                      path: path,
+                      onSuccess: onSuccess,
+                      onError: onError
+                  }; // must not mutate
+                  this.fi.api.get(options);
+                  var expected = ["path", "onSuccess", "onError"];
+                  for(attribute in options) {
+                      var isExpected = false;
+                      var i;
+                      for(i = 0; i < expected.length; i++) {
+                          if(expected[i] === attribute) {
+                              isExpected = true;
+                         }
+                      }
+                      expect(isExpected).toEqual(true);
+                  }
+                  expect(options.path).toEqual(path);
+                  expect(options.onSuccess).toEqual(onSuccess);
+                  expect(options.onError).toEqual(onError);
+              });
           });
       });
 
@@ -568,6 +572,36 @@ describe("Fluidinfo.js", function() {
               });
 
               it_should_have_a_content_type_of("application/json");
+
+              it("should not mutate the user-provided option object",
+                function() {
+                  var path = "objects/fakeObjectID/username/tag";
+                  var data = {name: "name", description: "a description"};
+                  var onSuccess = function(result) {};
+                  var onError = function(result) {};
+                  var options = {
+                      path: path,
+                      data: data,
+                      onSuccess: onSuccess,
+                      onError: onError
+                  }; // must not mutate
+                  this.fi.api.post(options);
+                  var expected = ["path", "data", "onSuccess", "onError"];
+                  for(attribute in options) {
+                      var isExpected = false;
+                      var i;
+                      for(i = 0; i < expected.length; i++) {
+                          if(expected[i] === attribute) {
+                              isExpected = true;
+                         }
+                      }
+                      expect(isExpected).toEqual(true);
+                  }
+                  expect(options.path).toEqual(path);
+                  expect(options.data).toEqual(data);
+                  expect(options.onSuccess).toEqual(onSuccess);
+                  expect(options.onError).toEqual(onError);
+              });
           });
       });
 
@@ -605,6 +639,36 @@ describe("Fluidinfo.js", function() {
               });
 
               it_should_have_a_content_type_of(JSON_CONTENT_TYPE);
+
+              it("should not mutate the user-provided option object",
+                function() {
+                  var path = "objects/fakeObjectID/username/tag";
+                  var data = "data";
+                  var onSuccess = function(result) {};
+                  var onError = function(result) {};
+                  var options = {
+                      path: path,
+                      data: data,
+                      onSuccess: onSuccess,
+                      onError: onError
+                  }; // must not mutate
+                  this.fi.api.put(options);
+                  var expected = ["path", "data", "onSuccess", "onError"];
+                  for(attribute in options) {
+                      var isExpected = false;
+                      var i;
+                      for(i = 0; i < expected.length; i++) {
+                          if(expected[i] === attribute) {
+                              isExpected = true;
+                         }
+                      }
+                      expect(isExpected).toEqual(true);
+                  }
+                  expect(options.path).toEqual(path);
+                  expect(options.data).toEqual(data);
+                  expect(options.onSuccess).toEqual(onSuccess);
+                  expect(options.onError).toEqual(onError);
+              });
           });
       });
 
@@ -635,6 +699,33 @@ describe("Fluidinfo.js", function() {
               });
 
               it_should_have_an_empty_payload();
+
+              it("should not mutate the user-provided option object",
+                function() {
+                  var path = "objects/fakeObjectID/username/tag";
+                  var onSuccess = function(result) {};
+                  var onError = function(result) {};
+                  var options = {
+                      path: path,
+                      onSuccess: onSuccess,
+                      onError: onError
+                  }; // must not mutate
+                  this.fi.api.del(options);
+                  var expected = ["path", "onSuccess", "onError"];
+                  for(attribute in options) {
+                      var isExpected = false;
+                      var i;
+                      for(i = 0; i < expected.length; i++) {
+                          if(expected[i] === attribute) {
+                              isExpected = true;
+                         }
+                      }
+                      expect(isExpected).toEqual(true);
+                  }
+                  expect(options.path).toEqual(path);
+                  expect(options.onSuccess).toEqual(onSuccess);
+                  expect(options.onError).toEqual(onError);
+              });
             });
         });
 
@@ -673,7 +764,34 @@ describe("Fluidinfo.js", function() {
                     expect(this.server.requests[0].method).toEqual("HEAD");
                 });
 
-               it_should_have_an_empty_payload();
+                it_should_have_an_empty_payload();
+
+                it("should not mutate the user-provided option object",
+                    function() {
+                    var path = "objects/fakeObjectID/username/tag";
+                    var onSuccess = function(result) {};
+                    var onError = function(result) {};
+                    var options = {
+                        path: path,
+                        onSuccess: onSuccess,
+                        onError: onError
+                    }; // must not mutate
+                    this.fi.api.head(options);
+                    var expected = ["path", "onSuccess", "onError"];
+                    for(attribute in options) {
+                        var isExpected = false;
+                        var i;
+                        for(i = 0; i < expected.length; i++) {
+                            if(expected[i] === attribute) {
+                                isExpected = true;
+                            }
+                        }
+                        expect(isExpected).toEqual(true);
+                    }
+                    expect(options.path).toEqual(path);
+                    expect(options.onSuccess).toEqual(onSuccess);
+                    expect(options.onError).toEqual(onError);
+                });
             });
         });
     });
@@ -875,6 +993,37 @@ describe("Fluidinfo.js", function() {
                         }
                     }
                 });
+            });
+
+            it("should not mutate the user-provided option object",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var where = "has esteve/rating > 7";
+                var onSuccess = function(result) {};
+                var onError = function(result) {};
+                var options = {
+                    select: select,
+                    where: where,
+                    onSuccess: onSuccess,
+                    onError: onError
+                }; // must not mutate
+                this.fi.query(options);
+                var expected = ["select", "where", "onSuccess", "onError"];
+                for(attribute in options) {
+                    var isExpected = false;
+                    var i;
+                    for(i = 0; i < expected.length; i++) {
+                        if(expected[i] === attribute) {
+                            isExpected = true;
+                        }
+                    }
+                    expect(isExpected).toEqual(true);
+                }
+                expect(options.select).toEqual(select);
+                expect(options.where).toEqual(where);
+                expect(options.onSuccess).toEqual(onSuccess);
+                expect(options.onError).toEqual(onError);
             });
 
             it("should send an appropriate query to /values", function() {
@@ -1098,6 +1247,39 @@ describe("Fluidinfo.js", function() {
          * https://github.com/fluidinfo/fluidinfo.js/issues/10
          */
         describe("Update function", function() {
+            it("should not mutate the user-provided option object",
+               function() {
+                var values = {
+                    "ntoll/rating": 7,
+                    "ntoll/description": "I like it!"
+                };
+                var where = "has terrycojones < 2";
+                var onSuccess = function(result) {};
+                var onError = function(result) {};
+                var options = {
+                    values: values,
+                    where: where,
+                    onSuccess: onSuccess,
+                    onError: onError
+                }; // must not mutate
+                this.fi.update(options);
+                var expected = ["values", "where", "onSuccess", "onError"];
+                for(attribute in options) {
+                    var isExpected = false;
+                    var i;
+                    for(i = 0; i < expected.length; i++) {
+                        if(expected[i] === attribute) {
+                            isExpected = true;
+                        }
+                    }
+                    expect(isExpected).toEqual(true);
+                }
+                expect(options.values).toEqual(values);
+                expect(options.where).toEqual(where);
+                expect(options.onSuccess).toEqual(onSuccess);
+                expect(options.onError).toEqual(onError);
+            });
+
             it("should insist on a values object", function() {
                 try {
                     var where = "has esteve/rating>7";
@@ -1201,6 +1383,39 @@ describe("Fluidinfo.js", function() {
          * https://github.com/fluidinfo/fluidinfo.js/issues/11
          */
         describe("Tag function", function() {
+            it("should not mutate the user-provided option object",
+               function() {
+                var values = {
+                    "ntoll/rating": 7,
+                    "ntoll/description": "I like it!"
+                };
+                var about = "foo";
+                var onSuccess = function(result) {};
+                var onError = function(result) {};
+                var options = {
+                    values: values,
+                    about: about,
+                    onSuccess: onSuccess,
+                    onError: onError
+                }; // must not mutate
+                this.fi.tag(options);
+                var expected = ["values", "about", "onSuccess", "onError"];
+                for(attribute in options) {
+                    var isExpected = false;
+                    var i;
+                    for(i = 0; i < expected.length; i++) {
+                        if(expected[i] === attribute) {
+                            isExpected = true;
+                        }
+                    }
+                    expect(isExpected).toEqual(true);
+                }
+                expect(options.values).toEqual(values);
+                expect(options.about).toEqual(about);
+                expect(options.onSuccess).toEqual(onSuccess);
+                expect(options.onError).toEqual(onError);
+            });
+
             it("should insist on a values attribute in options", function() {
                 try {
                     var about = "foo";
@@ -1333,6 +1548,36 @@ describe("Fluidinfo.js", function() {
          * https://github.com/fluidinfo/fluidinfo.js/issues/29
          */
         describe("Delete function", function() {
+            it("should not mutate the user-provided option object",
+               function() {
+                var tags = ["ntoll/rating", "ntoll/description"];
+                var where = "terrycojones/rating < 2";
+                var onSuccess = function(result) {};
+                var onError = function(result) {};
+                var options = {
+                    tags: tags,
+                    where: where,
+                    onSuccess: onSuccess,
+                    onError: onError
+                }; // must not mutate
+                this.fi.del(options);
+                var expected = ["tags", "where", "onSuccess", "onError"];
+                for(attribute in options) {
+                    var isExpected = false;
+                    var i;
+                    for(i = 0; i < expected.length; i++) {
+                        if(expected[i] === attribute) {
+                            isExpected = true;
+                        }
+                    }
+                    expect(isExpected).toEqual(true);
+                }
+                expect(options.tags).toEqual(tags);
+                expect(options.where).toEqual(where);
+                expect(options.onSuccess).toEqual(onSuccess);
+                expect(options.onError).toEqual(onError);
+            });
+
             it("should produce the correct request to Fluidinfo", function() {
                 var tags = ["ntoll/rating", "ntoll/description"];
                 var where = "terrycojones/rating < 2";
@@ -1440,6 +1685,37 @@ describe("Fluidinfo.js", function() {
                         }
                     }
                 });
+            });
+
+            it("should not mutate the user-provided option object",
+               function() {
+                var select = ["ntoll/foo", "terrycojones/bar",
+                              "fluiddb/about"];
+                var about = "foo";
+                var onSuccess = function(result) {};
+                var onError = function(result) {};
+                var options = {
+                    select: select,
+                    about: about,
+                    onSuccess: onSuccess,
+                    onError: onError
+                }; // must not mutate
+                this.fi.getObject(options);
+                var expected = ["select", "about", "onSuccess", "onError"];
+                for(attribute in options) {
+                    var isExpected = false;
+                    var i;
+                    for(i = 0; i < expected.length; i++) {
+                        if(expected[i] === attribute) {
+                            isExpected = true;
+                        }
+                    }
+                    expect(isExpected).toEqual(true);
+                }
+                expect(options.select).toEqual(select);
+                expect(options.about).toEqual(about);
+                expect(options.onSuccess).toEqual(onSuccess);
+                expect(options.onError).toEqual(onError);
             });
 
             it("should not include 'tag' parameters when the 'select' " +
@@ -1697,6 +1973,33 @@ describe("Fluidinfo.js", function() {
          * https://github.com/fluidinfo/fluidinfo.js/issues/37
          */
         describe("createObject function", function() {
+            it("should not mutate the user-provided option object",
+               function() {
+                var about = "foo";
+                var onSuccess = function(result) {};
+                var onError = function(result) {};
+                var options = {
+                    about: about,
+                    onSuccess: onSuccess,
+                    onError: onError
+                }; // must not mutate
+                this.fi.createObject(options);
+                var expected = ["about", "onSuccess", "onError"];
+                for(attribute in options) {
+                    var isExpected = false;
+                    var i;
+                    for(i = 0; i < expected.length; i++) {
+                        if(expected[i] === attribute) {
+                            isExpected = true;
+                        }
+                    }
+                    expect(isExpected).toEqual(true);
+                }
+                expect(options.about).toEqual(about);
+                expect(options.onSuccess).toEqual(onSuccess);
+                expect(options.onError).toEqual(onError);
+            });
+
             it("should complain if the user isn't logged in", function() {
                 var fi = fluidinfo(); // anonymous user
                 try {
@@ -1824,6 +2127,33 @@ describe("Fluidinfo.js", function() {
          * https://github.com/fluidinfo/fluidinfo.js/issues/67
          */
         describe("recent function", function() {
+            it("should not mutate the user-provided option object",
+               function() {
+                var where = "has user/follows";
+                var onSuccess = function(result) {};
+                var onError = function(result) {};
+                var options = {
+                    where: where,
+                    onSuccess: onSuccess,
+                    onError: onError
+                }; // must not mutate
+                this.fi.del(options);
+                var expected = ["where", "onSuccess", "onError"];
+                for(attribute in options) {
+                    var isExpected = false;
+                    var i;
+                    for(i = 0; i < expected.length; i++) {
+                        if(expected[i] === attribute) {
+                            isExpected = true;
+                        }
+                    }
+                    expect(isExpected).toEqual(true);
+                }
+                expect(options.where).toEqual(where);
+                expect(options.onSuccess).toEqual(onSuccess);
+                expect(options.onError).toEqual(onError);
+            });
+
             it("should expect either id, where, about or user args",
                function() {
                 try {

@@ -20,14 +20,17 @@
 var fluidinfo = function(options) {
     /**
      * Returns a clone of the supplied object.
+     *
+     * It is possible (although unlikely) that this method could get into an
+     * infinite loop. TODO: Refactor this out.
      */
     var clone = function(obj) {
-        if(obj === null || typeof(obj) !== 'object') {
+        if (obj === null || typeof(obj) !== 'object') {
             return obj;
         }
         var temp = obj.constructor();
-        for(var key in obj) {
-            if(typeof(obj[key]) === "object") {
+        for (var key in obj) {
+            if (typeof(obj[key]) === "object") {
                 temp[key] = clone(obj[key]);
             } else {
                 temp[key] = obj[key];
