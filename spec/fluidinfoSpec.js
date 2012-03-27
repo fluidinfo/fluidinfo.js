@@ -871,14 +871,15 @@ describe("Fluidinfo.js", function() {
                 expect(this.server.requests[0].method).toEqual("GET");
             });
 
-            it("should not include 'tag' parameters when the 'select' " +
+            it("should include a 'tag=*' parameter when the 'select' " +
                "argument is not provided", function() {
                 var where = "has esteve/rating > 7";
                 this.fi.query({where: where,
                                onSuccess: function(result) {},
                                onError: function(result) {}});
                 var expected = "https://fluiddb.fluidinfo.com/values?" +
-                               "query=has%20esteve%2Frating%20%3E%207";
+                               "query=has%20esteve%2Frating%20%3E%207&" +
+                               "tag=*";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("GET");
             });
@@ -1324,14 +1325,15 @@ describe("Fluidinfo.js", function() {
                 expect(this.server.requests[0].method).toEqual("DELETE");
             });
 
-            it("should not include 'tag' parameters when the 'tag' " +
-               "argument is not provided", function() {
+            it("should include a 'tag=*' parameter when the 'tag' argument" +
+               "is not provided", function() {
                 var where = "terrycojones/rating < 2";
                 this.fi.del({where: where,
                              onSuccess: function(result) {},
                              onError: function(result) {}});
                 var expected = "https://fluiddb.fluidinfo.com/values?" +
-                               "query=terrycojones%2Frating%20%3C%202";
+                               "query=terrycojones%2Frating%20%3C%202&" +
+                               "tag=*";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("DELETE");
             });
@@ -1418,14 +1420,15 @@ describe("Fluidinfo.js", function() {
                 });
             });
 
-            it("should not include 'tag' parameters when the 'select' " +
+            it("should include a 'tag=*' parameter when the 'select' " +
                "argument is not provided", function() {
                 var about = "foo";
                 this.fi.getObject({about: about,
                                    onSuccess: function(result) {},
                                    onError: function(result) {}});
                 var expected = "https://fluiddb.fluidinfo.com/values?" +
-                               "query=fluiddb%2Fabout%3D%22foo%22";
+                               "query=fluiddb%2Fabout%3D%22foo%22&" +
+                               "tag=*";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("GET");
             });

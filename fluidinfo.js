@@ -561,6 +561,8 @@ var fluidinfo = function(options) {
         var arguments = {query: options.where};
         if (options.select !== undefined) {
             arguments.tag = options.select;
+        } else {
+            arguments.tag = "*";
         }
 
         // Make the appropriate call to Fluidinfo
@@ -641,6 +643,8 @@ var fluidinfo = function(options) {
         options.args = {query: options.where};
         if (options.tags !== undefined) {
             options.args.tag = options.tags;
+        } else {
+            options.args.tag = "*";
         }
         this.api.del(options);
     };
