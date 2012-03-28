@@ -871,17 +871,16 @@ describe("Fluidinfo.js", function() {
                 expect(this.server.requests[0].method).toEqual("GET");
             });
 
-            it("should include a 'tag=*' parameter when the 'select' " +
-               "argument is not provided", function() {
-                var where = "has esteve/rating > 7";
-                this.fi.query({where: where,
-                               onSuccess: function(result) {},
-                               onError: function(result) {}});
-                var expected = "https://fluiddb.fluidinfo.com/values?" +
-                               "query=has%20esteve%2Frating%20%3E%207&" +
-                               "tag=*";
-                expect(this.server.requests[0].url).toEqual(expected);
-                expect(this.server.requests[0].method).toEqual("GET");
+            it("should insist on a 'select' argument", function() {
+                try {
+                    var where = "has esteve/rating > 7";
+                    this.fi.query({where: where,
+                                   onSuccess: function(result) {},
+                                   onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
             });
 
             it("should insist on a 'where' argument", function() {
@@ -1325,17 +1324,16 @@ describe("Fluidinfo.js", function() {
                 expect(this.server.requests[0].method).toEqual("DELETE");
             });
 
-            it("should include a 'tag=*' parameter when the 'tag' argument" +
-               "is not provided", function() {
-                var where = "terrycojones/rating < 2";
-                this.fi.del({where: where,
-                             onSuccess: function(result) {},
-                             onError: function(result) {}});
-                var expected = "https://fluiddb.fluidinfo.com/values?" +
-                               "query=terrycojones%2Frating%20%3C%202&" +
-                               "tag=*";
-                expect(this.server.requests[0].url).toEqual(expected);
-                expect(this.server.requests[0].method).toEqual("DELETE");
+            it("should insist on a tags attribute in options", function() {
+                try {
+                    var where = "terrycojones/rating < 2";
+                    this.fi.del({where: where,
+                                 onSuccess: function(result) {},
+                                 onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
             });
 
             it("should insist on a where object", function() {
@@ -1420,17 +1418,16 @@ describe("Fluidinfo.js", function() {
                 });
             });
 
-            it("should include a 'tag=*' parameter when the 'select' " +
-               "argument is not provided", function() {
-                var about = "foo";
-                this.fi.getObject({about: about,
-                                   onSuccess: function(result) {},
-                                   onError: function(result) {}});
-                var expected = "https://fluiddb.fluidinfo.com/values?" +
-                               "query=fluiddb%2Fabout%3D%22foo%22&" +
-                               "tag=*";
-                expect(this.server.requests[0].url).toEqual(expected);
-                expect(this.server.requests[0].method).toEqual("GET");
+            it("should insist on a select value", function() {
+                try {
+                    var about = "foo";
+                    this.fi.getObject({about: about,
+                                       onSuccess: function(result) {},
+                                       onError: function(result) {}});
+                } catch(e) {
+                    var exception = e;
+                }
+                expect(exception.name).toEqual("ValueError");
             });
 
             it("should insist on either an id or about attribute in options",
