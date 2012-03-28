@@ -511,6 +511,12 @@ var fluidinfo = function(options) {
      */
     session.query = function(options) {
         // process the options
+        if (options.select === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing select option."
+            };
+        }
         if (options.where === undefined) {
             throw {
                 name: "ValueError",
@@ -561,6 +567,8 @@ var fluidinfo = function(options) {
         var arguments = {query: options.where};
         if (options.select !== undefined) {
             arguments.tag = options.select;
+        } else {
+            arguments.tag = "*";
         }
 
         // Make the appropriate call to Fluidinfo
@@ -630,6 +638,12 @@ var fluidinfo = function(options) {
      * /values.
      */
     session.del = function(options) {
+        if (options.tags === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing tags option."
+            };
+        }
         if (options.where === undefined) {
             throw {
                 name: "ValueError",
@@ -641,6 +655,8 @@ var fluidinfo = function(options) {
         options.args = {query: options.where};
         if (options.tags !== undefined) {
             options.args.tag = options.tags;
+        } else {
+            options.args.tag = "*";
         }
         this.api.del(options);
     };
