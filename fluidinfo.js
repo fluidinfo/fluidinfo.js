@@ -738,11 +738,14 @@ var fluidinfo = function(options) {
             options.args = {"query": options.where};
         } else if (options.user) {
             options.path = ["recent", "users", options.user];
+        } else if (options.whereUsers) {
+            options.path = ["recent", "users"];
+            options.args = {"query": options.whereUsers};
         } else {
             throw {
                 name: "ValueError",
-                message: "Supply either an 'about', 'id', 'where' or " +
-                         "'user' to look up."
+                message: "Supply either an 'about', 'id', 'where',  " +
+                         "'user' or 'whereUser' to look up."
             };
         }
 
