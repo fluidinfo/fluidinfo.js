@@ -1858,6 +1858,19 @@ describe("Fluidinfo.js", function() {
                 expect(this.server.requests[0].method).toEqual("GET");
             });
 
+            it("should send the correct request to Fluidinfo with a "+
+               "'whereUsers.'",
+               function() {
+                var query = "has user/follows";
+                this.fi.recent({
+                    whereUsers: query
+                });
+                var expected = "https://fluiddb.fluidinfo.com/recent/users" +
+                               "?query=has%20user%2Ffollows";
+                expect(this.server.requests[0].url).toEqual(expected);
+                expect(this.server.requests[0].method).toEqual("GET");
+            });
+
             it("should return an array of objects", function() {
                 var isArray = function(obj){
                     // Thanks Doug Crockford
