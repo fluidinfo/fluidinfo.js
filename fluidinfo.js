@@ -538,6 +538,12 @@ var fluidinfo = function(options) {
     session.query = function(opts) {
         var options = clone(opts);
         // process the options
+        if (options.select === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing select option."
+            };
+        }
         if (options.where === undefined) {
             throw {
                 name: "ValueError",
@@ -588,6 +594,8 @@ var fluidinfo = function(options) {
         var arguments = {query: options.where};
         if (options.select !== undefined) {
             arguments.tag = options.select;
+        } else {
+            arguments.tag = "*";
         }
 
         // Make the appropriate call to Fluidinfo
@@ -660,6 +668,12 @@ var fluidinfo = function(options) {
      */
     session.del = function(opts) {
         var options = clone(opts);
+        if (options.tags === undefined) {
+            throw {
+                name: "ValueError",
+                message: "Missing tags option."
+            };
+        }
         if (options.where === undefined) {
             throw {
                 name: "ValueError",
@@ -668,10 +682,10 @@ var fluidinfo = function(options) {
         }
 
         options.path = "values";
-        options.args = {query: options.where};
-        if (options.tags !== undefined) {
-            options.args.tag = options.tags;
-        }
+        options.args = {
+            query: options.where,
+            tag: options.tags
+        };
         this.api.del(options);
     };
 
@@ -771,11 +785,14 @@ var fluidinfo = function(options) {
             options.args = {"query": options.where};
         } else if (options.user) {
             options.path = ["recent", "users", options.user];
+        } else if (options.whereUsers) {
+            options.path = ["recent", "users"];
+            options.args = {"query": options.whereUsers};
         } else {
             throw {
                 name: "ValueError",
-                message: "Supply either an 'about', 'id', 'where' or " +
-                         "'user' to look up."
+                message: "Supply either an 'about', 'id', 'where',  " +
+                         "'user' or 'whereUser' to look up."
             };
         }
 
