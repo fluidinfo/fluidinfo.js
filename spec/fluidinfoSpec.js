@@ -1764,6 +1764,12 @@ describe("Fluidinfo.js", function() {
                 expect(this.server.requests[0].method).toEqual("GET");
             });
 
+            it("should appropriately encode a dodgy about value", function() {
+                this.fi.getObject({about: '"', select: ['*']});
+                expect(this.server.requests[0].url).toEqual(this.fi.baseURL +
+                    "values?query=fluiddb%2Fabout%3D%22%5C%22%22&tag=*");
+            });
+
             it("should result in the correct request to Fluidinfo for 'id'",
                function() {
                 var select = ["ntoll/foo", "terrycojones/bar",
