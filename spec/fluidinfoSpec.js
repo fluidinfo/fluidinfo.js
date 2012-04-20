@@ -298,6 +298,17 @@ describe("Fluidinfo.js", function() {
                     .toEqual(this.fi.baseURL +
                              "about/%C3%A4n%2F-%20object/namespace/tag");
             });
+
+            it("should appropriately encode a URL passed in as a string",
+               function() {
+                var options = new Object();
+                options.path = 'about/"';
+                options.data = {name: "foo", description: "bar"};
+                this.fi.api.post(options);
+                expect(this.server.requests[0].url)
+                    .toEqual(this.fi.baseURL +
+                             "about/%22");
+            })
       });
 
       describe("Response handling", function() {
