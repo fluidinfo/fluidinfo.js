@@ -39,6 +39,10 @@ var fluidinfo = function(options) {
         return temp;
     };
 
+    /**
+    Quote an about value to make it suitable for use in a fluiddb/about="..."
+    type query.
+    */
     var quoteAbout = function(s) {
         return s.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
     };
