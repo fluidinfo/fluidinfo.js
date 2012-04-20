@@ -19,6 +19,27 @@
  */
 var fluidinfo = function(options) {
     /**
+     * Returns a clone of the supplied object.
+     *
+     * It is possible (although unlikely) that this method could get into an
+     * infinite loop. TODO: Refactor this out.
+     */
+    var clone = function(obj) {
+        if (obj === null || typeof(obj) !== 'object') {
+            return obj;
+        }
+        var temp = obj.constructor();
+        for (var key in obj) {
+            if (typeof(obj[key]) === "object") {
+                temp[key] = clone(obj[key]);
+            } else {
+                temp[key] = obj[key];
+            }
+        }
+        return temp;
+    };
+
+    /**
      * Encodes strings into base64. Adapted from:
      * http://www.webtoolkit.info/javascript-base64.html
      */
@@ -460,7 +481,8 @@ var fluidinfo = function(options) {
      * Makes an HTTP GET call to the Fluidinfo API
      *
      */
-    api.get = function(options){
+    api.get = function(opts){
+        var options = clone(opts);
         options.type = "GET";
         options.data = null;
         return sendRequest(options);
@@ -470,7 +492,8 @@ var fluidinfo = function(options) {
      * Makes an HTTP POST call to the Fluidinfo API
      *
      */
-    api.post = function(options){
+    api.post = function(opts){
+        var options = clone(opts);
         options.type = "POST";
         return sendRequest(options);
     };
@@ -479,7 +502,8 @@ var fluidinfo = function(options) {
      * Makes an HTTP PUT call to the Fluidinfo API
      *
      */
-    api.put = function(options){
+    api.put = function(opts){
+        var options = clone(opts);
         options.type = "PUT";
         return sendRequest(options);
     };
@@ -488,7 +512,8 @@ var fluidinfo = function(options) {
      * Makes an HTTP DELETE call to the Fluidinfo API
      *
      */
-    api.del = function(options){
+    api.del = function(opts){
+        var options = clone(opts);
         options.type = "DELETE";
         options.data = null;
         return sendRequest(options);
@@ -498,7 +523,8 @@ var fluidinfo = function(options) {
      * Makes an HTTP HEAD call to the Fluidinfo API.
      *
      */
-    api.head = function(options){
+    api.head = function(opts){
+        var options = clone(opts);
         options.type = "HEAD";
         options.data = null;
         return sendRequest(options);
@@ -509,7 +535,8 @@ var fluidinfo = function(options) {
     /**
      * Easily gets results from Fluidinfo.
      */
-    session.query = function(options) {
+    session.query = function(opts) {
+        var options = clone(opts);
         // process the options
         if (options.select === undefined) {
             throw {
@@ -579,7 +606,8 @@ var fluidinfo = function(options) {
     /**
      * Easily updates objects in Fluidinfo.
      */
-    session.update = function(options) {
+    session.update = function(opts) {
+        var options = clone(opts);
         // process the options
         if (options.values === undefined) {
             throw {
@@ -618,7 +646,8 @@ var fluidinfo = function(options) {
     /**
      * Easily tag a specified object
      */
-    session.tag = function(options) {
+    session.tag = function(opts) {
+        var options = clone(opts);
         if (options.about === undefined && options.id === undefined) {
             throw {
                 name: "ValueError",
@@ -637,7 +666,8 @@ var fluidinfo = function(options) {
      * Easily delete tag-value instances from Fluidinfo using a query to
      * /values.
      */
-    session.del = function(options) {
+    session.del = function(opts) {
+        var options = clone(opts);
         if (options.tags === undefined) {
             throw {
                 name: "ValueError",
@@ -652,19 +682,18 @@ var fluidinfo = function(options) {
         }
 
         options.path = "values";
-        options.args = {query: options.where};
-        if (options.tags !== undefined) {
-            options.args.tag = options.tags;
-        } else {
-            options.args.tag = "*";
-        }
+        options.args = {
+            query: options.where,
+            tag: options.tags
+        };
         this.api.del(options);
     };
 
     /**
      * Get tags for a specific object
      */
-    session.getObject = function(options) {
+    session.getObject = function(opts) {
+        var options = clone(opts);
         if (options.about === undefined && options.id === undefined) {
             throw {
                 name: "ValueError",
@@ -708,7 +737,8 @@ var fluidinfo = function(options) {
     /**
      * Enables a user to create a new object about something
      */
-    session.createObject = function(options) {
+    session.createObject = function(opts) {
+        var options = clone(opts);
         if (!authorizationBase64Fragment && !OAuthAccessToken) {
             throw {
                 name: "AuthorizationError",
@@ -740,7 +770,8 @@ var fluidinfo = function(options) {
      * Finds the most recent 20 tags and values on the specified objects
      * (using either id, about or query) or created by the given user.
      */
-    session.recent = function(options) {
+    session.recent = function(opts) {
+        var options = clone(opts);
         if (options == undefined) {
             var options = {};
         }
