@@ -298,14 +298,6 @@ describe("Fluidinfo.js", function() {
                     .toEqual(this.fi.baseURL +
                              "about/%C3%A4n%2F-%20object/namespace/tag");
             });
-
-            it("should appropriately encode a URL passed in as a string",
-               function() {
-                this.fi.getObject({about: '"', select: ['*']});
-                expect(this.server.requests[0].url)
-                    .toEqual(this.fi.baseURL +
-                             "about/%22");
-            })
       });
 
       describe("Response handling", function() {
@@ -1770,6 +1762,12 @@ describe("Fluidinfo.js", function() {
                                "tag=fluiddb%2Fabout";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("GET");
+            });
+
+            it("should appropriately encode a dodgy about value", function() {
+                this.fi.getObject({about: '"', select: ['*']});
+                expect(this.server.requests[0].url).toEqual(this.fi.baseURL +
+                    "values?query=fluiddb%2Fabout%3D%22%5C%22%22&tag=*");
             });
 
             it("should result in the correct request to Fluidinfo for 'id'",
