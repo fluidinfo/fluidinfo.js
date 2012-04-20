@@ -40,6 +40,14 @@ var fluidinfo = function(options) {
     };
 
     /**
+    Quote an about value to make it suitable for use in a fluiddb/about="..."
+    type query.
+    */
+    var quoteAbout = function(s) {
+        return s.replace(/\\/g, '\\\\').replace(/\"/g, '\\"');
+    };
+
+    /**
      * Encodes strings into base64. Adapted from:
      * http://www.webtoolkit.info/javascript-base64.html
      */
@@ -701,7 +709,7 @@ var fluidinfo = function(options) {
             };
         }
         if (options.about) {
-            options.where = 'fluiddb/about="' + options.about + '"';
+            options.where = 'fluiddb/about="' + quoteAbout(options.about) + '"';
         } else if (options.id) {
             options.where = 'fluiddb/id="' + options.id + '"';
         }
