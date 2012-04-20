@@ -301,10 +301,7 @@ describe("Fluidinfo.js", function() {
 
             it("should appropriately encode a URL passed in as a string",
                function() {
-                var options = new Object();
-                options.path = 'about/"';
-                options.data = {name: "foo", description: "bar"};
-                this.fi.api.post(options);
+                this.fi.getObject({about: '"', select: ['*']});
                 expect(this.server.requests[0].url)
                     .toEqual(this.fi.baseURL +
                              "about/%22");
