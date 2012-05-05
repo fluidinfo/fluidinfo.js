@@ -131,10 +131,10 @@ var fluidinfo = function(options) {
                 }
             }
         }
-        if (options.access_token != undefined){
+        if (options.access_token !== undefined){
             OAuthAccessToken = options.access_token;
         }
-        if ((options.username != undefined) && (options.password != undefined)) {
+        if ((options.username !== undefined) && (options.password !== undefined)) {
             authorizationBase64Fragment = Base64.encode(
                 options.username + ":" + options.password);
             // Makes sure the logged in user's username is available via the
@@ -168,7 +168,7 @@ var fluidinfo = function(options) {
      * @return {string} The appropriately encoded URL.
      */
     function encodeURL(path) {
-        var result = "";
+        var i, result = "";
         for (i = 0; i < path.length; i++) {
             result += "/" + encodeURIComponent(path[i]);
         }
@@ -201,7 +201,6 @@ var fluidinfo = function(options) {
         // check for an array (potential set) and validate it only contains
         // strings (currently multi-type arrays are not allowed)
         if (isArray(value)) {
-            var i;
             for (i = 0; i < value.length; i++) {
                 var memberType = typeof(value[i]);
                 if (memberType !== "string") {
@@ -229,8 +228,8 @@ var fluidinfo = function(options) {
         // then check if the value is a Fluidinfo primitive type. Otherwise
         // complain.
         var result = null;
-        if (options.type==="PUT" && (options.path.match("^objects\/") ||
-                                     options.path.match("^about\/"))) {
+        if (options.type === "PUT" && (options.path.match("^objects\/") ||
+                                       options.path.match("^about\/"))) {
             if (options.contentType){
                 result = options.contentType;
             } else if (isPrimitive(options.data)) {
@@ -464,7 +463,7 @@ var fluidinfo = function(options) {
             } else {
                 xhr.onreadystatechange = function() {
                     // Old skool handling of XHR for older browsers.
-                    if (xhr.readyState != 4) return;
+                    if (xhr.readyState !== 4) return;
                     handleResult();
                 };
             }
@@ -573,7 +572,7 @@ var fluidinfo = function(options) {
             var objectID;
             for (objectID in data.id){
                 if (typeof data.id[objectID] !== "function") {
-                    var obj = new Object();
+                    var tag, obj = new Object();
                     obj["id"] = objectID;
                     for (tag in data.id[objectID]) {
                         if (typeof data.id[objectID][tag] !== "function") {
@@ -633,7 +632,7 @@ var fluidinfo = function(options) {
         var queries = [];
         var updateSpecification = [];
         updateSpecification[0] = options.where;
-        var valueSpec = new Object();
+        var val, valueSpec = new Object();
         for (val in options.values){
             if (typeof options.values[val] !== "function") {
                 if(options.values[val] === undefined) {
@@ -780,8 +779,8 @@ var fluidinfo = function(options) {
      */
     session.recent = function(opts) {
         var options = clone(opts);
-        if (options == undefined) {
-            var options = {};
+        if (options === undefined) {
+            options = {};
         }
 
         if (options.about) {
