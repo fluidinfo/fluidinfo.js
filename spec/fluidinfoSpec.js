@@ -512,6 +512,7 @@ describe("Fluidinfo.js", function() {
                   }; // must not mutate
                   this.fi.api.get(options);
                   var expected = ["path", "onSuccess", "onError"];
+                  var attribute;
                   for(attribute in options) {
                       if(typeof(options[attribute]) !== 'function') {
                           var isExpected = false;
@@ -589,6 +590,7 @@ describe("Fluidinfo.js", function() {
                   }; // must not mutate
                   this.fi.api.post(options);
                   var expected = ["path", "data", "onSuccess", "onError"];
+                  var attribute;
                   for(attribute in options) {
                       var isExpected = false;
                       var i;
@@ -615,7 +617,7 @@ describe("Fluidinfo.js", function() {
                          data: "data",
                          onSuccess: function(result) {
                            expect(result.status).toEqual(204);
-                         },
+                         }
                   });
                   var responseStatus = 204;
                   var responseHeaders = {"Content-Type": "text/html",
@@ -656,6 +658,7 @@ describe("Fluidinfo.js", function() {
                   }; // must not mutate
                   this.fi.api.put(options);
                   var expected = ["path", "data", "onSuccess", "onError"];
+                  var attribute;
                   for(attribute in options) {
                       var isExpected = false;
                       var i;
@@ -714,6 +717,7 @@ describe("Fluidinfo.js", function() {
                   }; // must not mutate
                   this.fi.api.del(options);
                   var expected = ["path", "onSuccess", "onError"];
+                  var attribute;
                   for(attribute in options) {
                       var isExpected = false;
                       var i;
@@ -780,6 +784,7 @@ describe("Fluidinfo.js", function() {
                     }; // must not mutate
                     this.fi.api.head(options);
                     var expected = ["path", "onSuccess", "onError"];
+                    var attribute;
                     for(attribute in options) {
                         var isExpected = false;
                         var i;
@@ -1012,6 +1017,7 @@ describe("Fluidinfo.js", function() {
                 }; // must not mutate
                 this.fi.query(options);
                 var expected = ["select", "where", "onSuccess", "onError"];
+                var attribute;
                 for(attribute in options) {
                     var isExpected = false;
                     var i;
@@ -1266,6 +1272,7 @@ describe("Fluidinfo.js", function() {
                 }; // must not mutate
                 this.fi.update(options);
                 var expected = ["values", "where", "onSuccess", "onError"];
+                var attribute;
                 for(attribute in options) {
                     var isExpected = false;
                     var i;
@@ -1315,7 +1322,7 @@ describe("Fluidinfo.js", function() {
                                 where: where,
                                 onSuccess: function(result) {},
                                 onError: function(result) {}});
-                expected = "https://fluiddb.fluidinfo.com/values";
+                var expected = "https://fluiddb.fluidinfo.com/values";
                 expect(this.server.requests[0].url).toEqual(expected);
                 expect(this.server.requests[0].method).toEqual("PUT");
                 expect(this.server.requests[0].requestHeaders["content-type"])
@@ -1402,6 +1409,7 @@ describe("Fluidinfo.js", function() {
                 }; // must not mutate
                 this.fi.tag(options);
                 var expected = ["values", "about", "onSuccess", "onError"];
+                var attribute;
                 for(attribute in options) {
                     var isExpected = false;
                     var i;
@@ -1564,6 +1572,7 @@ describe("Fluidinfo.js", function() {
                 }; // must not mutate
                 this.fi.del(options);
                 var expected = ["tags", "where", "onSuccess", "onError"];
+                var attribute;
                 for(attribute in options) {
                     var isExpected = false;
                     var i;
@@ -1704,6 +1713,7 @@ describe("Fluidinfo.js", function() {
                 }; // must not mutate
                 this.fi.getObject(options);
                 var expected = ["select", "about", "onSuccess", "onError"];
+                var attribute;
                 for(attribute in options) {
                     var isExpected = false;
                     var i;
@@ -1993,6 +2003,7 @@ describe("Fluidinfo.js", function() {
                 }; // must not mutate
                 this.fi.createObject(options);
                 var expected = ["about", "onSuccess", "onError"];
+                var attribute;
                 for(attribute in options) {
                     var isExpected = false;
                     var i;
@@ -2147,6 +2158,7 @@ describe("Fluidinfo.js", function() {
                 }; // must not mutate
                 this.fi.recent(options);
                 var expected = ["where", "onSuccess", "onError"];
+                var attribute;
                 for(attribute in options) {
                     var isExpected = false;
                     var i;
