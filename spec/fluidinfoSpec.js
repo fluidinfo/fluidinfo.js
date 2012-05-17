@@ -801,6 +801,155 @@ describe("Fluidinfo.js", function() {
                 });
             });
         });
+
+      describe("JSONRPC", function() {
+          describe("default behaviour", function() {
+              beforeEach(function() {
+                  var spy = sinon.spy();
+                  this.fi.api.jsonrpc({
+                      method: "add-comment",
+                      onSuccess: function(result) {
+                          spy();
+                          expect(result.status).toEqual(200);
+                          expect(result.data)
+                              .toEqual({
+                                  "fluidinfo.com/info/about" : [ 'nothing' ],
+                                  "fluidinfo.com/info/text" : 'a comment about nothing',
+                                  "fluidinfo.com/info/timestamp" : 1336086338.758058,
+                                  "fluidinfo.com/info/url" : 'http://comments.com',
+                                  "fluidinfo.com/info/username" : 'username'
+                              });
+                      },
+                      params: {
+                          about: "nothing",
+                          text: "a comment about nothing"
+                      }
+                  });
+                  var responseStatus = 200;
+                  var responseHeaders = {"Content-Type": "application/json"};
+                  var responseText = (
+                      '{' +
+                          '"id": 1, ' +
+                          '"jsonrpc": "2.0",' +
+                          '"result": {' +
+                              '"fluidinfo.com/info/about": ["nothing"],' +
+                              '"fluidinfo.com/info/text": "a comment about nothing",' +
+                              '"fluidinfo.com/info/timestamp": 1336086338.7580581,' +
+                              '"fluidinfo.com/info/url": "http://comments.com",' +
+                              '"fluidinfo.com/info/username": "username"' +
+                          '}' +
+                      '}'
+                  );
+                  this.server.requests[0].respond(
+                      responseStatus, responseHeaders, responseText);
+                  expect(spy.calledOnce).toBeTruthy();
+              });
+
+              it_should_be_a_standard_ajax_request();
+
+              it_should_be_authenticated();
+
+              it("should be a POST method", function() {
+                  expect(this.server.requests[0].method)
+                      .toEqual("POST");
+              });
+
+              it("should have a payload", function() {
+                  expect(this.server.requests[0].requestBody)
+                      .not.toEqual(null);
+                  expect(this.server.requests[0].requestBody)
+                      .toBeTruthy();
+              });
+
+              it_should_have_a_content_type_of("application/json");
+
+              it("should not mutate the user-provided option object",
+                function() {
+                  var method = 'a-remote-method';
+                  var params = {name: "name", description: "a description"};
+                  var onSuccess = function(result) {};
+                  var onError = function(result) {};
+                  var options = {
+                      method: method,
+                      onSuccess: onSuccess,
+                      onError: onError,
+                      params: params
+                  }; // must not mutate
+                  this.fi.api.jsonrpc(options);
+                  var expected = ["method", "params", "onSuccess", "onError"];
+                  var attribute;
+                  for(attribute in options) {
+                      var isExpected = false;
+                      var i;
+                      for(i = 0; i < expected.length; i++) {
+                          if(expected[i] === attribute) {
+                              isExpected = true;
+                         }
+                      }
+                      expect(isExpected).toEqual(true);
+                  }
+                  expect(options.method).toEqual(method);
+                  expect(options.onSuccess).toEqual(onSuccess);
+                  expect(options.onError).toEqual(onError);
+                  expect(options.params).toEqual(params);
+              });
+          });
+
+          describe("error behaviour", function() {
+              beforeEach(function() {
+                  var spy = sinon.spy();
+                  this.fi.api.jsonrpc({
+                      method: "add-comment",
+                      onError: function(result) {
+                          spy();
+                          expect(result.status).toEqual(200);
+                          expect(result.data)
+                              .toEqual({
+                                  code: 400,
+                                  message: 'Sorry...'
+                              });
+                      },
+                      params: {
+                          about: "nothing",
+                          text: "a comment about nothing"
+                      }
+                  });
+                  var responseStatus = 200;
+                  var responseHeaders = {"Content-Type": "application/json"};
+                  var responseText = (
+                      '{' +
+                          '"id": 1, ' +
+                          '"jsonrpc": "2.0",' +
+                          '"error": {' +
+                              '"code": 400,' +
+                              '"message": "Sorry..."' +
+                          '}' +
+                      '}'
+                  );
+                  this.server.requests[0].respond(
+                      responseStatus, responseHeaders, responseText);
+                  expect(spy.calledOnce).toBeTruthy();
+              });
+
+              it_should_be_a_standard_ajax_request();
+
+              it_should_be_authenticated();
+
+              it("should be a POST method", function() {
+                  expect(this.server.requests[0].method)
+                      .toEqual("POST");
+              });
+
+              it("should have a payload", function() {
+                  expect(this.server.requests[0].requestBody)
+                      .not.toEqual(null);
+                  expect(this.server.requests[0].requestBody)
+                      .toBeTruthy();
+              });
+
+              it_should_have_a_content_type_of("application/json");
+          });
+       });
     });
 
     /**

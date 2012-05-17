@@ -537,6 +537,55 @@ var fluidinfo = function(options) {
         return sendRequest(options);
     };
 
+    /**
+     * Make a JSON RPC call (via HTTP POST) to the Fluidinfo API.
+     * See http://www.simple-is-better.org/json-rpc/jsonrpc20.html for
+     * the JSON RPC specification.
+     */
+    api.jsonrpc = function(opts){
+        /*
+         * param opts: a JS object containing attributes:
+         *   method: the (string) name of the remote method.
+         *   onError: (optional) the error callback function.
+         *   onSuccess: (optional) the success callback function.
+         *   params: the parameters to pass to the remote method,
+         *       either a JS object or array.
+         */
+        var options = clone(opts);
+        var originalOnSuccess = options.onSuccess;
+        var originalOnError = options.onError;
+
+        options.onSuccess = function(result){
+            if (result.data.hasOwnProperty('result')){
+                // Success.
+                if (originalOnSuccess){
+                    result.data = result.data.result;
+                    originalOnSuccess(result);
+                }
+            }
+            else {
+                // Error.
+                if (originalOnError){
+                    // We could overwrite result.status and result.statusText
+                    // here, but I think it's better to just pass the error
+                    // object (which contains a 'code' and 'message' and
+                    // possibly a 'data'.
+                    result.data = result.data.error;
+                    originalOnError(result);
+                }
+            }
+        };
+        options.type = 'POST';
+        options.path = 'jsonrpc';
+        options.data = {
+            id: 1,  // Just send a constant request id for now.
+            jsonrpc: '2.0',
+            method: options.method,
+            params: options.params
+        };
+        return sendRequest(options);
+    };
+
     session.api = api;
 
     /**
