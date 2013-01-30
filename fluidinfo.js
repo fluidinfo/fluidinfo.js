@@ -105,7 +105,7 @@ var fluidinfo = function(options) {
     /**
      * Represents a session with Fluidinfo.
      */
-    var session = new Object();
+    var session = {};
     var authorizationBase64Fragment = '';
     var OAuthAccessToken = '';
 
@@ -157,7 +157,7 @@ var fluidinfo = function(options) {
      */
     function isArray(value) {
         return Object.prototype.toString.apply(value) === "[object Array]";
-    };
+    }
 
     /**
      * Given a path that is expressed as an array of path elements, will
@@ -173,7 +173,7 @@ var fluidinfo = function(options) {
             result += "/" + encodeURIComponent(path[i]);
         }
         return result.slice(1); // chops the leading slash
-    };
+    }
 
     /**
      * Checks the passed value to discover if it's a Fluidinfo "primitive"
@@ -255,8 +255,8 @@ var fluidinfo = function(options) {
      */
     function isJSONData(contentType) {
         return contentType && (
-            contentType === "application/json"
-            || contentType === "application/vnd.fluiddb.value+json");
+            contentType === "application/json" ||
+            contentType === "application/vnd.fluiddb.value+json");
     }
 
     /**
@@ -349,7 +349,7 @@ var fluidinfo = function(options) {
      */
     function createNiceResult(xhr) {
         // build a simple result object
-        var result = new Object();
+        var result = {};
         result.status = xhr.status;
         result.statusText = xhr.statusText;
         result.headers = getHeaders(xhr);
@@ -482,7 +482,7 @@ var fluidinfo = function(options) {
     /**
      * Contains functions to facilitate the calling of the Fluidinfo REST API.
      */
-    var api = new Object();
+    var api = {};
 
     /**
      * Makes an HTTP GET call to the Fluidinfo API
@@ -572,8 +572,8 @@ var fluidinfo = function(options) {
             var objectID;
             for (objectID in data.id){
                 if (typeof data.id[objectID] !== "function") {
-                    var tag, obj = new Object();
-                    obj["id"] = objectID;
+                    var tag, obj = {};
+                    obj.id = objectID;
                     for (tag in data.id[objectID]) {
                         if (typeof data.id[objectID][tag] !== "function") {
                             if (data.id[objectID][tag].value !== undefined) {
@@ -583,7 +583,7 @@ var fluidinfo = function(options) {
                                 // opaque value
                                 obj[tag] = data.id[objectID][tag];
                                 // add a URL to the opaque value
-                                obj[tag]['url'] =
+                                obj[tag].url =
                                     session.baseURL + "objects/" + objectID +
                                     "/" + tag;
                             }
@@ -595,18 +595,18 @@ var fluidinfo = function(options) {
             raw.data = result;
             if (options.onSuccess){
                 options.onSuccess(raw);
-            };
+            }
         };
 
-        var arguments = {query: options.where};
+        var args = {query: options.where};
         if (options.select !== undefined) {
-            arguments.tag = options.select;
+            args.tag = options.select;
         } else {
-            arguments.tag = "*";
+            args.tag = "*";
         }
 
         // Make the appropriate call to Fluidinfo
-        this.api.get({path: "values", args: arguments,
+        this.api.get({path: "values", args: args,
                       onSuccess: processResult, onError: options.onError});
     };
 
@@ -628,11 +628,11 @@ var fluidinfo = function(options) {
                 message: "Missing where option."
             };
         }
-        var payload = new Object();
-        var queries = [];
-        var updateSpecification = [];
+        var payload = {},
+            queries = [],
+            updateSpecification = [];
         updateSpecification[0] = options.where;
-        var val, valueSpec = new Object();
+        var val, valueSpec = {};
         for (val in options.values){
             if (typeof options.values[val] !== "function") {
                 if(options.values[val] === undefined) {
@@ -644,7 +644,7 @@ var fluidinfo = function(options) {
         }
         updateSpecification[1] = valueSpec;
         queries[0] = updateSpecification;
-        payload["queries"] = queries;
+        payload.queries = queries;
         // Make the appropriate call to Fluidinfo
         this.api.put({path: "values", data: payload,
                       onSuccess: options.onSuccess, onError: options.onError});
@@ -759,11 +759,11 @@ var fluidinfo = function(options) {
         }
         var userOnSuccess = options.onSuccess;
         var onSuccess = function(result) {
-            var newObject = new Object();
+            var newObject = {};
             if (options.about){
                 newObject["fluiddb/about"] = options.about;
             }
-            newObject["id"] = result.data.id;
+            newObject.id = result.data.id;
             result.data = newObject;
             if (userOnSuccess){
                 userOnSuccess(result);
@@ -819,10 +819,10 @@ var fluidinfo = function(options) {
             for (i = 0; i < data.length; i++){
                 var obj = data[i];
                 obj.date = new Date(obj["updated-at"]);
-                if (obj.value !== null
-                    && obj.value["value-type"] !== undefined) {
+                if (obj.value !== null &&
+                    obj.value["value-type"] !== undefined) {
                     // opaque value
-                    obj.value["url"] =
+                    obj.value.url =
                         session.baseURL + "objects/" + obj.id +
                         "/" + obj.tag;
                 }
@@ -831,7 +831,7 @@ var fluidinfo = function(options) {
             raw.data = result;
             if (userOnSuccess){
                 userOnSuccess(raw);
-            };
+            }
         };
         options.onSuccess = processResult;
         session.api.get(options);
